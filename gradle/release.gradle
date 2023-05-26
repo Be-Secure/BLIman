@@ -1,0 +1,56 @@
+apply plugin: 'org.jreleaser'
+
+jreleaser {
+	project {
+		name = 'bliman-cli'
+		version = blimanVersion
+		description = 'Bliman - The Software Development Kit Manager'
+		website = 'https://bliman.io'
+		authors = ['Marco Vermeulen']
+		license = 'Apache-2.0'
+		extraProperties.put('inceptionYear', '2012')
+	}
+	
+	release {
+		github {
+			overwrite = true
+			tagName = '{{projectVersion}}'
+			changelog {
+				formatted = 'ALWAYS'
+				format = '- {{commitShortHash}} {{commitTitle}}'
+				contributors {
+					format = '- {{contributorName}}'
+				}
+				contentTemplate = file('src/jreleaser/changelog.tpl')
+				hide {
+					contributors = ['GitHub']
+				}
+			}
+		}
+	}
+	
+	distributions {
+		'bliman-cli' {
+			distributionType = 'BINARY'
+			artifact {
+				path = "build/distributions/{{distributionName}}-${blimanVersion}.zip"
+				extraProperties.put("universal", "true")
+			}
+			brew {
+				active = 'ALWAYS'
+			}
+		}
+	}
+	
+	announce {
+		twitter {
+			active = 'RELEASE'
+			status = 'Released version {{tagName}} of BLIMAN! {{releaseNotesUrl}}'
+		}
+		mastodon {
+			active = 'RELEASE'
+			status = 'Released version {{tagName}} of BLIMAN! {{releaseNotesUrl}}'
+			host = 'https://fosstodon.org'
+		}
+	}
+}
