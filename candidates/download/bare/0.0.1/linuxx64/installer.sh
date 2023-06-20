@@ -22,6 +22,8 @@ echo ' ## ### ## ##     ## ##     ## ######    '
 echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ##  #######  ########  ########  '
+export BESLAB_MODE=bare
+
 if [[ ! -d $HOME/.oah ]]; then
   	echo "Installing oah-shell"
   	curl -s https://raw.githubusercontent.com/Be-Secure/oah-installer/install.sh | bash
