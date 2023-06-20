@@ -23,6 +23,7 @@ echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ##  #######  ########  ########  '
 
+export BESLAB_MODE=host
 
 if [[ ! -d $HOME/.oah ]]; then
   	echo "Installing oah-shell"
