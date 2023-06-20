@@ -22,6 +22,7 @@ echo ' ## ### ## ##     ## ##     ## ######    '
 echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ##  #######  ########  ########  '
+export BESLAB_MODE=light
 if [[ ! -d $HOME/.besman ]]; then
 	echo "Installing BeSman"
 	curl -L https://raw.githubusercontent.com/Be-Secure/BeSman/dist/dist/get.besman.io | bash
