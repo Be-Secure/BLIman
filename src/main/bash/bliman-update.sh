@@ -17,7 +17,7 @@
 #
 
 function __bli_update() {
-	local candidates_uri="${BLIMAN_CANDIDATES_API}/candidates/all"
+	local candidates_uri="${BLIMAN_CANDIDATES_REPO}/candidates/all"
 	__bliman_echo_debug "Using candidates endpoint: $candidates_uri"
 
 	local fresh_candidates_csv=$(__bliman_secure_curl_with_timeouts "$candidates_uri")

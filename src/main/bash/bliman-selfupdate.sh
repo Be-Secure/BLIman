@@ -27,11 +27,11 @@ function __bli_selfupdate() {
 	fi
 
 	if [[ "$bliman_beta_channel" == "true" ]]; then
-		bliman_script_version_api="${BLIMAN_CANDIDATES_API}/broker/version/bliman/script/beta"
-		bliman_native_version_api="${BLIMAN_CANDIDATES_API}/broker/version/bliman/native/beta"
+		bliman_script_version_api="${BLIMAN_CANDIDATES_REPO}/broker/version/bliman/script/beta"
+		bliman_native_version_api="${BLIMAN_CANDIDATES_REPO}/broker/version/bliman/native/beta"
 	else
-		bliman_script_version_api="${BLIMAN_CANDIDATES_API}/broker/version/bliman/script/stable"
-		bliman_native_version_api="${BLIMAN_CANDIDATES_API}/broker/version/bliman/native/stable"
+		bliman_script_version_api="${BLIMAN_CANDIDATES_REPO}/broker/version/bliman/script/stable"
+		bliman_native_version_api="${BLIMAN_CANDIDATES_REPO}/broker/version/bliman/native/stable"
 	fi
 
 	bliman_remote_script_version=$(__bliman_secure_curl "$bliman_script_version_api")
@@ -48,8 +48,8 @@ function __bli_selfupdate() {
 	if [[ "$bliman_local_script_version" == "$bliman_remote_script_version" && "$bliman_local_native_version" == "$bliman_remote_native_version" && "$force_selfupdate" != "force" ]]; then
 		echo "No update available at this time."
 	elif [[ "$bliman_beta_channel" == "true" ]]; then
-		__bliman_secure_curl "${BLIMAN_CANDIDATES_API}/selfupdate/beta/${BLIMAN_PLATFORM}" | bash
+		__bliman_secure_curl "${BLIMAN_CANDIDATES_REPO}/selfupdate/beta/${BLIMAN_PLATFORM}" | bash
 	else
-		__bliman_secure_curl "${BLIMAN_CANDIDATES_API}/selfupdate/stable/${BLIMAN_PLATFORM}" | bash
+		__bliman_secure_curl "${BLIMAN_CANDIDATES_REPO}/selfupdate/stable/${BLIMAN_PLATFORM}" | bash
 	fi
 }
