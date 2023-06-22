@@ -19,9 +19,9 @@ trap echo_failed_command EXIT
 
 
 # Global variables
-export BLIMAN_HOSTED_URL="https://github.com"
+export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
 export BLIMAN_NAMESPACE="asa1997"
-export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman"
+export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
 # export BLIMAN_VERSION="5.18.1"
 # export BLIMAN_NATIVE_VERSION="0.2.9"
 # infer platform
@@ -259,6 +259,7 @@ mkdir -p "$bliman_var_folder"
 mkdir -p "$bliman_candidates_folder"
 
 echo "Getting available candidates..."
+echo "from ${BLIMAN_REPO_URL}/candidates.txt"
 BLIMAN_CANDIDATES_CSV=$(curl -s "${BLIMAN_REPO_URL}/candidates.txt")
 echo "$BLIMAN_CANDIDATES_CSV" > "${BLIMAN_DIR}/var/candidates"
 
