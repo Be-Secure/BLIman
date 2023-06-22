@@ -18,7 +18,7 @@
 
 # set env vars if not set
 if [ -z "$BLIMAN_CANDIDATES_REPO" ]; then
-	export BLIMAN_CANDIDATES_REPO="https://raw.githubusercontent.com/asa1997/BLIman/main"
+	export BLIMAN_CANDIDATES_REPO="https://raw.githubusercontent.com/$BLIMAN_NAMESPACE/BLIman/main"
 fi
 
 if [ -z "$BLIMAN_DIR" ]; then
