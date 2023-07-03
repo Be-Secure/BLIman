@@ -1,18 +1,5 @@
 #!/bin/bash
 
-function __bliman_check_oah_available()
-{
-    if [[ -d "$HOME/.oah" ]]; 
-    then
-        __bliman_echo_white "oah-shell found"
-    else
-        __bliman_echo_white "Installing oah"
-        
-        curl -L "https://raw.githubusercontent.com/Be-Secure/oah-installer/master/install.sh" | bash
-        source "$HOME/.oah/bin/oah-init.sh"
-    fi
-}
-
 function __bliman_check_oah_bes_vm_available()
 {
     local tmp_file="/tmp/list.txt"
