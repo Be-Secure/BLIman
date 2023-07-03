@@ -151,8 +151,10 @@ if [[ -z "${bliman_curl_retry_max_time}" ]]; then bliman_curl_retry_max_time=60;
 if [[ -z "${bliman_curl_continue}" ]]; then bliman_curl_continue=true; fi
 
 # read list of candidates and set array
-export BLIMAN_CANDIDATES_CACHE="${BLIMAN_DIR}/var/candidates"
-export BLIMAN_CANDIDATES_CSV=$(<"$BLIMAN_CANDIDATES_CACHE")
+BLIMAN_CANDIDATES_CACHE="${BLIMAN_DIR}/var/candidates"
+export BLIMAN_CANDIDATES_CACHE
+BLIMAN_CANDIDATES_CSV=$(<"$BLIMAN_CANDIDATES_CACHE")
+export BLIMAN_CANDIDATES_CSV
 __bliman_echo_debug "Setting candidates csv: $BLIMAN_CANDIDATES_CSV"
 if [[ "$zsh_shell" == 'true' ]]; then
 	BLIMAN_CANDIDATES=(${(s:,:)BLIMAN_CANDIDATES_CSV})
