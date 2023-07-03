@@ -25,7 +25,7 @@ function __bliman_determine_healthcheck_status() {
 	if [[ "$BLIMAN_OFFLINE_MODE" == "true" || "$COMMAND" == "offline" && "$QUALIFIER" == "enable" ]]; then
 		echo ""
 	else
-		echo $(__bliman_secure_curl_with_timeouts "${BLIMAN_CANDIDATES_REPO}/healthcheck")
+		echo "$(__bliman_secure_curl_with_timeouts "${BLIMAN_CANDIDATES_REPO}/healthcheck")"
 	fi
 }
 
