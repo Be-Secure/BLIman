@@ -91,8 +91,8 @@ function infer_platform() {
 	esac
 }
 
-export BLIMAN_PLATFORM="$(infer_platform)"
-
+BLIMAN_PLATFORM="$(infer_platform)"
+export BLIMAN_PLATFORM
 
 if [ -z "$BLIMAN_DIR" ]; then
     BLIMAN_DIR="$HOME/.bliman"
@@ -104,7 +104,6 @@ export BLIMAN_DIR
 
 # Local variables
 bliman_src_folder="${BLIMAN_DIR}/src"
-bliman_libexec_folder="${BLIMAN_DIR}/libexec"
 bliman_tmp_folder="${BLIMAN_DIR}/tmp"
 bliman_ext_folder="${BLIMAN_DIR}/ext"
 bliman_etc_folder="${BLIMAN_DIR}/etc"
@@ -112,7 +111,6 @@ bliman_var_folder="${BLIMAN_DIR}/var"
 bliman_candidates_folder="${BLIMAN_DIR}/candidates"
 bliman_config_file="${bliman_etc_folder}/config"
 bliman_bash_profile="${HOME}/.bash_profile"
-bliman_profile="${HOME}/.profile"
 bliman_bashrc="${HOME}/.bashrc"
 bliman_zshrc="${ZDOTDIR:-${HOME}}/.zshrc"
 
