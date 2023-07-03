@@ -1,49 +1,66 @@
 #!/bin/bash
 
-function __bliman_launch()
+function __bli_launch()
 {
-    __bliman_check_oah_available
-    __bliman_check_oah_bes_vm_available || return 1
-    __bliman_set_mode
-    if [[ $BLIMAN_LAB_MODE == "host" ]]; then
-        __bliman_check_vagrant_available || return 1
-        __bliman_checl_vm_available || return 1
-        __bliman_launch_bes_lab_host_mode || return 1
+    local genesis_file_name genesis_file_url default_genesis_file_path
+    genesis_file_name="beslab_genesis.yaml"
+    genesis_file_url="$BLIMAN_LAB_URL/$genesis_file_name"
+    if [[ -f $HOME/$genesis_file_name ]]; then
+
+        __bliman_echo_yellow "Genesis file found at $HOME"
+        export BLIMAN_GENSIS_FILE_PATH="$HOME/$genesis_file_name"
     else
-        __bliman_launch_bes_lab_bare_metal_mode || return 1
+        export BLIMAN_GENSIS_FILE_PATH="$BLIMAN_DIR/tmp/$genesis_file_name"
+        __bliman_check_genesis_file_available "$genesis_file_url" || return 1
+        __bliman_get_genesis_file "$genesis_file_url" "$BLIMAN_GENSIS_FILE_PATH"
     fi
+    __bliman_load_export_vars "$BLIMAN_GENSIS_FILE_PATH"
+
 }
 
-function __bliman_checl_vm_available()
+
+
+function __bliman_check_genesis_file_available()
 {
-    if [[ -z "$(which virtualbox)" ]]; then
-        sudo apt update
-        sudo apt upgrade
-        __bliman_echo_white "Installing virtualbox"
-        wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
-        wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
-        sudo add-apt-repository "deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib"
-        sudo apt update
-        sudo apt install virtualbox
-        virtualbox --version
-        [[ "$?" -eq 1 ]] && __bliman_echo_red "Virtual Box installation failed" && return 1     
+    local url response
+    url=$1
+    response=$(curl --head --silent "$url" | head -n 1 | awk '{print $2}')
+    if [ "$response" -eq 200 ]; then
+        __bliman_echo_red "Could not find genesis file @ $url"
+        return 1
+    else
+        __bliman_echo_white "Genesis file found"
     fi
+
 }
 
-function __bliman_check_vagrant_available()
+function __bliman_get_genesis_file()
 {
+    local url default_genesis_file_path
+    url=$1
+    default_genesis_file_path=$2
+    touch "$default_genesis_file_path"
+    __bliman_secure_curl "$url" >> "$default_genesis_file_path"
     
-    if [[ -z "$(which vagrant)" ]]; then
-        sudo apt update
-        sudo apt upgrade
-        __bliman_echo_white "Installing vagrant"
-        sudo apt install virtualbox-ext-pack
-        wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-        echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-        sudo apt update && sudo apt install vagrant
-        vagrant --version
-        [[ "$?" -eq 1 ]] && __bliman_echo_red "Vagrant installation failed" && return 1     
-        
-
-    fi
 }
+
+function __bliman_load_export_vars()
+{
+    local var value genesis_file_path
+    genesis_file_path=$1
+    while read -r line 
+    do
+        [[ $line == "---" ]] && continue
+        if echo "$line" | grep -qe "^BESLAB_"  
+        then
+            
+            var=$(echo "$line" | cut -d ":" -f 1)
+            value=$(echo "$line" | cut -d ":" -f 2 | sed "s/ //g")
+            unset "$var"
+            export "$var"="$value"
+        fi
+    done < "$genesis_file_path"
+    
+}
+
+
