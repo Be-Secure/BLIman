@@ -272,17 +272,21 @@ if [ -z "$ZSH_VERSION" -a -z "$BASH_VERSION" ]; then
 else
     echo "bliman_auto_complete=true" >> "$bliman_config_file"
 fi
-echo "bliman_auto_env=false" >> "$bliman_config_file"
-echo "bliman_auto_update=true" >> "$bliman_config_file"
-echo "bliman_beta_channel=false" >> "$bliman_config_file"
-echo "bliman_checksum_enable=true" >> "$bliman_config_file"
-echo "bliman_colour_enable=true" >> "$bliman_config_file"
-echo "bliman_curl_connect_timeout=7" >> "$bliman_config_file"
-echo "bliman_curl_max_time=10" >> "$bliman_config_file"
-echo "bliman_debug_mode=false" >> "$bliman_config_file"
-echo "bliman_insecure_ssl=false" >> "$bliman_config_file"
-echo "bliman_rosetta2_compatible=false" >> "$bliman_config_file"
-echo "bliman_selfupdate_feature=true" >> "$bliman_config_file"
+touch "$bliman_config_file"
+{
+	echo "bliman_auto_env=false" 
+	echo "bliman_auto_update=true" 
+	echo "bliman_beta_channel=false" 
+	echo "bliman_checksum_enable=true" 
+	echo "bliman_colour_enable=true" 
+	echo "bliman_curl_connect_timeout=7" 
+	echo "bliman_curl_max_time=10" 
+	echo "bliman_debug_mode=false" 
+	echo "bliman_insecure_ssl=false" 
+	echo "bliman_rosetta2_compatible=false" 
+	echo "bliman_selfupdate_feature=true" 
+} >> "$bliman_config_file"
+
 
 # script cli distribution
 echo "Installing script cli archive..."
