@@ -5,7 +5,9 @@ function __bli_launch()
     local genesis_file_name genesis_file_url default_genesis_file_path
     genesis_file_name="beslab_genesis.yaml"
     genesis_file_url="$BLIMAN_LAB_URL/$genesis_file_name"
-    if [[ -f $HOME/$genesis_file_name ]]; then
+    
+    [[ -z $BESLAB_MODE ]] && __bliman_echo_red "Stop!!! Please run the install command first" && return 1
+    if [[ -f "$HOME/$genesis_file_name" ]]; then
 
         __bliman_echo_yellow "Genesis file found at $HOME"
         export BLIMAN_GENSIS_FILE_PATH="$HOME/$genesis_file_name"
@@ -17,7 +19,6 @@ function __bli_launch()
     __bliman_load_export_vars "$BLIMAN_GENSIS_FILE_PATH"
 
 }
-
 
 
 function __bliman_check_genesis_file_available()
