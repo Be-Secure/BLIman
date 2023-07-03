@@ -96,7 +96,7 @@ export BLIMAN_PLATFORM="$(infer_platform)"
 
 if [ -z "$BLIMAN_DIR" ]; then
     BLIMAN_DIR="$HOME/.bliman"
-    BLIMAN_DIR_RAW='$HOME/.bliman'
+    BLIMAN_DIR_RAW="$HOME/.bliman"
 else
     BLIMAN_DIR_RAW="$BLIMAN_DIR"
 fi
