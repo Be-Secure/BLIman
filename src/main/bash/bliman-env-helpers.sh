@@ -61,10 +61,10 @@ function __bliman_determine_version() {
 
 	else
 		if [[ -z "$version" ]]; then
-			version=$(__bliman_secure_curl "${BLIMAN_CANDIDATES_API}/candidates/default/${candidate}")
+			version=$(__bliman_secure_curl "${BLIMAN_CANDIDATES_REPO}/candidates/default/${candidate}")
 		fi
 
-		local validation_url="${BLIMAN_CANDIDATES_API}/candidates/validate/${candidate}/${version}/${BLIMAN_PLATFORM}"
+		local validation_url="${BLIMAN_CANDIDATES_REPO}/candidates/validate/${candidate}/${version}/${BLIMAN_PLATFORM}"
 		VERSION_VALID=$(__bliman_secure_curl "$validation_url")
 		__bliman_echo_debug "Validate $candidate $version for $BLIMAN_PLATFORM: $VERSION_VALID"
 		__bliman_echo_debug "Validation URL: $validation_url"

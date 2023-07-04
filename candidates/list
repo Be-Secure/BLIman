@@ -1,0 +1,46 @@
+================================================================================
+Available Modes of BeSLab
+================================================================================
+q-quit                                  /-search down
+j-down                                  ?-search up
+k-up                                    h-help
+--------------------------------------------------------------------------------
+Host Mode
+
+Tools installed - 
+  - oah-shell
+  - Ansible
+  - Vagrant
+  - Virtual Box
+
+A VM is brought up after launching BeSLab with all the required tools inside.
+
+                                                          $ bli install host
+                                                          $ bli launch beslab
+
+--------------------------------------------------------------------------------
+Bare Metal Mode
+
+Tools installed -
+  - oah-shell
+  - ansible
+
+BeSLab is installed within the user's machine.
+                                                          $ bli install bare
+                                                          $ bli launch beslab
+
+--------------------------------------------------------------------------------
+Lightweight Mode
+
+Tools installed - 
+  - BeSman
+
+Bare minimum tools for running RT/BT activities will be installed in the user's 
+machine using BeSLab env scripts.
+                                                          $ bli install light
+
+
+
+
+
+                  

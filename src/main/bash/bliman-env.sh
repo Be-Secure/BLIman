@@ -85,7 +85,7 @@ function __bliman_create_env_file() {
 	__bliman_determine_current_version "java"
 
 	local version
-	[[ -n "$CURRENT" ]] && version="$CURRENT" || version="$(__bliman_secure_curl "${BLIMAN_CANDIDATES_API}/candidates/default/java")"
+	[[ -n "$CURRENT" ]] && version="$CURRENT" || version="$(__bliman_secure_curl "${BLIMAN_CANDIDATES_REPO}/candidates/default/java")"
 
 	cat <<-eof >|"$blimanrc"
 	# Enable auto-env through the bliman_auto_env config

@@ -1,0 +1,15 @@
+*~
+.#*
+.classpath
+.gradle/
+.gradletasknamecache
+.idea/
+.pid.lock
+.project
+.settings/
+.vscode/
+\#*
+build/
+classes
+target/
+bin/test

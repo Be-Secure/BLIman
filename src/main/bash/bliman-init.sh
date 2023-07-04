@@ -17,8 +17,8 @@
 #
 
 # set env vars if not set
-if [ -z "$BLIMAN_CANDIDATES_API" ]; then
-	export BLIMAN_CANDIDATES_API="@BLIMAN_CANDIDATES_API@"
+if [ -z "$BLIMAN_CANDIDATES_REPO" ]; then
+	export BLIMAN_CANDIDATES_REPO="https://raw.githubusercontent.com/$BLIMAN_NAMESPACE/BLIman/main"
 fi
 
 if [ -z "$BLIMAN_DIR" ]; then
@@ -30,8 +30,62 @@ if [ -f "${BLIMAN_DIR}/etc/config" ]; then
 	source "${BLIMAN_DIR}/etc/config"
 fi
 
-# Read the platform file
-BLIMAN_PLATFORM="$(cat "${BLIMAN_DIR}/var/platform")"
+function infer_platform() {
+	local kernel
+	local machine
+	
+	kernel="$(uname -s)"
+	machine="$(uname -m)"
+	
+	case $kernel in
+	Linux)
+	  case $machine in
+	  i686)
+		echo "LinuxX32"
+		;;
+	  x86_64)
+		echo "LinuxX64"
+		;;
+	  armv6l)
+		echo "LinuxARM32HF"
+		;;
+	  armv7l)
+		echo "LinuxARM32HF"
+		;;
+	  armv8l)
+		echo "LinuxARM32HF"
+		;;
+	  aarch64)
+		echo "LinuxARM64"
+		;;
+	  *)
+	  	echo "Exotic"
+	  	;;
+	  esac
+	  ;;
+	Darwin)
+	  case $machine in
+	  x86_64)
+		echo "DarwinX64"
+		;;
+	  arm64)
+		if [[ "$bliman_rosetta2_compatible" == 'true' ]]; then
+			echo "DarwinX64"
+		else
+			echo "DarwinARM64"
+		fi
+		;;
+	  *)
+	  	echo "DarwinX64"
+	  	;;
+	  esac
+	  ;;
+	*)
+	  echo "$kernel"
+	esac
+}
+
+BLIMAN_PLATFORM="$(infer_platform | tr '[:upper:]' '[:lower:]')"
 export BLIMAN_PLATFORM
 
 # OS specific support (must be 'true' or 'false').
@@ -53,7 +107,6 @@ case "${BLIMAN_KERNEL}" in
 	FreeBSD*)
 		freebsd=true
 esac
-
 # Determine shell
 zsh_shell=false
 bash_shell=false
@@ -99,7 +152,9 @@ if [[ -z "${bliman_curl_continue}" ]]; then bliman_curl_continue=true; fi
 
 # read list of candidates and set array
 BLIMAN_CANDIDATES_CACHE="${BLIMAN_DIR}/var/candidates"
+export BLIMAN_CANDIDATES_CACHE
 BLIMAN_CANDIDATES_CSV=$(<"$BLIMAN_CANDIDATES_CACHE")
+export BLIMAN_CANDIDATES_CSV
 __bliman_echo_debug "Setting candidates csv: $BLIMAN_CANDIDATES_CSV"
 if [[ "$zsh_shell" == 'true' ]]; then
 	BLIMAN_CANDIDATES=(${(s:,:)BLIMAN_CANDIDATES_CSV})
@@ -133,10 +188,10 @@ if [[ "$bliman_auto_complete" == 'true' ]]; then
 		fi
 		autoload -U bashcompinit
 		bashcompinit
-		source "${BLIMAN_DIR}/contrib/completion/bash/sdk"
+		source "${BLIMAN_DIR}/contrib/completion/bash/bli"
 		__bliman_echo_debug "ZSH completion script loaded..."
 	elif [[ "$bash_shell" == 'true' ]]; then
-		source "${BLIMAN_DIR}/contrib/completion/bash/sdk"
+		source "${BLIMAN_DIR}/contrib/completion/bash/bli"
 		__bliman_echo_debug "Bash completion script loaded..."
 	else
 		__bliman_echo_debug "No completion scripts found for $SHELL"

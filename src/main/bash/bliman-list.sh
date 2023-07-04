@@ -30,7 +30,7 @@ function __bliman_list_candidates() {
 	if [[ "$BLIMAN_AVAILABLE" == "false" ]]; then
 		__bliman_echo_red "This command is not available while offline."
 	else
-		__bliman_echo_paged "$(__bliman_secure_curl "${BLIMAN_CANDIDATES_API}/candidates/list")"
+		__bliman_echo_paged "$(__bliman_secure_curl "${BLIMAN_CANDIDATES_REPO}/candidates/list")"
 	fi
 }
 
@@ -44,7 +44,7 @@ function __bliman_list_versions() {
 	if [[ "$BLIMAN_AVAILABLE" == "false" ]]; then
 		__bliman_offline_list "$candidate" "$versions_csv"
 	else
-		__bliman_echo_paged "$(__bliman_secure_curl "${BLIMAN_CANDIDATES_API}/candidates/${candidate}/${BLIMAN_PLATFORM}/versions/list?current=${CURRENT}&installed=${versions_csv}")"
+		__bliman_echo_paged "$(__bliman_secure_curl "${BLIMAN_CANDIDATES_REPO}/candidates/${candidate}/${BLIMAN_PLATFORM}/versions/list?current=${CURRENT}&installed=${versions_csv}")"
 	fi
 }
 

@@ -58,20 +58,48 @@ function __bli_install() {
 	fi
 }
 
+function __bliman_install_oah()
+{
+	__bliman_echo_green "Setting up oah-shell"
+	curl -s https://raw.githubusercontent.com/Be-Secure/oah-installer/install.sh | bash
+	source "$HOME/.oah/bin/oah-init.sh"
+}
+
+function __bliman_install_ansible()
+{
+	__bliman_echo_green "Setting up ansible"
+	sudo apt update
+	sudo apt-add-repository --yes ppa:ansible/ansible
+	sudo apt update
+	sudo apt install ansible -y
+
+
+}
+
+function __bliman_install_vagrant()
+{
+	__bliman_echo_green "Setting up virtualbox"
+	sudo apt update
+	sudo apt install virtualbox -y
+	__bliman_echo_green "Setting up vagrant"
+	wget https://releases.hashicorp.com/vagrant/2.2.19/vagrant_2.2.19_x86_64.deb
+	sudo apt install ./vagrant_2.2.19_x86_64.deb
+
+}
+
 function __bliman_install_candidate_version() {
 	local candidate version
 
 	candidate="$1"
 	version="$2"
 
-	__bliman_download "$candidate" "$version" || return 1
-	__bliman_echo_green "Installing: ${candidate} ${version}"
-
 	mkdir -p "${BLIMAN_CANDIDATES_DIR}/${candidate}"
+	__bliman_download "$candidate" "$version" || return 1
 
-	rm -rf "${BLIMAN_DIR}/tmp/out"
-	unzip -oq "${BLIMAN_DIR}/tmp/${candidate}-${version}.zip" -d "${BLIMAN_DIR}/tmp/out"
-	mv -f "$BLIMAN_DIR"/tmp/out/* "${BLIMAN_CANDIDATES_DIR}/${candidate}/${version}"
+
+	# rm -rf "${BLIMAN_DIR}/tmp/out"
+	# unzip -oq "${BLIMAN_DIR}/tmp/${candidate}-${version}.zip" -d "${BLIMAN_DIR}/tmp/out"
+	# mv -f "$BLIMAN_DIR"/tmp/out/* "${BLIMAN_CANDIDATES_DIR}/${candidate}/${version}"
 	__bliman_echo_green "Done installing!"
 	echo ""
 }
@@ -123,38 +151,39 @@ function __bliman_download() {
 	mkdir -p ${metadata_folder}
 		
 	local platform_parameter="$BLIMAN_PLATFORM"
-	local download_url="${BLIMAN_CANDIDATES_API}/broker/download/${candidate}/${version}/${platform_parameter}"
-	local base_name="${candidate}-${version}"
-	local tmp_headers_file="${BLIMAN_DIR}/tmp/${base_name}.headers.tmp"
-	local headers_file="${metadata_folder}/${base_name}.headers"
+	local download_url="${BLIMAN_CANDIDATES_REPO}/candidates/download/${candidate}/${version}/${platform_parameter}/installer.sh"
+	# local base_name="${candidate}-${version}"
+	# local tmp_headers_file="${BLIMAN_DIR}/tmp/${base_name}.headers.tmp"
+	# local headers_file="${metadata_folder}/${base_name}.headers"
 
-	export local binary_input="${BLIMAN_DIR}/tmp/${base_name}.bin"
-	export local zip_output="${BLIMAN_DIR}/tmp/${base_name}.zip"
+	# export local binary_input="${BLIMAN_DIR}/tmp/${base_name}.bin"
+	# export local zip_output="${BLIMAN_DIR}/tmp/${base_name}.zip"
 
-	echo ""
-	__bliman_echo_no_colour "Downloading: ${candidate} ${version}"
-	echo ""
-	__bliman_echo_no_colour "In progress..."
-	echo ""
+	# echo ""
+	# __bliman_echo_no_colour "Downloading: ${candidate} ${version}"
+	# echo ""
+	# __bliman_echo_no_colour "In progress..."
+	# echo ""
 
 	# download binary
-	__bliman_secure_curl_download "${download_url}" --output "${binary_input}" --dump-header "${tmp_headers_file}"
-	grep '^X-Bliman' "${tmp_headers_file}" > "${headers_file}"
-	__bliman_echo_debug "Downloaded binary to: ${binary_input} (HTTP headers written to: ${headers_file})"
+	curl -L "$download_url" | bash
+	# __bliman_secure_curl_download "${download_url}" --output "${binary_input}" --dump-header "${tmp_headers_file}"
+	# grep '^X-Bliman' "${tmp_headers_file}" > "${headers_file}"
+	# __bliman_echo_debug "Downloaded binary to: ${binary_input} (HTTP headers written to: ${headers_file})"
 
-	# post-installation hook: implements function __bliman_post_installation_hook
-	# responsible for taking `binary_input` and producing `zip_output`
-	local post_installation_hook="${BLIMAN_DIR}/tmp/hook_post_${candidate}_${version}.sh"
-	__bliman_echo_debug "Get post-installation hook: ${BLIMAN_CANDIDATES_API}/hooks/post/${candidate}/${version}/${platform_parameter}"
-	__bliman_secure_curl "${BLIMAN_CANDIDATES_API}/hooks/post/${candidate}/${version}/${platform_parameter}" >| "$post_installation_hook"
-	__bliman_echo_debug "Copy remote post-installation hook: ${post_installation_hook}"
-	source "$post_installation_hook"
-	__bliman_post_installation_hook || return 1
-	__bliman_echo_debug "Processed binary as: $zip_output"
-	__bliman_echo_debug "Completed post-installation hook..."
+	# # post-installation hook: implements function __bliman_post_installation_hook
+	# # responsible for taking `binary_input` and producing `zip_output`
+	# local post_installation_hook="${BLIMAN_DIR}/tmp/hook_post_${candidate}_${version}.sh"
+	# __bliman_echo_debug "Get post-installation hook: ${BLIMAN_CANDIDATES_REPO}/hooks/post/${candidate}/${version}/${platform_parameter}"
+	# __bliman_secure_curl "${BLIMAN_CANDIDATES_REPO}/hooks/post/${candidate}/${version}/${platform_parameter}" >| "$post_installation_hook"
+	# __bliman_echo_debug "Copy remote post-installation hook: ${post_installation_hook}"
+	# source "$post_installation_hook"
+	# __bliman_post_installation_hook || return 1
+	# __bliman_echo_debug "Processed binary as: $zip_output"
+	# __bliman_echo_debug "Completed post-installation hook..."
 		
-	__bliman_validate_zip "${zip_output}" || return 1
-	__bliman_checksum_zip "${zip_output}" "${headers_file}" || return 1
+	# __bliman_validate_zip "${zip_output}" || return 1
+	# __bliman_checksum_zip "${zip_output}" "${headers_file}" || return 1
 	echo ""
 }
 

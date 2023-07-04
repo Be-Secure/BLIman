@@ -17,21 +17,25 @@
 #
 
 function __bliman_update_service_availability() {
-	local healthcheck_status=$(__bliman_determine_healthcheck_status)
+	local healthcheck_status
+	healthcheck_status=$(__bliman_determine_healthcheck_status)
 	__bliman_set_availability "$healthcheck_status"
 }
 
 function __bliman_determine_healthcheck_status() {
+	local output
 	if [[ "$BLIMAN_OFFLINE_MODE" == "true" || "$COMMAND" == "offline" && "$QUALIFIER" == "enable" ]]; then
 		echo ""
 	else
-		echo $(__bliman_secure_curl_with_timeouts "${BLIMAN_CANDIDATES_API}/healthcheck")
+		output=$(__bliman_secure_curl_with_timeouts "${BLIMAN_CANDIDATES_REPO}/healthcheck")
+		echo "$output"
 	fi
 }
 
 function __bliman_set_availability() {
 	local healthcheck_status="$1"
-	local detect_html="$(echo "$healthcheck_status" | tr '[:upper:]' '[:lower:]' | grep 'html')"
+	local detect_html
+	detect_html="$(echo "$healthcheck_status" | tr '[:upper:]' '[:lower:]' | grep 'html')"
 	if [[ -z "$healthcheck_status" ]]; then
 		BLIMAN_AVAILABLE="false"
 		__bliman_display_offline_warning "$healthcheck_status"

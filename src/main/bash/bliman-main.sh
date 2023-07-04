@@ -24,7 +24,7 @@ function ___bliman_help() {
 	fi
 }
 
-function sdk() {
+function bli() {
 
 	COMMAND="$1"
 	QUALIFIER="$2"
@@ -42,8 +42,8 @@ function sdk() {
 	u)
 		COMMAND="use"
 		;;
-	i)
-		COMMAND="install"
+	launch)
+		COMMAND="launch"
 		;;
 	rm)
 		COMMAND="uninstall"
@@ -135,7 +135,7 @@ function sdk() {
 	elif [ -n "$CMD_FOUND" ]; then
 
 		# Check whether the candidate exists
-		if [[ -n "$QUALIFIER" && "$COMMAND" != "help" && "$COMMAND" != "offline" && "$COMMAND" != "flush" && "$COMMAND" != "selfupdate" && "$COMMAND" != "env" && "$COMMAND" != "completion" && "$COMMAND" != "edit" && "$COMMAND" != "home" && -z $(echo ${BLIMAN_CANDIDATES[@]} | grep -w "$QUALIFIER") ]]; then
+		if [[ -n "$QUALIFIER" && "$COMMAND" != "help" && "$COMMAND" != "offline" && "$COMMAND" != "flush" && "$COMMAND" != "selfupdate" && "$COMMAND" != "env" && "$COMMAND" != "completion" && "$COMMAND" != "edit" && "$COMMAND" != "home" && -z $(echo "${BLIMAN_CANDIDATES[@]}" | grep -w "$QUALIFIER") ]]; then
 			echo ""
 			__bliman_echo_red "Stop! $QUALIFIER is not a valid candidate."
 			return 1

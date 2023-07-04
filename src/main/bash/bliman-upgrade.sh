@@ -103,7 +103,7 @@ function __bliman_determine_upgradable_version() {
 	fi
 
 	# Resolve remote default version
-	remote_default_version="$(__bliman_secure_curl "${BLIMAN_CANDIDATES_API}/candidates/default/${candidate}")"
+	remote_default_version="$(__bliman_secure_curl "${BLIMAN_CANDIDATES_REPO}/candidates/default/${candidate}")"
 	if [ -z "$remote_default_version" ]; then
 		return 2
 	fi
