@@ -23,8 +23,9 @@ echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ##  #######  ########  ########  '
 echo ''
-export BESLAB_MODE=host
-
+BESLAB_MODE=host
+export BESLAB_MODE
+echo "Setting lab mode as $BESLAB_MODE"
 if [[ ! -d $HOME/.oah ]]; then
   	echo "Installing oah-shell"
   	curl -s https://raw.githubusercontent.com/Be-Secure/oah-installer/install.sh | bash
