@@ -20,9 +20,8 @@ trap echo_failed_command EXIT
 
 # Global variables
 export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
-export BLIMAN_NAMESPACE="Be-Secure"
+export BLIMAN_NAMESPACE="asa1997"
 export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
-export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
 # export BLIMAN_VERSION="5.18.1"
 # export BLIMAN_NATIVE_VERSION="0.2.9"
 # infer platform
@@ -399,7 +398,8 @@ if [[ -z $(grep 'bliman-init.sh' "$bliman_zshrc") ]]; then
     echo "Updated existing ${bliman_zshrc}"
 fi
 
-
+echo "Sourcing"
+source "$BLIMAN_DIR/bin/bliman-init.sh"
 
 echo -e "\n\n\nAll done!\n\n"
 
