@@ -23,7 +23,7 @@ echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ##  #######  ########  ########  '
 echo ''
-export BESLAB_MODE=host
+export BLIMAN_LAB_MODE=host
 
 if [[ ! -d $HOME/.oah ]]; then
   	echo "Installing oah-shell"
