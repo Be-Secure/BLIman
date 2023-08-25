@@ -22,8 +22,7 @@ trap echo_failed_command EXIT
 export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
 export BLIMAN_NAMESPACE="Be-Secure"
 export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
-export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
-# export BLIMAN_VERSION="5.18.1"
+export BLIMAN_VERSION="0.1.0"
 # export BLIMAN_NATIVE_VERSION="0.2.9"
 # infer platform
 function infer_platform() {
@@ -398,7 +397,6 @@ if [[ -z $(grep 'bliman-init.sh' "$bliman_zshrc") ]]; then
     echo -e "\n$bliman_init_snippet" >> "$bliman_zshrc"
     echo "Updated existing ${bliman_zshrc}"
 fi
-
 
 
 echo -e "\n\n\nAll done!\n\n"

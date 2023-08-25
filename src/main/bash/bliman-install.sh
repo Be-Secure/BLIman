@@ -58,41 +58,18 @@ function __bli_install() {
 	fi
 }
 
-function __bliman_install_oah()
-{
-	__bliman_echo_green "Setting up oah-shell"
-	curl -s https://raw.githubusercontent.com/Be-Secure/oah-installer/install.sh | bash
-	source "$HOME/.oah/bin/oah-init.sh"
-}
-
-function __bliman_install_ansible()
-{
-	__bliman_echo_green "Setting up ansible"
-	sudo apt update
-	sudo apt-add-repository --yes ppa:ansible/ansible
-	sudo apt update
-	sudo apt install ansible -y
 
 
-}
 
-function __bliman_install_vagrant()
-{
-	__bliman_echo_green "Setting up virtualbox"
-	sudo apt update
-	sudo apt install virtualbox -y
-	__bliman_echo_green "Setting up vagrant"
-	wget https://releases.hashicorp.com/vagrant/2.2.19/vagrant_2.2.19_x86_64.deb
-	sudo apt install ./vagrant_2.2.19_x86_64.deb
-
-}
 
 function __bliman_install_candidate_version() {
 	local candidate version
 
 	candidate="$1"
 	version="$2"
-
+	BLIMAN_LAB_MODE="$candidate"
+	export BLIMAN_LAB_MODE
+	__bliman_echo_yellow "Setting lab mode as $candidate"
 	mkdir -p "${BLIMAN_CANDIDATES_DIR}/${candidate}"
 	__bliman_download "$candidate" "$version" || return 1
 

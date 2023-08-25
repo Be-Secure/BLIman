@@ -25,7 +25,6 @@ echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ##  #######  ########  ########  '
 echo ''
 
-export BESLAB_MODE=bare
 
 if [[ ! -d $HOME/.oah ]]; then
   	echo "Installing oah-shell"
