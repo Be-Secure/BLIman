@@ -398,12 +398,6 @@ if [[ -z $(grep 'bliman-init.sh' "$bliman_zshrc") ]]; then
     echo "Updated existing ${bliman_zshrc}"
 fi
 
-<<<<<<< HEAD
-echo "Sourcing"
-source "$BLIMAN_DIR/bin/bliman-init.sh"
-=======
-
->>>>>>> 08bb396d4c2d75e21701cd651212dc3bc4aac9f5
 
 echo -e "\n\n\nAll done!\n\n"
 
