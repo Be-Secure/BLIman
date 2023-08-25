@@ -33,7 +33,9 @@ In this mode, we are installing the tools using pure shell scripts using [BeSman
 # Install BLIman
 
 1.Open your terminal.
+
 2.Clone the repo https://github.com/Be-Secure/BLIman.
+
 3.Run the file https://github.com/Be-Secure/BLIman/blob/main/quick_install.sh - `./quick_install.sh` 
 
 # Other commands
