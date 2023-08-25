@@ -26,7 +26,7 @@ echo ''
 
 if [[ ! -d $HOME/.oah ]]; then
   	echo "Installing oah-shell"
-  	curl -s https://raw.githubusercontent.com/Be-Secure/oah-installer/install.sh | bash
+  	curl -s https://raw.githubusercontent.com/Be-Secure/oah-installer/master/install.sh | bash
 	source "$HOME/.oah/bin/oah-init.sh"
 else
 	echo "oah-shell found"
