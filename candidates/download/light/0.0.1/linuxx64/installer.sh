@@ -31,7 +31,3 @@ else
 	echo "BeSman found"
 fi
 
-if ! echo "$BESMAN_ENV_REPOS" | grep -q "Be-Secure/BeSLab"
-then
-	export BESMAN_ENV_REPOS=$BESMAN_ENV_REPOS,Be-Secure/BeSLab
-fi
