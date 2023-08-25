@@ -22,12 +22,7 @@ trap echo_failed_command EXIT
 export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
 export BLIMAN_NAMESPACE="Be-Secure"
 export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
-<<<<<<< HEAD
 export BLIMAN_VERSION="0.1.0"
-=======
-export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
-# export BLIMAN_VERSION="5.18.1"
->>>>>>> 08bb396d4c2d75e21701cd651212dc3bc4aac9f5
 # export BLIMAN_NATIVE_VERSION="0.2.9"
 # infer platform
 function infer_platform() {
