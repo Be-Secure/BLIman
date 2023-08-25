@@ -30,7 +30,9 @@ function __bliman_launch_light_mode()
 function __bliman_clone_substrate()
 {
 	echo "Setting OAH_ENV_BASE as $HOME"
-	export OAH_ENV_BASE="$HOME"
+	OAH_ENV_BASE="$HOME"
+  export OAH_ENV_BASE
+  echo "OAH_ENV_BASE=$OAH_ENV_BASE"
 	[[ -d "$HOME/oah-bes-vm" ]] && echo "oah-bes-vm found" && return
 	git clone "https://github.com/$BLIMAN_NAMESPACE/oah-bes-vm" "$HOME/oah-bes-vm"
 }
