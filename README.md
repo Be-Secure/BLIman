@@ -1,6 +1,3 @@
-# BLIMAN! CLI
-### The Software Development Kit Manager Command Line Interface
-
 # BLIman CLI
 
 BLIman CLI is a tool for managing [BeSLab](https://github.com/Be-Secure/BeSLab).
