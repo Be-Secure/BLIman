@@ -49,6 +49,7 @@ function __bliman_get_genesis_file()
     local url default_genesis_file_path
     url=$1
     default_genesis_file_path=$2
+    [[ -f "$default_genesis_file_path" ]] && rm "$default_genesis_file_path"
     touch "$default_genesis_file_path"
     __bliman_secure_curl "$url" >> "$default_genesis_file_path"
     
