@@ -242,3 +242,5 @@ if [[ "$bliman_auto_env" == "true" ]]; then
 
 	bliman_auto_env
 fi
+
+source "$BLIMAN_DIR/tmp/source.sh"
