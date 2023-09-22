@@ -4,9 +4,7 @@ on:
     # Sequence of  patterns matched against refs/tags
     tags:
       - '*.*.*'
-    branches:
-      - release
-      - main
+
 jobs:
   publish_artifacts:
     runs-on: ubuntu-latest
