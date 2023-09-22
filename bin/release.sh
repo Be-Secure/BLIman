@@ -19,7 +19,7 @@ fi
 
 # prepare branch
 cd $HOME/BLIman || return 1
-git checkout issue#4
+git checkout main
 #git checkout dev
 git branch -D $branch
 git checkout -b $branch
@@ -71,5 +71,5 @@ git push origin "$bli_version"
 
 
 #checkout to issue#4
-git checkout issue#4
+git checkout main
 #git checkout dev
