@@ -38,8 +38,8 @@ sed -i "s/@BLIMAN_NAMESPACE@/$BLIMAN_NAMESPACE/g" "$file"
 echo "Renaming to remove .tmpl extension"
 mv "$file" "${file//.tmpl/}"
 
-mkdocs new bliman
-mv "$HOME/BLIman/bliman" "$HOME/BLIman"
+mkdocs new website
+mv "$HOME"/BLIman/website/* "$HOME/BLIman/"
 
 echo "Listing scripts"
 ls "$HOME/BLIman/scripts"
