@@ -44,6 +44,9 @@ mv "$file" "${file//.tmpl/}"
 [[ -f "$HOME/BLIman/mkdocs.yml" ]] && rm "$HOME/BLIman/mkdocs.yml"
 mkdocs new website
 mv "$HOME"/BLIman/website/* "$HOME/BLIman/"
+[[ -f "$HOME/BLIman/docs/index.md" ]] && rm "$HOME/BLIman/docs/index.md"
+touch "$HOME/BLIman/docs/index.md"
+echo "Welcome to BLIMAN" >> "$HOME/BLIman/docs/index.md"
 
 echo "Listing scripts"
 ls "$HOME/BLIman/scripts"
