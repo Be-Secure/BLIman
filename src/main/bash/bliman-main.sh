@@ -63,11 +63,15 @@ function bli() {
 	e)
 		COMMAND="env"
 		;;
+	re)
+		COMMAND="reload"
 	esac
 
 	#
 	# Various sanity checks and default settings
 	#
+
+	export BLIMAN_COMMAND="$COMMAND"
 
 	# Check candidates cache
 	if [[ "$COMMAND" != "update" ]]; then
