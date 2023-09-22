@@ -44,7 +44,7 @@ mv "$HOME"/BLIman/website/* "$HOME/BLIman/"
 echo "Listing scripts"
 ls "$HOME/BLIman/scripts"
 echo "Moving to docs"
-mv "$HOME/BLIman/scripts/get.bliman.io" "$HOME/BLIMAN/docs/"
+mv "$HOME/BLIman/scripts/get.bliman.io" "$HOME/BLIman/docs/"
 
 
 # committing the changes
