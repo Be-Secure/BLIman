@@ -260,6 +260,7 @@ EOF
 	mkdir -p "$bliman_etc_folder"
 	mkdir -p "$bliman_var_folder"
 	mkdir -p "$bliman_candidates_folder"
+	mkdir -p "$bliman_src_folder"
 
 	echo "Getting available candidates..."
 	echo "from ${BLIMAN_REPO_URL}/candidates.txt"
