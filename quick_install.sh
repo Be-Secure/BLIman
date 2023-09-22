@@ -757,7 +757,6 @@ function __bliman_load_export_vars() {
 	touch "$tmp_file"
 	chmod +x "$tmp_file"
 	echo "#!/bin/bash" >>"$tmp_file"
-	echo "echo "soucing vars"" >> "$tmp_file"
 	while read -r line; do
 		[[ $line == "---" ]] && continue
 		if echo "$line" | grep -qe "^#"; then
