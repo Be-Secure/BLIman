@@ -27,7 +27,6 @@ jobs:
         run: |
           zip -rj ./build/tmp/bliman-latest.zip ./src/main/bash/bliman-* ./src/main/bash/envs/bliman-* ./src/main/bash/commands/bliman-*
           cp ./build/tmp/bliman-latest.zip ./build/tmp/bliman-$RELEASE_VERSION.zip
-          mv ./scripts/get.bliman.io ./build/tmp/
           ls ./build/tmp/
       - name: Switch to dist 
         run: |
