@@ -37,5 +37,8 @@ __bliman_echo_yellow 'install                                                   
 __bliman_echo_no_colour '----------------------------------------------------------------------------------------'
 __bliman_echo_no_colour 'Installs the pre-requisites for launching the lab in different modes.'
 __bliman_echo_no_colour '----------------------------------------------------------------------------------------'
-
+__bliman_echo_yellow 'reload                                                          bli reload'
+__bliman_echo_no_colour '----------------------------------------------------------------------------------------'
+__bliman_echo_no_colour 'Reloads the genesis file.'
+__bliman_echo_no_colour '----------------------------------------------------------------------------------------'
 }
