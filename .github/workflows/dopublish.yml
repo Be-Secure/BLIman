@@ -6,6 +6,7 @@ on:
       - '*.*.*'
     branches:
       - release
+      - main
 jobs:
   publish_artifacts:
     runs-on: ubuntu-latest
