@@ -36,7 +36,7 @@ do
     mv "$file" "${file//.tmpl/}"
 done
 
-mv "$HOME/BLIMAN/scripts/get.bliman.io" "$HOME/BLIMAN/docs/"
+mv "$HOME/BLIman/scripts/get.bliman.io" "$HOME/BLIMAN/docs/"
 
 # committing the changes
 git add $HOME/BLIman/scripts/*.* 
