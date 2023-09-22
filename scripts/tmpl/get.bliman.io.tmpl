@@ -320,7 +320,7 @@ EOF
 	#cp -r "contrib/" "$BLIMAN_DIR"
 	#cp -r "src/main/bash" "$bliman_src_folder"
 	mkdir -p "$BLIMAN_DIR/bin/"
-	cp -rf "${bliman_tmp_folder}"/bliman-*/* "$bliman_src_folder"
+	cp -rf "${bliman_tmp_folder}"/bliman-* "$bliman_src_folder"
 	mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/"
 
 	# clean up
