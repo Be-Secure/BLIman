@@ -1,44 +1,46 @@
 #!/bin/bash
 
-function __bliman_launch_host_mode()
-{
-    __bliman_clone_substrate
-    __bliman_generate_vm_roles
-    __bliman_generate_vm_config
-    __bliman_prime_installer_playbook
-    __bliman_launch_bes_lab_host_mode
+function __bliman_launch_host_mode() {
+	__bliman_clone_substrate
+	__bliman_generate_vm_roles
+	__bliman_generate_vm_config
+	__bliman_prime_vagrantfile
+	__bliman_prime_installer_playbook
+	__bliman_launch_bes_lab_host_mode
 }
 
-function __bliman_launch_bare_mode()
-{
+function __bliman_launch_bare_mode() {
 	export BESLAB_VM_GUI=false
-    __bliman_clone_substrate
-    __bliman_generate_vm_roles
-    __bliman_generate_vm_config
-    __bliman_prime_installer_playbook
-    __bliman_launch_bes_lab_bare_metal_mode
-    
+	__bliman_clone_substrate
+	__bliman_generate_vm_roles
+	__bliman_generate_vm_config
+	__bliman_prime_installer_playbook
+	__bliman_launch_bes_lab_bare_metal_mode
+
 }
 
-function __bliman_launch_light_mode()
-{
+function __bliman_launch_light_mode() {
 	__bliman_check_besman || return 1
 	__bliman_set_env_repo || return 1
 	__bliman_install_beslab_env
 }
 
-function __bliman_clone_substrate()
-{
-	echo "Setting OAH_ENV_BASE as $HOME"
-	OAH_ENV_BASE="$HOME"
-  export OAH_ENV_BASE
-  echo "OAH_ENV_BASE=$OAH_ENV_BASE"
-	[[ -d "$HOME/oah-bes-vm" ]] && echo "oah-bes-vm found" && return
-	git clone "https://github.com/$BLIMAN_NAMESPACE/oah-bes-vm" "$HOME/oah-bes-vm"
+function __bliman_prime_vagrantfile() {
+	__bliman_echo_yellow "Prime vagrantfile"
+	[[ -f $HOME/oah-bes-vm/host/vagrant/Vagrantfile ]] && rm "$HOME/oah-bes-vm/host/vagrant/Vagrantfile"
+	cp "$BLIMAN_DIR/tmp/Vagrantfile" "$HOME/oah-bes-vm/host/vagrant/Vagrantfile"
 }
 
-function __bliman_set_env_repo()
-{
+function __bliman_clone_substrate() {
+	echo "Setting OAH_ENV_BASE as $HOME"
+	OAH_ENV_BASE="$HOME"
+	export OAH_ENV_BASE
+	echo "OAH_ENV_BASE=$OAH_ENV_BASE"
+	[[ -d "$HOME/oah-bes-vm" ]] && echo "oah-bes-vm found" && return
+	git clone "https://github.com/$BLIMAN_NAMESPACE/oah-bes-vm" "$HOME/oah-bes-vm"
+	}
+
+function __bliman_set_env_repo() {
 	bes set BESMAN_LIGHT_MODE True
 	bes set BESMAN_LOCAL_ENV False
 	bes set BESMAN_ENV_REPOS "$BLIMAN_NAMESPACE/BeSLab" || return 1
@@ -47,32 +49,29 @@ function __bliman_set_env_repo()
 	source "$HOME/.besman/bin/besman-init.sh"
 }
 
-function __bliman_install_beslab_env()
-{
+function __bliman_install_beslab_env() {
 	bes install -env beslab-env -V 0.0.1
 }
 
-function __bliman_check_besman()
-{
-	if [[ ! -d $BESMAN_DIR ]]; then  
-		echo "BeSman not found. Run install first" 
+function __bliman_check_besman() {
+	if [[ ! -d $BESMAN_DIR ]]; then
+		echo "BeSman not found. Run install first"
 		return 1
 	else
-		echo "BeSman found" 
+		echo "BeSman found"
 		return 0
 	fi
 }
 
-function __bliman_prime_installer_playbook()
-{
-    __bliman_echo_yellow "Priming installer playbook"
-    local playbook roles
-    playbook="$HOME/oah-bes-vm/provisioning/oah-install.yml"
-    requirements="$HOME/oah-bes-vm/provisioning/oah-requirements.yml"
-    roles=$(yq  '.[].name' "$requirements" | sed 's/"//g')
-    [[ -f "$playbook" ]] && rm "$playbook"
-    touch "$playbook"
-    cat << EOF >> "$playbook"
+function __bliman_prime_installer_playbook() {
+	__bliman_echo_yellow "Priming installer playbook"
+	local playbook roles
+	playbook="$HOME/oah-bes-vm/provisioning/oah-install.yml"
+	requirements="$HOME/oah-bes-vm/provisioning/oah-requirements.yml"
+	roles=$(yq '.[].name' "$requirements" | sed 's/"//g')
+	[[ -f "$playbook" ]] && rm "$playbook"
+	touch "$playbook"
+	cat <<EOF >>"$playbook"
 
 ---
 - hosts: all || localhost
@@ -98,37 +97,34 @@ function __bliman_prime_installer_playbook()
 EOF
 }
 
-function __bliman_generate_vm_roles()
-{
-    local vm_path requirements_file roles_vars
-    vm_path="$HOME/oah-bes-vm"
-    requirements_file="$vm_path/provisioning/oah-requirements.yml"
-    [[ -f "$requirements_file" ]] && rm "$requirements_file"
-    touch "$requirements_file"
-    __bliman_echo_yellow "Writing roles to requirements file"
-    echo "---" >> "$requirements_file"
- 
-  {
-    echo "- src: https://github.com/$BLIMAN_NAMESPACE/ansible-role-oah-beslab" 
-    echo "  version: main"
-    echo "  name: oah.beslab"
-  } >> "$requirements_file"
+function __bliman_generate_vm_roles() {
+	local vm_path requirements_file roles_vars
+	vm_path="$HOME/oah-bes-vm"
+	requirements_file="$vm_path/provisioning/oah-requirements.yml"
+	[[ -f "$requirements_file" ]] && rm "$requirements_file"
+	touch "$requirements_file"
+	__bliman_echo_yellow "Writing roles to requirements file"
+	echo "---" >>"$requirements_file"
 
+	{
+		echo "- src: https://github.com/$BLIMAN_NAMESPACE/ansible-role-oah-beslab"
+		echo "  version: main"
+		echo "  name: oah.beslab"
+	} >>"$requirements_file"
 
 }
 
-function __bliman_generate_vm_config()
-{
-    local vm_path vm_config_file
-    vm_path="$HOME/oah-bes-vm"
-    vm_config_file="$vm_path/oah-config.yml"
-    [[ -f "$vm_config_file" ]] && rm "$vm_config_file"
-    touch "$vm_config_file"
+function __bliman_generate_vm_config() {
+	local vm_path vm_config_file
+	vm_path="$HOME/oah-bes-vm"
+	vm_config_file="$vm_path/oah-config.yml"
+	[[ -f "$vm_config_file" ]] && rm "$vm_config_file"
+	touch "$vm_config_file"
 
-    __bliman_echo_yellow "Writing config file"
+	__bliman_echo_yellow "Writing config file"
 
-    echo "---" >> "$vm_config_file"
-    cat << EOF >> "$vm_config_file"
+	cat <<EOF >> "$vm_config_file"
+---
 # environment Name
 oah_env_name: "$BESLAB_VM_NAME"
 #GUI Flag
@@ -333,18 +329,16 @@ vagrant_plugins:
 # # Other configuration.
 # known_hosts_path: ~/.ssh/known_hosts
 EOF
-while read -r line 
-do
-    [[ "$line" == "---" ]] && continue
-    if echo "$line" | grep -qe "^#" || echo "$line" | grep -qe "^BESLAB_"  || echo "$line" | grep -qe "^-"
-    then
-        continue
-    fi
-    # if echo "$line" | grep -qe "^BESLAB_" 
-    # then
-    #     continue
-    # fi
-    echo "$line" >> "$vm_config_file"
-done < "$BLIMAN_GENSIS_FILE_PATH"
+	while read -r line; do
+		[[ "$line" == "---" ]] && continue
+		if echo "$line" | grep -qe "^#" || echo "$line" | grep -qe "^BESLAB_" || echo "$line" | grep -qe "^-"; then
+			continue
+		fi
+		# if echo "$line" | grep -qe "^BESLAB_"
+		# then
+		#     continue
+		# fi
+		echo "$line" >>"$vm_config_file"
+	done <"$BLIMAN_GENSIS_FILE_PATH"
 
 }
