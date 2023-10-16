@@ -81,25 +81,16 @@ function infer_platform() {
 
 function __bliman_quick_install() {
 
-	local force_flag
-	force_flag=$1
-
-	if [[ (-n $force_flag) && (($force_flag == "--force") || ($force_flag == -F)) ]]; then
-
-		echo "Removing current installation of bliman"
-		rm -rf "$HOME/.bliman"
-	fi
-
 	set -e
 	trap track_last_command DEBUG
 	trap echo_failed_command EXIT
 
 	# Global variables
-	export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
-	export BLIMAN_NAMESPACE="asa1997"
-	export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
-	export BLIMAN_VERSION="0.1.0"
-	export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
+	export BLIMAN_SERVICE="https://raw.githubusercontent.com"
+	export BLIMAN_NAMESPACE="@BLIMAN_NAMESPACE@"
+	export BLIMAN_REPO_URL="$BLIMAN_SERVICE/$BLIMAN_NAMESPACE/BLIman/main"
+	export BLIMAN_VERSION="@BLIMAN_VERSION@"
+	export BLIMAN_LAB_URL="$BLIMAN_SERVICE/$BLIMAN_NAMESPACE/BeSLab/main"
 	
 	# export BLIMAN_NATIVE_VERSION="0.2.9"
 	# infer platform
@@ -269,6 +260,7 @@ EOF
 	mkdir -p "$bliman_etc_folder"
 	mkdir -p "$bliman_var_folder"
 	mkdir -p "$bliman_candidates_folder"
+	mkdir -p "$bliman_src_folder"
 
 	echo "Getting available candidates..."
 	echo "from ${BLIMAN_REPO_URL}/candidates.txt"
@@ -298,51 +290,44 @@ EOF
 		echo "bliman_selfupdate_feature=true"
 	} >>"$bliman_config_file"
 
-	if [[ $BLIMAN_PLATFORM == "windowsx64" ]]; then
-		echo "bliman_insecure_ssl=true" >> "$bliman_config_file"
-	else
-		echo "bliman_insecure_ssl=false" >> "$bliman_config_file"
-	fi
 	# script cli distribution
 	echo "Installing script cli archive..."
 	# fetch distribution
-	# bliman_zip_file="${bliman_tmp_folder}/bliman-${BLIMAN_VERSION}.zip"
-	# echo "* Downloading..."
-	# curl --fail --location --progress-bar "${BLIMAN_SERVICE}/broker/download/bliman/install/${BLIMAN_VERSION}/${BLIMAN_PLATFORM}" > "$bliman_zip_file"
+	bliman_zip_file="${bliman_tmp_folder}/bliman-${BLIMAN_VERSION}.zip"
+	echo "* Downloading..."
+    curl -sL --location --progress-bar "${BLIMAN_SERVICE}/${BLIMAN_NAMESPACE}/BLIman/dist/dist/bliman-latest.zip" > "$bliman_zip_file"
 
 	# check integrity
-	# echo "* Checking archive integrity..."
-	# ARCHIVE_OK=$(unzip -qt "$bliman_zip_file" | grep 'No errors detected in compressed data')
-	# if [[ -z "$ARCHIVE_OK" ]]; then
-	# 	echo "Downloaded zip archive corrupt. Are you connected to the internet?"
-	# 	echo ""
-	# 	echo "If problems persist, please ask for help on our Slack:"
-	# 	echo "* easy sign up: https://slack.bliman.io/"
-	# 	echo "* report on channel: https://bliman.slack.com/app_redirect?channel=user-issues"
-	# 	exit
-	# fi
+	echo "* Checking archive integrity..."
+	ARCHIVE_OK=$(unzip -qt "$bliman_zip_file" | grep 'No errors detected in compressed data')
+	if [[ -z "$ARCHIVE_OK" ]]; then
+		echo "Downloaded zip archive corrupt. Are you connected to the internet?"
+		echo ""
+		echo "If problems persist, please raise an issue in:"
+		echo "* https://github.com/Be-Secure/BLIman/issues"
+		exit
+	fi
 
 	# extract archive
-	# echo "* Extracting archive..."
-	# if [[ "$cygwin" == 'true' ]]; then
-	# 	bliman_tmp_folder=$(cygpath -w "$bliman_tmp_folder")
-	# 	bliman_zip_file=$(cygpath -w "$bliman_zip_file")
-	# fi
-	# unzip -qo "$bliman_zip_file" -d "$bliman_tmp_folder"
+	echo "* Extracting archive..."
+	if [[ "$cygwin" == 'true' ]]; then
+		bliman_tmp_folder=$(cygpath -w "$bliman_tmp_folder")
+		bliman_zip_file=$(cygpath -w "$bliman_zip_file")
+	fi
+	unzip -qo "$bliman_zip_file" -d "$bliman_tmp_folder"
 
 	# copy in place
 	echo "* Copying archive contents..."
-	cp -r "contrib/" "$BLIMAN_DIR"
-	cp -r "src/main/bash" "$bliman_src_folder"
+	#cp -r "contrib/" "$BLIMAN_DIR"
+	#cp -r "src/main/bash" "$bliman_src_folder"
 	mkdir -p "$BLIMAN_DIR/bin/"
+	cp -rf "${bliman_tmp_folder}"/bliman-* "$bliman_src_folder"
 	mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/"
-	# rm -f "$bliman_src_folder"/*
-	# cp -rf "${bliman_tmp_folder}"/bliman-*/* "$BLIMAN_DIR"
 
 	# clean up
-	# echo "* Cleaning up..."
-	# rm -rf "$bliman_tmp_folder"/bliman-*
-	# rm -rf "$bliman_zip_file"
+	echo "* Cleaning up..."
+	rm -rf "$bliman_tmp_folder"/bliman-*.sh
+	rm -rf "$bliman_zip_file"
 
 	echo ""
 
@@ -780,4 +765,4 @@ function __bliman_load_export_vars() {
 
 }
 
-__bliman_quick_install "$1"
+__bliman_quick_install

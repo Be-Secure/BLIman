@@ -19,7 +19,7 @@
 # set env vars if not set
 if [[ -z "$BLIMAN_NAMESPACE" ]]; then
 
-	BLIMAN_NAMESPACE="Be-Secure"
+	BLIMAN_NAMESPACE="asa1997"
 	export BLIMAN_NAMESPACE
 fi
 if [ -z "$BLIMAN_CANDIDATES_REPO" ]; then
@@ -31,7 +31,7 @@ if [ -z "$BLIMAN_DIR" ]; then
 fi
 
 export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
-export BLIMAN_NAMESPACE="Be-Secure"
+export BLIMAN_NAMESPACE="asa1997"
 export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
 export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
 
@@ -242,3 +242,5 @@ if [[ "$bliman_auto_env" == "true" ]]; then
 
 	bliman_auto_env
 fi
+
+source "$BLIMAN_DIR/tmp/source.sh"
