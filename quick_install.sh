@@ -20,7 +20,7 @@ trap echo_failed_command EXIT
 
 # Global variables
 export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
-export BLIMAN_NAMESPACE="Be-Secure"
+export BLIMAN_NAMESPACE="asa1997"
 export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
 export BLIMAN_VERSION="0.1.0"
 # export BLIMAN_NATIVE_VERSION="0.2.9"
@@ -90,9 +90,9 @@ function infer_platform() {
 	esac
 }
 
-BLIMAN_PLATFORM="$(infer_platform)"
-export BLIMAN_PLATFORM
 
+
+echo "$BLIMAN_PLATFORM"
 if [ -z "$BLIMAN_DIR" ]; then
     BLIMAN_DIR="$HOME/.bliman"
     BLIMAN_DIR_RAW="$HOME/.bliman"
@@ -112,6 +112,8 @@ bliman_config_file="${bliman_etc_folder}/config"
 bliman_bash_profile="${HOME}/.bash_profile"
 bliman_bashrc="${HOME}/.bashrc"
 bliman_zshrc="${ZDOTDIR:-${HOME}}/.zshrc"
+bliman_platform_file="${bliman_var_folder}/platform"
+
 
 bliman_init_snippet=$( cat << EOF
 #THIS MUST BE AT THE END OF THE FILE FOR BLIMAN TO WORK!!!
@@ -256,9 +258,13 @@ mkdir -p "$bliman_etc_folder"
 mkdir -p "$bliman_var_folder"
 mkdir -p "$bliman_candidates_folder"
 
+touch $bliman_platform_file
+
+export BLIMAN_PLATFORM="$(infer_platform)"
+echo "$BLIMAN_PLATFORM" > "$bliman_platform_file"
 echo "Getting available candidates..."
 echo "from ${BLIMAN_REPO_URL}/candidates.txt"
-BLIMAN_CANDIDATES_CSV=$(curl -s "${BLIMAN_REPO_URL}/candidates.txt")
+BLIMAN_CANDIDATES_CSV=$(curl --insecure "${BLIMAN_REPO_URL}/candidates.txt")
 echo "$BLIMAN_CANDIDATES_CSV" > "${BLIMAN_DIR}/var/candidates"
 
 echo "Prime the config file..."
@@ -279,12 +285,18 @@ touch "$bliman_config_file"
 	echo "bliman_curl_connect_timeout=7" 
 	echo "bliman_curl_max_time=10" 
 	echo "bliman_debug_mode=false" 
-	echo "bliman_insecure_ssl=false" 
 	echo "bliman_rosetta2_compatible=false" 
 	echo "bliman_selfupdate_feature=true" 
 } >> "$bliman_config_file"
 
+if [[ $BLIMAN_PLATFORM == "windowsx64" ]]; then
 
+	echo "bliman_insecure_ssl=true" >> "$bliman_config_file"
+else
+
+	echo "bliman_insecure_ssl=false" >> "$bliman_config_file"
+
+fi
 # script cli distribution
 echo "Installing script cli archive..."
 # fetch distribution
