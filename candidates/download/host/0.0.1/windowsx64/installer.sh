@@ -32,8 +32,8 @@ echo ''
 # 	echo "oah-shell found"
 # fi
 
-if [[ -z $(which VBoxManage) ]]; then
-
+if ! echo "$PATH" | grep -q "VirtualBox"
+then
 	echo "Downloading Oracle VM VirtualBox"
 	wget -P "$BLIMAN_DIR/tmp" https://download.virtualbox.org/virtualbox/7.0.12/VirtualBox-7.0.12-159484-Win.exe 
 	./"$BLIMAN_DIR"/tmp/VirtualBox-7.0.12-159484-Win.exe 
