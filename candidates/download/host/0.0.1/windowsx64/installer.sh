@@ -35,9 +35,9 @@ echo ''
 if ! echo "$PATH" | grep -q "VirtualBox"
 then
 	echo "Downloading Oracle VM VirtualBox"
-	curl -k -s -L https://download.virtualbox.org/virtualbox/7.0.12/VirtualBox-7.0.12-159484-Win.exe >> "$BLIMAN_DIR/tmp/virtualbox.exe"
-	./"$BLIMAN_DIR"/tmp/virtualbox.exe
-
+	curl -# -o "$BLIMAN_DIR/tmp/virtualbox.exe"  -k -s -L https://download.virtualbox.org/virtualbox/7.0.12/VirtualBox-7.0.12-159484-Win.exe
+	cd "$BLIMAN_DIR/tmp" || return 1
+	./virtualbox.exe
 else
 	echo "VirtualBox found"
 fi
