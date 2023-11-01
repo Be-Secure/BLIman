@@ -24,20 +24,21 @@ echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ##  #######  ########  ########  '
 echo ''
 
-# if [[ ! -d $HOME/.oah ]]; then
-#   	echo "Installing oah-shell"
-#   	__bliman_secure_curl https://raw.githubusercontent.com/Be-Secure/oah-installer/master/install.sh | bash
-# 	source "$HOME/.oah/bin/oah-init.sh"
-# else
-# 	echo "oah-shell found"
-# fi
+if [[ ! -d $HOME/.oah ]]; then
+  	echo "Installing oah-shell"
+  	__bliman_secure_curl https://raw.githubusercontent.com/Be-Secure/oah-installer/master/install.sh | bash
+	source "$HOME/.oah/bin/oah-init.sh"
+else
+	echo "oah-shell found"
+fi
 
 if [[ ! -d "/c/Program Files/Oracle/VirtualBox" ]]; then
 	
 	[[ -f "$BLIMAN_DIR/tmp/virtualbox.exe" ]] && rm "$BLIMAN_DIR/tmp/virtualbox.exe"
 	echo "Downloading Oracle VM VirtualBox"
-	curl -k -s -L --progress-bar https://download.virtualbox.org/virtualbox/7.0.12/VirtualBox-7.0.12-159484-Win.exe >> "$BLIMAN_DIR/tmp/virtualbox.exe"
+	curl -k -s -L --progress-bar https://download.virtualbox.org/virtualbox/7.0.12/VirtualBox-7.0.12-159484-Win.exe > "$BLIMAN_DIR/tmp/virtualbox.exe"
 	cd "$BLIMAN_DIR/tmp" || return 1
+	echo "Please follow the steps in installation wizard"
 	./virtualbox.exe
 else
 	echo "VirtualBox found"
