@@ -36,7 +36,7 @@ if [[ ! -d "/c/Program Files/Oracle/VirtualBox" ]]; then
 	
 	[[ -f "$BLIMAN_DIR/tmp/virtualbox.exe" ]] && rm "$BLIMAN_DIR/tmp/virtualbox.exe"
 	echo "Downloading Oracle VM VirtualBox"
-	curl --progress-bar -k -s -L https://download.virtualbox.org/virtualbox/7.0.12/VirtualBox-7.0.12-159484-Win.exe > "$BLIMAN_DIR/tmp/virtualbox.exe"
+	curl --fail --location --progress-bar --insecure https://download.virtualbox.org/virtualbox/7.0.12/VirtualBox-7.0.12-159484-Win.exe > "$BLIMAN_DIR/tmp/virtualbox.exe"
 	cd "$BLIMAN_DIR/tmp" || return 1
 	echo "Please follow the steps in installation wizard"
 	./virtualbox.exe
