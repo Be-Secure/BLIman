@@ -44,8 +44,7 @@ else
 	echo "VirtualBox found"
 fi
 
-if vagrant --version | grep -q "not found" 
-then
+if [[ -x "$(command -v vagrant)" ]]; then
 	
 	echo "Downloading vagrant"
 	curl --fail --location --progress-bar --insecure https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0_windows_amd64.msi > "$BLIMAN_DIR/tmp/vagrant.msi"
