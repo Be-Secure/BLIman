@@ -44,7 +44,7 @@ else
 	echo "VirtualBox found"
 fi
 
-if vagrant --version | grep -q "vagrant: command not found" 
+if vagrant --version | grep -q "not found" 
 then
 	
 	echo "Downloading vagrant"
