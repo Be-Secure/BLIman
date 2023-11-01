@@ -44,6 +44,20 @@ else
 	echo "VirtualBox found"
 fi
 
+if vagrant --version | grep -q "vagrant: command not found" 
+then
+	
+	echo "Downloading vagrant"
+	curl --fail --location --progress-bar --insecure https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0_windows_amd64.msi > "$BLIMAN_DIR/tmp/vagrant.msi"
+	cd "$BLIMAN_DIR/tmp/vagrant.msi" || return 1
+	"$BLIMAN_DIR/tmp/vagrant.msi"
+	msiexec /i vagrant.msi
+else
+
+	echo "vagrant found"
+
+fi
+
 # if [[ -z $(which vagrant) ]]; then
 #   	echo "Installing vagrant"
 #   	wget https://releases.hashicorp.com/vagrant/2.2.19/vagrant_2.2.19_x86_64.deb
