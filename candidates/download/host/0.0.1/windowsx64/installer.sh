@@ -49,7 +49,7 @@ if [[ -z "$(command -v vagrant)" ]]; then
 	echo "Downloading vagrant"
 	curl --fail --location --progress-bar --insecure https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0_windows_amd64.msi > "$BLIMAN_DIR/tmp/vagrant.msi"
 	cd "$BLIMAN_DIR/tmp" || return 1
-	msiexec /i vagrant.msi
+	msiexec vagrant.msi
 else
 
 	echo "vagrant found"
