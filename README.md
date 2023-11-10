@@ -1,8 +1,6 @@
-# BLIman CLI
+![BLIman](./BLIman-logo-horizontal.png)
 
-BLIman CLI is a tool for managing [BeSLab](https://github.com/Be-Secure/BeSLab).
-
-It can be used to bring up the lab in 3 different modes.
+BLIman is a command line interface tool for managing [BeSLab](https://github.com/Be-Secure/BeSLab). It can be used to bring up the lab in 3 different modes.
 
 # Modes of BeSLab
 
