@@ -67,14 +67,14 @@ function __bliman_prime_installer_playbook() {
 	__bliman_echo_yellow "Priming installer playbook"
 	local playbook roles
 	playbook="$HOME/oah-bes-vm/provisioning/oah-install.yml"
-	requirements="$HOME/oah-bes-vm/provisioning/oah-requirements.yml"
-	roles=$(yq '.[].name' "$requirements" | sed 's/"//g')
+	# requirements="$HOME/oah-bes-vm/provisioning/oah-requirements.yml"
+	# roles=$(yq '.[].name' "$requirements" | sed 's/"//g')
 	[[ -f "$playbook" ]] && rm "$playbook"
 	touch "$playbook"
 	cat <<EOF >>"$playbook"
 
 ---
-- hosts: all || localhost
+- hosts: localhost
   vars:
   - oah_command: install
 
