@@ -143,7 +143,7 @@ function __bliman_download() {
 	# echo ""
 
 	# download binary
-	curl -L "$download_url" | bash
+	__bliman_secure_curl "$download_url" | bash
 	# __bliman_secure_curl_download "${download_url}" --output "${binary_input}" --dump-header "${tmp_headers_file}"
 	# grep '^X-Bliman' "${tmp_headers_file}" > "${headers_file}"
 	# __bliman_echo_debug "Downloaded binary to: ${binary_input} (HTTP headers written to: ${headers_file})"
