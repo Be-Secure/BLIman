@@ -47,59 +47,70 @@ fi
 function infer_platform() {
 	local kernel
 	local machine
-	
+
 	kernel="$(uname -s)"
 	machine="$(uname -m)"
-	
+
 	case $kernel in
 	Linux)
-	  case $machine in
-	  i686)
-		echo "LinuxX32"
+		case $machine in
+		i686)
+			echo "linuxx32"
+			;;
+		x86_64)
+			echo "linuxx64"
+			;;
+		armv6l)
+			echo "linuxarm32hf"
+			;;
+		armv7l)
+			echo "linuxarm32hf"
+			;;
+		armv8l)
+			echo "linuxarm32hf"
+			;;
+		aarch64)
+			echo "linuxarm64"
+			;;
+		*)
+			echo "exotic"
+			;;
+		esac
 		;;
-	  x86_64)
-		echo "LinuxX64"
-		;;
-	  armv6l)
-		echo "LinuxARM32HF"
-		;;
-	  armv7l)
-		echo "LinuxARM32HF"
-		;;
-	  armv8l)
-		echo "LinuxARM32HF"
-		;;
-	  aarch64)
-		echo "LinuxARM64"
-		;;
-	  *)
-	  	echo "Exotic"
-	  	;;
-	  esac
-	  ;;
 	Darwin)
-	  case $machine in
-	  x86_64)
-		echo "DarwinX64"
+		case $machine in
+		x86_64)
+			echo "darwinx64"
+			;;
+		arm64)
+			if [[ "$bliman_rosetta2_compatible" == 'true' ]]; then
+				echo "darwinx64"
+			else
+				echo "darwinarm64"
+			fi
+			;;
+		*)
+			echo "darwinx64"
+			;;
+		esac
 		;;
-	  arm64)
-		if [[ "$bliman_rosetta2_compatible" == 'true' ]]; then
-			echo "DarwinX64"
-		else
-			echo "DarwinARM64"
-		fi
+	MSYS* | MINGW*)
+		case $machine in
+		x86_64)
+			echo "windowsx64"
+			;;
+		*)
+			echo "exotic"
+			;;
+		esac
 		;;
-	  *)
-	  	echo "DarwinX64"
-	  	;;
-	  esac
-	  ;;
 	*)
-	  echo "$kernel"
+		echo "exotic"
+		;;
 	esac
 }
 
-BLIMAN_PLATFORM="$(infer_platform | tr '[:upper:]' '[:lower:]')"
+BLIMAN_PLATFORM="$(infer_platform)"
 export BLIMAN_PLATFORM
 
 # OS specific support (must be 'true' or 'false').
