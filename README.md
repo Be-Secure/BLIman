@@ -2,6 +2,8 @@
 
 BLIman is a command line interface tool for managing [BeSLab](https://github.com/Be-Secure/BeSLab). It can be used to bring up the lab in 3 different modes.
 
+To set up, please look at the [getting started guide](./Getting_started.md).
+
 # Modes of BeSLab
 
 ## Host mode
