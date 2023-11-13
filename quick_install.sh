@@ -185,7 +185,7 @@ EOF
 		echo ""
 		echo " Please consider running the following if you need to upgrade."
 		echo ""
-		echo "    $ sdk selfupdate force"
+		echo "    $ bli selfupdate force"
 		echo ""
 		echo "======================================================================================================"
 		echo ""
@@ -429,7 +429,7 @@ EOF
 	echo ""
 	echo "Then issue the following command:"
 	echo ""
-	echo "    sdk help"
+	echo "    bli help"
 	echo ""
 	echo "Enjoy!!!"
 
