@@ -68,12 +68,12 @@ function __bliman_convert_yaml_to_sh()
 		if [ $multi_values_flag == true ] && ! echo "$key" | grep -qe "^-" 
 		then
 			multi_values_flag=false
-			echo "$key_save=$multi_values" | sed "s/,//1" >> "$source_file"
+			echo "export $key_save=$multi_values" | sed "s/,//1" >> "$source_file"
 			multi_values=""
 		fi
 		if [[ "$line" == "" ]]; then
 			multi_values_flag=false
-			echo "$key_save=$multi_values" | sed "s/,//1" >> "$source_file"
+			echo "export $key_save=$multi_values" | sed "s/,//1" >> "$source_file"
 			multi_values=""
 		fi
 		if [[ $value == "" ]]; then
@@ -83,7 +83,7 @@ function __bliman_convert_yaml_to_sh()
 		elif [[ $multi_values_flag == false ]] 
 		then
 			
-			echo "$key=$value" >> "$source_file"
+			echo "export $key=$value" >> "$source_file"
 		fi
 		if [[ $multi_values_flag == "true" ]] 
 		then
@@ -95,14 +95,14 @@ function __bliman_convert_yaml_to_sh()
 
 			else
 				multi_values_flag=false
-				echo "$key_save=$multi_values"
+				echo "export $key_save=$multi_values"
 			fi
 		fi
 	done < "$HOME/tmp.sh"
 
 	if ! grep "$key_save" "$source_file" 
 	then
-		echo "$key_save=$multi_values" | sed "s/,//1" >> "$source_file"
+		echo "export $key_save=$multi_values" | sed "s/,//1" >> "$source_file"
 	fi
 
 	[[ -f "$HOME/tmp.sh" ]] && rm "$HOME/tmp.sh"
@@ -120,34 +120,3 @@ function __bliman_load_export_vars() {
 	source "$HOME/.bashrc"
 }
 
-# function __bliman_check_for_yq() {
-# 	if [[ -z $(which yq) ]]; then
-# 		echo "Installing yq"
-# 		python3 -m pip install yq
-# 	fi
-# }
-
-# function __bliman_load_export_vars() {
-# 	local var value genesis_file_path tmp_file
-# 	__bliman_check_for_yq
-# 	__bliman_echo_yellow "Loading genesis file parameters"
-# 	genesis_file_path=$1
-# 	sed -i '/^$/d' "$genesis_file_path"
-# 	genesis_data=$(<"$genesis_file_path")
-# 	tmp_file="$BLIMAN_DIR/tmp/source.sh"
-# 	[[ -f "$tmp_file" ]] && rm "$tmp_file"
-# 	touch "$tmp_file"
-# 	echo "#!/bin/bash" >>"$tmp_file"
-# 	while read -r line; do
-# 		[[ $line == "---" ]] && continue
-# 		if echo "$line" | grep -qe "^#"; then
-# 			continue
-# 		elif echo "$line" | grep -qe "^BESLAB_"; then
-# 			var=$(echo "$line" | cut -d ":" -f 1)
-# 			value=$(yq ."$var" "$genesis_file_path" | sed 's/\[//; s/\]//; s/"//g' | tr -d '\n' | sed 's/ //g')
-# 			unset "$var"
-# 			echo "export $var=$value" >>"$tmp_file"
-# 		fi
-# 	done <<<"$genesis_data"
-
-# }
