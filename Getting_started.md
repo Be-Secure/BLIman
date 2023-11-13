@@ -8,16 +8,22 @@ Before getting started, you should know what [BeSLab](https://github.com/Be-Secu
 
 1. Open your git bash
 2. Run the below command to download the binaries
+   
    `curl -k https://be-secure.github.io/BLIman/get.bliman.io | bash`
+
 3. Run the below command to load BLIman.
+
    `source $HOME/.bliman/bin/bliman-init.sh`
 
 **For linux users**
 
 1. Open your terminal
 2. Run the below command to download the binaries
+
    `curl -s https://be-secure.github.io/BLIman/get.bliman.io | bash`
+
 3. Run the below command to load BLIman.
+
    `source $HOME/.bliman/bin/bliman-init.sh`
 
 ## The 3 modes of BeSLab
@@ -45,8 +51,11 @@ To use this mode, you will have to install the following tools.
 1. Open your git bash
 2. Make sure you have installed bliman by running, `bli help`
 3. Run the below command.
+
    `bli install host`
+
 4. Next step, you can launch the lab.
+
    `bli launch`
 
 ### 2. Bare metal mode
@@ -62,8 +71,11 @@ You don't need to install a pre-requisites for this as it is done using BLIman i
 1. Open your terminal
 2. Make sure you have installed bliman by running, `bli help`
 3. Run the below command.
+
    `bli install bare`
+
 4. Next step, you can launch the lab.
+
    `bli launch`
 
 ### 3. Lightweight mode
@@ -79,6 +91,9 @@ You wont have to worry about pre-requisites. It will be installed by BLIman.
 1. Open your terminal
 2. Make sure you have installed bliman by running, `bli help`
 3. Run the below command.
+
    `bli install light`
+
 4. Next step, you can launch the lab.
+
    `bli launch`
