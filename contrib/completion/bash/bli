@@ -79,7 +79,7 @@ __bliman_complete_candidate_version() {
 	COMPREPLY=($(compgen -W "${candidates[*]}" -- "$candidate_version"))
 }
 
-complete -o default -F _bli sdk
+complete -o default -F _bli bli
 
 # Set 'bliman_auto_complete' to 'true' in .bliman/etc/config to enable completion
 

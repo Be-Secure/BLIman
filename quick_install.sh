@@ -185,7 +185,7 @@ EOF
 		echo ""
 		echo " Please consider running the following if you need to upgrade."
 		echo ""
-		echo "    $ sdk selfupdate force"
+		echo "    $ bli selfupdate force"
 		echo ""
 		echo "======================================================================================================"
 		echo ""
@@ -272,7 +272,7 @@ EOF
 
 	echo "Getting available candidates..."
 	echo "from ${BLIMAN_REPO_URL}/candidates.txt"
-	BLIMAN_CANDIDATES_CSV=$(curl -s "${BLIMAN_REPO_URL}/candidates.txt")
+	BLIMAN_CANDIDATES_CSV=$(curl -k -s "${BLIMAN_REPO_URL}/candidates.txt")
 	echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
 
 	echo "Prime the config file..."
@@ -298,6 +298,11 @@ EOF
 		echo "bliman_selfupdate_feature=true"
 	} >>"$bliman_config_file"
 
+	if [[ $BLIMAN_PLATFORM == "windowsx64" ]]; then
+		echo "bliman_insecure_ssl=true" >> "$bliman_config_file"
+	else
+		echo "bliman_insecure_ssl=false" >> "$bliman_config_file"
+	fi
 	# script cli distribution
 	echo "Installing script cli archive..."
 	# fetch distribution
@@ -410,7 +415,7 @@ EOF
 		echo "Updated existing ${bliman_zshrc}"
 	fi
 
-	__bliman_load_genesis_file
+	__bliman_load_genesis_file || return 1
 	__bliman_write_tmpl_vagrantfile
 
 	echo -e "\n\n\nAll done!\n\n"
@@ -424,7 +429,7 @@ EOF
 	echo ""
 	echo "Then issue the following command:"
 	echo ""
-	echo "    sdk help"
+	echo "    bli help"
 	echo ""
 	echo "Enjoy!!!"
 
@@ -468,19 +473,6 @@ end
 vconfig = YAML::load_file("#{dir}/oah-config.yml")
 
 
-\$script_local_ansible = <<SCRIPT
-git config --global http.sslverify false
-git clone \$OAH_GITHUB_URL/\$env_repo_name.git
-sudo sed -i 's/archive/in.archive/g' /etc/apt/sources.list
-sudo apt-get update
-sudo apt-get install -y --no-install-recommends ansible
-
-mkdir -p \$VHOME/\$env_repo_name/roles
-ansible-galaxy install -r \$VHOME/\$env_repo_name/provisioning/oah-requirements.yml -p \$VHOME/\$env_repo_name/provisioning/roles
-echo "TEST Passed"
-ansible-playbook  --extra-vars "ansible_become_pass=vagrant"  \$VHOME/\$env_repo_name/provisioning/oah-install.yml
-SCRIPT
-
 \$script = <<SCRIPT
 echo "create user vagrant"
 adduser --disabled-password --gecos "" vagrant
@@ -520,48 +512,6 @@ test -e /usr/bin/python || (sudo apt -y update && apt install -y python-minimal)
 sudo systemctl disable apt-daily.service
 sudo systemctl disable apt-daily.timer
 SCRIPT
-
-# \$script = <<SCRIPT
-# echo "create user vagrant"
-# adduser --disabled-password --gecos "" vagrant
-# echo 'vagrant:vagrant' | chpasswd
-# ls -al /home/
-# echo "add sudo privilege to user vagrant"
-# cp /etc/sudoers.d/90-cloud-init-users /etc/sudoers.d/admin
-# chmod +w /etc/sudoers.d/admin
-# ls -al /etc/sudoers.d/
-# sed -i 's/ubuntu/vagrant/g' /etc/sudoers.d/admin
-# cat /etc/sudoers.d/admin
-# echo "enable ssh access for user vagrant"
-# rm -rf /home/ubuntu/.ssh
-# echo "generating new ssh key pairs"
-# ssh-keygen -t rsa -f /home/ubuntu/.ssh/
-# echo "generating authorized_keys"
-# ls /home/ubuntu/.ssh/
-# cp /home/ubuntu/.ssh/id_rsa.pub /home/ubuntu/.ssh/authorized_keys
-# chmod 600 /home/ubuntu/.ssh/authorized_keys
-# mkdir -p /home/vagrant/.ssh
-# echo "listing contents of under /home/ubuntu/.ssh"
-# ls /home/ubuntu/.ssh
-# chown vagrant:vagrant /home/vagrant/.ssh
-# cat /home/ubuntu/.ssh/authorized_keys >> /home/vagrant/.ssh/authorized_keys
-# echo "value of authorized_keys under ubuntu"
-# cat /home/ubuntu/.ssh/authorized_keys
-# echo "value of authorized_keys under vagrant"
-# cat /home/vagrant/.ssh/authorized_keys
-# chown vagrant:vagrant /home/vagrant/.ssh/authorized_keys
-# su - vagrant -c "cat /home/vagrant/.ssh/authorized_keys"
-# chmod 600 /home/vagrant/.ssh/authorized_keys
-# ls -al /home/vagrant/.ssh
-# chmod 700 /home/vagrant/.ssh
-# ls -al /home/vagrant
-# sudo apt update -y
-# sudo apt full-upgrade -y
-# sudo apt-get autoremove -y
-# test -e /usr/bin/python || (sudo apt -y update && apt install -y python-minimal)
-# sudo systemctl disable apt-daily.service
-# sudo systemctl disable apt-daily.timer
-# SCRIPT
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -647,18 +597,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   beslab_user = ENV['BESLAB_USER']
   beslab_password = ENV['BESLAB_PWD']
-  
+  bliman_dir = ENV['BLIMAN_DIR']
+  oah_dir = ENV['OAH_DIR']
+
   if which('ansible-playbook')
     # Provision using Ansible provisioner if Ansible is installed on host.
     bliman_dir = ENV['BLIMAN_DIR']
     config.vm.provision "shell", path: "#{bliman_dir}/tmp/source.sh"
-    config.vm.provision "shell", inline: <<-SHELL, env: { "BESLAB_USER_NAME" => beslab_user, "BESLAB_USER_PASSWORD" => beslab_password }
+    config.vm.provision "shell", inline: <<-SHELL, env: { "BESLAB_USER" => beslab_user, "BESLAB_USER_PASSWORD" => beslab_password }
 		encrypted_password=$(openssl passwd -1 \$BESLAB_USER_PASSWORD)
-		# sudo userdel -r "\$BESLAB_USER_NAME"
-		sudo useradd -m -p "\$encrypted_password" "\$BESLAB_USER_NAME"
-		sudo usermod -aG sudo "\$BESLAB_USER_NAME"
-		cp -r /home/vagrant/.ssh /home/\$BESLAB_USER_NAME/
-		chown \$BESLAB_USER_NAME:\$BESLAB_USER_NAME /home/\$BESLAB_USER_NAME/.ssh/authorized_keys
+		# sudo userdel -r "\$BESLAB_USER"
+		sudo useradd -m -p "\$encrypted_password" "\$BESLAB_USER"
+		sudo usermod -aG sudo "\$BESLAB_USER"
+		cp -r /home/vagrant/.ssh /home/\$BESLAB_USER/
+		chown \$BESLAB_USER:\$BESLAB_USER /home/\$BESLAB_USER/.ssh/authorized_keys
     SHELL
 
     config.vm.provision "ansible" do |ansible|
@@ -668,12 +620,29 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ansible.become = true                                                                                                                
     end
   else
-     config.vm.provision "shell", inline: \$script_local_ansible, env: { "VHOME" => "/home/vagrant", "env_repo_name" => ENV['env_repo_name'], "OAH_DIR" => ENV['OAH_DIR'], "OAH_GITHUB_URL" => ENV['OAH_GITHUB_URL'] } 
-      #config.vm.provision "ansible_local" do |ansible|
-      # ansible.playbook = "../../provisioning/oah-install.yml"
-      #ansible.playbook = "../../provisioning/oah-install.yml"
-      #ansible.galaxy_role_file = "../../provisioning/oah-requirements.yml"
-      #end
+	config.vm.provision "shell", inline: <<-SHELL, env: {"BESLAB_USER" => beslab_user, "BESLAB_USER_PASSWORD" => beslab_password }
+		encrypted_password=\$(openssl passwd -1 \$BESLAB_USER_PASSWORD)
+		# sudo userdel -r "\$BESLAB_USER"
+		sudo useradd -m -p "\$encrypted_password" "\$BESLAB_USER"
+		sudo usermod -aG sudo "\$BESLAB_USER"
+		cp -r /home/vagrant/.ssh /home/\$BESLAB_USER/
+		chown \$BESLAB_USER:\$BESLAB_USER /home/\$BESLAB_USER/.ssh/authorized_keys
+		mkdir -p /home/\$BESLAB_USER/oah-bes-vm
+		mkdir -p /home/\$BESLAB_USER/bliman_tmp
+	SHELL
+
+	config.vm.synced_folder "#{bliman_dir}/tmp", "/home/#{beslab_user}/bliman_tmp"
+	config.vm.synced_folder "#{oah_dir}/data/env/oah-bes-vm", "/home/#{beslab_user}/oah-bes-vm"
+
+	config.vm.provision "shell", inline: <<-SHELL, env: {"BESLAB_USER" => beslab_user, "BESLAB_USER_PASSWORD" => beslab_password }
+		sudo apt-add-repository ppa:ansible/ansible
+		sudo apt update
+		sudo apt install ansible -y
+		source /home/\$BESLAB_USER/bliman_tmp/source.sh
+		mkdir -p "/home/\$BESLAB_USER/oah-bes-vm/roles"
+		ansible-galaxy install -r /home/\$BESLAB_USER/oah-bes-vm/provisioning/oah-requirements.yml -p /home/\$BESLAB_USER/oah-bes-vm/provisioning/roles
+		ansible-playbook /home/\$BESLAB_USER/oah-bes-vm/provisioning/oah-install.yml --ask-become-pass
+	SHELL
   end
 
 
@@ -715,8 +684,8 @@ function __bliman_check_genesis_file_available() {
 	local url response
 	url=$1
 	echo "Checking if genesis file available @ $url"
-	response=$(curl --head --silent "$url" | head -n 1 | awk '{print $2}')
-	if [ "$response" -eq 200 ]; then
+	response=$(curl -k --head --silent "$url" | head -n 1 | awk '{print $2}')
+	if [[ $response -eq 200 ]]; then
 		echo "Genesis file found"
 		return 0
 	else
@@ -733,46 +702,88 @@ function __bliman_get_genesis_file() {
 	[[ -f "$default_genesis_file_path" ]] && rm "$default_genesis_file_path"
 	touch "$default_genesis_file_path"
 	echo "Downloading genesis file"
-	curl -sL "$url" >>"$default_genesis_file_path"
+	curl -k -sL "$url" >>"$default_genesis_file_path"
 
 }
 
-function __bliman_check_for_yq() {
-	if [[ -z $(which yq) ]]; then
-		echo "Installing yq"
-		python3 -m pip install yq
-	else
-		return 0
+
+function __bliman_convert_yaml_to_sh()
+{
+	local genesis_data source_file
+	genesis_data=$1
+	source_file=$2
+
+	while read -r key 
+	do
+		echo "$key" | sed "s/:/=/" | sed "s/ //g" >> "$HOME/tmp.sh"
+	done <<< "$genesis_data" 
+
+	multi_values=""
+	multi_values_flag=false
+	echo "#!/bin/bash" >> "$source_file"
+	while read -r line 
+	do
+		if echo "$line" | grep -qe "^#" 
+		then
+			continue
+		fi
+		if [[ ( "$line" == "" ) || ( $line == "---" ) ]] 
+		then
+			continue
+		fi
+		key=$(echo "$line" | cut -d "=" -f 1)
+		value=$(echo "$line" | cut -d "=" -f 2)
+		if [ $multi_values_flag == true ] && ! echo "$key" | grep -qe "^-" 
+		then
+			multi_values_flag=false
+			echo "export $key_save=$multi_values" | sed "s/,//1" >> "$source_file"
+			multi_values=""
+		fi
+		if [[ "$line" == "" ]]; then
+			multi_values_flag=false
+			echo "export $key_save=$multi_values" | sed "s/,//1" >> "$source_file"
+			multi_values=""
+		fi
+		if [[ $value == "" ]]; then
+			multi_values_flag=true
+			key_save=$key
+			continue
+		elif [[ $multi_values_flag == false ]] 
+		then
+			
+			echo "export $key=$value" >> "$source_file"
+		fi
+		if [[ $multi_values_flag == "true" ]] 
+		then
+			if echo "$line" | grep -qe "^-" 
+			then
+				value_2=$(echo "$line" | sed "s/-//1")
+				multi_values+=",$value_2"
+				continue
+
+			else
+				multi_values_flag=false
+				echo "export $key_save=$multi_values"
+			fi
+		fi
+	done < "$HOME/tmp.sh"
+
+	if ! grep "$key_save" "$source_file" 
+	then
+		echo "export $key_save=$multi_values" | sed "s/,//1" >> "$source_file"
 	fi
+
+	[[ -f "$HOME/tmp.sh" ]] && rm "$HOME/tmp.sh"
 }
 
 function __bliman_load_export_vars() {
-	local var value genesis_file_path tmp_file
-	__bliman_check_for_yq
+	local genesis_file_path source_file genesis_data
 	echo "Loading genesis file parameters"
 	genesis_file_path=$1
-	sed -i '/^$/d' "$genesis_file_path"
+	sed -i '/^$/d' "$genesis_file_path" # Delete empty lines
 	genesis_data=$(<"$genesis_file_path")
-	tmp_file="$BLIMAN_DIR/tmp/source.sh"
-	touch "$tmp_file"
-	chmod +x "$tmp_file"
-	echo "#!/bin/bash" >>"$tmp_file"
-	while read -r line; do
-		[[ $line == "---" ]] && continue
-		if echo "$line" | grep -qe "^#"; then
-			continue
-		elif echo "$line" | grep -qe "^BESLAB_"; then
-			var=$(echo "$line" | cut -d ":" -f 1)
-			value=$(yq ."$var" "$genesis_file_path" | sed 's/\[//; s/\]//; s/"//g' | tr -d '\n' | sed 's/ //g')
-			unset "$var"
-			echo "export $var=$value" >>"$tmp_file"
-		fi
-	done <<<"$genesis_data"
-	# source "$tmp_file"
-	# echo "[[ -s $tmp_file ]] && source $tmp_file" >> "$HOME/.bashrc"
-	# source "$HOME/.bashrc"
-	# echo "BESLAB_VM_NAME: $BESLAB_VM_NAME"
-
+	source_file="$BLIMAN_DIR/tmp/source.sh"
+	__bliman_convert_yaml_to_sh "$genesis_data" "$source_file"
 }
 
 __bliman_quick_install "$1"
