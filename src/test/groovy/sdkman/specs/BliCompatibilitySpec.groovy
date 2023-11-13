@@ -5,7 +5,7 @@ import bliman.support.BlimanEnvSpecification
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class SdkCompatibilitySpec extends BlimanEnvSpecification {
+class bliCompatibilitySpec extends BlimanEnvSpecification {
 
 	def allCandidates = ["groovy", "grails", "scala", "sbt"]
 

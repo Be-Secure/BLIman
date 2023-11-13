@@ -205,7 +205,7 @@ class BlimanBashEnvBuilder {
 	}
 
 	private primeBashCompletionScript(File targetFolder) {
-		def sourceCompletionScript = new File(BUILD_COMPLETION_DIR, 'sdk')
+		def sourceCompletionScript = new File(BUILD_COMPLETION_DIR, 'bli')
 
 		if (!sourceCompletionScript.exists())
 			throw new IllegalStateException("bli has not been prepared for consumption.")
@@ -213,7 +213,7 @@ class BlimanBashEnvBuilder {
 		new FileTreeBuilder(targetFolder).with {
 			completion {
 				bash {
-					sdk(sourceCompletionScript.text)
+					bli(sourceCompletionScript.text)
 				}
 			}			
 		}

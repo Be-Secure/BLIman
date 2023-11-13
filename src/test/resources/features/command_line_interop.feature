@@ -5,8 +5,8 @@ Feature: Command Line Interop
 		And an initialised environment
 		And the system is bootstrapped
 
-	Scenario: Enter sdk
-		When I enter "sdk"
+	Scenario: Enter bli
+		When I enter "bli"
 		Then I see "Usage: bli <command> [candidate] [version]"
 		And I see "bli offline <enable|disable>"
 
