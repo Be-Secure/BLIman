@@ -264,7 +264,7 @@ EOF
 
 	echo "Getting available candidates..."
 	echo "from ${BLIMAN_REPO_URL}/candidates.txt"
-	BLIMAN_CANDIDATES_CSV=$(curl -s "${BLIMAN_REPO_URL}/candidates.txt")
+	BLIMAN_CANDIDATES_CSV=$(curl -s -k "${BLIMAN_REPO_URL}/candidates.txt")
 	echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
 
 	echo "Prime the config file..."
@@ -295,7 +295,7 @@ EOF
 	# fetch distribution
 	bliman_zip_file="${bliman_tmp_folder}/bliman-${BLIMAN_VERSION}.zip"
 	echo "* Downloading..."
-    curl -sL --location --progress-bar "${BLIMAN_SERVICE}/${BLIMAN_NAMESPACE}/BLIman/dist/dist/bliman-latest.zip" > "$bliman_zip_file"
+    curl -s -k --location --progress-bar "${BLIMAN_SERVICE}/${BLIMAN_NAMESPACE}/BLIman/dist/dist/bliman-latest.zip" > "$bliman_zip_file"
 
 	# check integrity
 	echo "* Checking archive integrity..."
