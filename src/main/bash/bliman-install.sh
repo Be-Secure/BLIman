@@ -44,7 +44,7 @@ function __bli_install() {
 		if [[ -z "$USE" || "$USE" == "y" || "$USE" == "Y" ]]; then
 			echo ""
 			__bliman_echo_green "Setting ${candidate} ${VERSION} as default."
-			__bliman_link_candidate_version "$candidate" "$VERSION"
+			# __bliman_link_candidate_version "$candidate" "$VERSION"
 			__bliman_add_to_path "$candidate"
 		fi
 
