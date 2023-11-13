@@ -473,19 +473,6 @@ end
 vconfig = YAML::load_file("#{dir}/oah-config.yml")
 
 
-\$script_local_ansible = <<SCRIPT
-git config --global http.sslverify false
-git clone \$OAH_GITHUB_URL/\$env_repo_name.git
-sudo sed -i 's/archive/in.archive/g' /etc/apt/sources.list
-sudo apt-get update
-sudo apt-get install -y --no-install-recommends ansible
-echo "local ansible"
-mkdir -p \$VHOME/\$env_repo_name/roles
-ansible-galaxy install -r \$VHOME/\$env_repo_name/provisioning/oah-requirements.yml -p \$VHOME/\$env_repo_name/provisioning/roles
-echo "TEST Passed"
-ansible-playbook  --extra-vars "ansible_become_pass=vagrant"  \$VHOME/\$env_repo_name/provisioning/oah-install.yml
-SCRIPT
-
 \$script = <<SCRIPT
 echo "create user vagrant"
 adduser --disabled-password --gecos "" vagrant
@@ -719,14 +706,6 @@ function __bliman_get_genesis_file() {
 
 }
 
-# function __bliman_check_for_yq() {
-# 	if [[ -z $(which yq) ]]; then
-# 		echo "Installing yq"
-# 		python3 -m pip install yq
-# 	else
-# 		return 0
-# 	fi
-# }
 
 function __bliman_convert_yaml_to_sh()
 {
@@ -799,7 +778,6 @@ function __bliman_convert_yaml_to_sh()
 
 function __bliman_load_export_vars() {
 	local genesis_file_path source_file genesis_data
-	__bliman_check_for_yq
 	echo "Loading genesis file parameters"
 	genesis_file_path=$1
 	sed -i '/^$/d' "$genesis_file_path" # Delete empty lines
