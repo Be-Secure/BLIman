@@ -47,6 +47,7 @@ function __bliman_set_env_repo() {
 	git clone "https://github.com/$BLIMAN_NAMESPACE/BeSLab" /tmp/BeSLab
 	cp /tmp/BeSLab/beslab/0.0.1/* "$HOME/.besman/envs/"
 	source "$HOME/.besman/bin/besman-init.sh"
+        bes list
 }
 
 function __bliman_install_beslab_env() {
