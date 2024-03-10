@@ -81,9 +81,10 @@ function infer_platform() {
 
 function __bliman_quick_install() {
 
-	local force_flag
-	force_flag=$1
-
+	local genesis_path force_flag
+        genesis_path=$1	
+	force_flag=$2
+        
 	if [[ (-n $force_flag) && (($force_flag == "--force") || ($force_flag == -F)) ]]; then
 
 		echo "Removing current installation of bliman"
@@ -94,47 +95,47 @@ function __bliman_quick_install() {
 	trap track_last_command DEBUG
 	trap echo_failed_command EXIT
 
-	# Global variables
-	export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
-	export BLIMAN_NAMESPACE="Be-Secure"
-	export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
-	export BLIMAN_VERSION="0.1.0"
-	export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
-	
-	# export BLIMAN_NATIVE_VERSION="0.2.9"
-	# infer platform
-
-	BLIMAN_PLATFORM="$(infer_platform)"
-	export BLIMAN_PLATFORM
-
-	if [ -z "$BLIMAN_DIR" ]; then
-		BLIMAN_DIR="$HOME/.bliman"
-		BLIMAN_DIR_RAW="$HOME/.bliman"
-	else
-		BLIMAN_DIR_RAW="$BLIMAN_DIR"
-	fi
-	export BLIMAN_DIR
+        if [ -z "$BLIMAN_DIR" ]; then
+                BLIMAN_DIR="$HOME/.bliman"
+                BLIMAN_DIR_RAW="$HOME/.bliman"
+        else
+                BLIMAN_DIR_RAW="$BLIMAN_DIR"
+        fi
+        export BLIMAN_DIR
 
 	# Local variables
-	bliman_src_folder="${BLIMAN_DIR}/src"
-	bliman_tmp_folder="${BLIMAN_DIR}/tmp"
-	bliman_ext_folder="${BLIMAN_DIR}/ext"
-	bliman_etc_folder="${BLIMAN_DIR}/etc"
-	bliman_var_folder="${BLIMAN_DIR}/var"
-	bliman_candidates_folder="${BLIMAN_DIR}/candidates"
-	bliman_config_file="${bliman_etc_folder}/config"
-	bliman_bash_profile="${HOME}/.bash_profile"
-	bliman_bashrc="${HOME}/.bashrc"
-	bliman_zshrc="${ZDOTDIR:-${HOME}}/.zshrc"
+        bliman_src_folder="${BLIMAN_DIR}/src"
+        bliman_tmp_folder="${BLIMAN_DIR}/tmp"
+        bliman_ext_folder="${BLIMAN_DIR}/ext"
+        bliman_etc_folder="${BLIMAN_DIR}/etc"
+        bliman_var_folder="${BLIMAN_DIR}/var"
+        bliman_candidates_folder="${BLIMAN_DIR}/candidates"
+        bliman_config_file="${bliman_etc_folder}/config"
+        bliman_bash_profile="${HOME}/.bash_profile"
+        bliman_bashrc="${HOME}/.bashrc"
+        bliman_zshrc="${ZDOTDIR:-${HOME}}/.zshrc"
 
-	bliman_init_snippet=$(
-		cat <<EOF
+        bliman_init_snippet=$(
+                cat <<EOF
 #THIS MUST BE AT THE END OF THE FILE FOR BLIMAN TO WORK!!!
 export BLIMAN_DIR="$BLIMAN_DIR_RAW"
 [[ -s "${BLIMAN_DIR_RAW}/bin/bliman-init.sh" ]] && source "${BLIMAN_DIR_RAW}/bin/bliman-init.sh"
 EOF
-	)
+        )
 
+	# Create directory structure
+        echo "Create distribution directories..."
+        mkdir -p "$bliman_tmp_folder"
+        mkdir -p "$bliman_ext_folder"
+        mkdir -p "$bliman_etc_folder"
+        mkdir -p "$bliman_var_folder"
+        mkdir -p "$bliman_candidates_folder"
+
+	__bliman_load_genesis_file "$genesis_path"
+        __bliman_write_tmpl_vagrantfile
+
+	BLIMAN_PLATFORM="$(infer_platform)"
+	export BLIMAN_PLATFORM
 	# OS specific support (must be 'true' or 'false').
 	cygwin=false
 	darwin=false
@@ -174,7 +175,7 @@ EOF
 	# Sanity checks
 
 	echo "Looking for a previous installation of BLIMAN..."
-	if [ -d "$BLIMAN_DIR" ]; then
+	if [ -d "$BLIMAN_DIR/bin/" ]; then
 		echo "BLIMAN found."
 		echo ""
 		echo "======================================================================================================"
@@ -259,16 +260,9 @@ EOF
 		fi
 	fi
 
+	source "$BLIMAN_DIR/tmp/source.sh"
+
 	echo "Installing BLIMAN scripts..."
-
-	# Create directory structure
-
-	echo "Create distribution directories..."
-	mkdir -p "$bliman_tmp_folder"
-	mkdir -p "$bliman_ext_folder"
-	mkdir -p "$bliman_etc_folder"
-	mkdir -p "$bliman_var_folder"
-	mkdir -p "$bliman_candidates_folder"
 
 	echo "Getting available candidates..."
 	echo "from ${BLIMAN_REPO_URL}/candidates.txt"
@@ -415,9 +409,6 @@ EOF
 		echo "Updated existing ${bliman_zshrc}"
 	fi
 
-	__bliman_load_genesis_file || return 1
-	__bliman_write_tmpl_vagrantfile
-
 	echo -e "\n\n\nAll done!\n\n"
 
 	echo "You are subscribed to the STABLE channel."
@@ -438,6 +429,7 @@ EOF
 function __bliman_write_tmpl_vagrantfile()
 {
 	local vagrantfile_path
+	
 	vagrantfile_path="$BLIMAN_DIR/tmp/Vagrantfile"
 	touch "$vagrantfile_path"
 	cat <<EOF >>"$vagrantfile_path"
@@ -661,50 +653,58 @@ end
 EOF
 }
 function __bliman_load_genesis_file() {
-	local genesis_file_name genesis_file_url
+	local genesis_path genesis_file_name genesis_file_url present_working_dir
 	genesis_file_name="beslab_genesis.yaml"
-	genesis_file_url="$BLIMAN_LAB_URL/$genesis_file_name"
+	genesis_path=$1
+	genesis_file_url="$genesis_path/$genesis_file_name"
 
-	if [[ -f "$HOME/$genesis_file_name" ]]; then
-
-		echo "Using genesis file found @ $HOME"
-		export BLIMAN_GENSIS_FILE_PATH="$HOME/$genesis_file_name"
-		echo "Setting genesis file path as $BLIMAN_GENSIS_FILE_PATH"
+	if [[ -z $genesis_path ]];then
+	   present_working_dir=`pwd`
+	   if [ -f "$BLIMAN_DIR/$genesis_file_name" ];then
+             export BLIMAN_GENSIS_FILE_PATH="$BLIMAN_DIR/$genesis_file_name"
+             __bliman_load_export_vars "$BLIMAN_DIR/$genesis_file_name"
+	   elif [ -f "$present_working_dir/$genesis_file_name" ];then 
+             export BLIMAN_GENSIS_FILE_PATH="$present_working_dir"
+	     __bliman_load_export_vars "$present_working_dir/$genesis_file_name"
+	   else
+             echo "Genesis file not found at default locations." 
+	     echo "Provide genesis file location with --genesis_path option in command." && return 1
+	   fi
 	else
-		echo "Using default genesis file @ $genesis_file_url"
-		export BLIMAN_GENSIS_FILE_PATH="$BLIMAN_DIR/tmp/$genesis_file_name"
-		echo "Setting genesis file path as $BLIMAN_GENSIS_FILE_PATH"
-		__bliman_check_genesis_file_available "$genesis_file_url" || return 1
-		__bliman_get_genesis_file "$genesis_file_url" "$BLIMAN_GENSIS_FILE_PATH"
+	   if [ -f $genesis_path/$genesis_file_name ];then
+	      export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
+              __bliman_load_export_vars "$genesis_path/$genesis_file_name"
+	   else
+	      echo "Genesis file not found at path provided." && return 1
+	   fi
 	fi
-	__bliman_load_export_vars "$BLIMAN_GENSIS_FILE_PATH"
-}
+} 
 
-function __bliman_check_genesis_file_available() {
-	local url response
-	url=$1
-	echo "Checking if genesis file available @ $url"
-	response=$(curl -k --head --silent "$url" | head -n 1 | awk '{print $2}')
-	if [[ $response -eq 200 ]]; then
-		echo "Genesis file found"
-		return 0
-	else
-		echo "Could not find genesis file @ $url"
-		return 1
-	fi
+#function __bliman_check_genesis_file_available() {
+#	local url response
+#	url=$1
+#	echo "Checking if genesis file available $url"
+#	response=$(curl -k --head --silent "$url" | head -n 1 | awk '{print $2}')
+#	if [[ $response -eq 200 ]]; then
+#		echo "Genesis file found"
+#		return 0
+#	else
+#		echo "Could not find genesis file $url"
+#		return 1
+#	fi
+#
+#}
 
-}
-
-function __bliman_get_genesis_file() {
-	local url default_genesis_file_path
-	url=$1
-	default_genesis_file_path=$2
-	[[ -f "$default_genesis_file_path" ]] && rm "$default_genesis_file_path"
-	touch "$default_genesis_file_path"
-	echo "Downloading genesis file"
-	curl -k -sL "$url" >>"$default_genesis_file_path"
-
-}
+#function __bliman_get_genesis_file() {
+#	local url default_genesis_file_path
+#	url=$1
+#	default_genesis_file_path=$2
+#	[[ -f "$default_genesis_file_path" ]] && rm "$default_genesis_file_path"
+#	touch "$default_genesis_file_path"
+#	echo "Downloading genesis file"
+#	curl -k -sL "$url" >>"$default_genesis_file_path"
+#
+#}
 
 
 function __bliman_convert_yaml_to_sh()
@@ -720,7 +720,7 @@ function __bliman_convert_yaml_to_sh()
 
 	multi_values=""
 	multi_values_flag=false
-	echo "#!/bin/bash" >> "$source_file"
+	echo "#!/bin/bash" > "$source_file"
 	while read -r line 
 	do
 		if echo "$line" | grep -qe "^#" 
@@ -782,8 +782,41 @@ function __bliman_load_export_vars() {
 	genesis_file_path=$1
 	sed -i '/^$/d' "$genesis_file_path" # Delete empty lines
 	genesis_data=$(<"$genesis_file_path")
+	
 	source_file="$BLIMAN_DIR/tmp/source.sh"
 	__bliman_convert_yaml_to_sh "$genesis_data" "$source_file"
 }
 
-__bliman_quick_install "$1"
+#### MAIN STARTS HERE
+opts=()
+args=()
+while [[ -n "$1" ]]; do
+  case "$1" in
+        --genesis_path | --force)         
+           opts=("${opts[@]}" "$1")
+	   ;; ## genesis file path on local system
+        *)          
+           args=("${args[@]}" "$1")
+	   ;; ## command | genesis_path
+  esac
+  shift
+done
+[[ -z $command ]] && command="${args[0]}"
+case $command in
+     install)
+	     ([[ ${#opts[@]} -lt 1 ]] && __bliman_quick_install) ||
+		     ([[ ${#opts[@]} -eq 1 ]] && __bliman_quick_install "${args[1]}") ||
+		     ([[ ${#opts[@]} -eq 2 ]] && __bliman_quick_install "${opts[0]}" "$opts[1]")
+       ;;
+     remove | rm)
+       echo "TODO"
+       ;;
+     reinstall)
+       echo "TODO"
+       ;;
+     *)
+        echo -e "Not valid command\n"
+        echo -e "Use ./quicksetup install --genesis_path <path of genesis file on local system>"
+        echo -e "For force use ./quicksetup install --genesis_path <path of genesis file on local system> --force"
+        ;;
+     esac
