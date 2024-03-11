@@ -302,40 +302,23 @@ EOF
 	# fetch distribution
 	# bliman_zip_file="${bliman_tmp_folder}/bliman-${BLIMAN_VERSION}.zip"
 	# echo "* Downloading..."
-	# curl --fail --location --progress-bar "${BLIMAN_SERVICE}/broker/download/bliman/install/${BLIMAN_VERSION}/${BLIMAN_PLATFORM}" > "$bliman_zip_file"
-
-	# check integrity
-	# echo "* Checking archive integrity..."
-	# ARCHIVE_OK=$(unzip -qt "$bliman_zip_file" | grep 'No errors detected in compressed data')
-	# if [[ -z "$ARCHIVE_OK" ]]; then
-	# 	echo "Downloaded zip archive corrupt. Are you connected to the internet?"
-	# 	echo ""
-	# 	echo "If problems persist, please ask for help on our Slack:"
-	# 	echo "* easy sign up: https://slack.bliman.io/"
-	# 	echo "* report on channel: https://bliman.slack.com/app_redirect?channel=user-issues"
-	# 	exit
-	# fi
-
-	# extract archive
-	# echo "* Extracting archive..."
-	# if [[ "$cygwin" == 'true' ]]; then
-	# 	bliman_tmp_folder=$(cygpath -w "$bliman_tmp_folder")
-	# 	bliman_zip_file=$(cygpath -w "$bliman_zip_file")
-	# fi
-	# unzip -qo "$bliman_zip_file" -d "$bliman_tmp_folder"
+        [[ ! -d /tmp/bliman ]] && mkdir -p /tmp/bliman
+	curl -o /tmp/bliman/bliman-${BLIMAN_VERSION}.zip --fail --location --progress-bar "https://github.com/Be-Secure/BLIman/archieve/refs/tags/${BLIMAN_VERSION}.zip"
+        
+        unzip -qo /tmp/bliman/bliman-${BLIMAN_VERSION}.zip -d /tmp/bliman/
 
 	# copy in place
 	echo "* Copying archive contents..."
-	cp -r "contrib/" "$BLIMAN_DIR"
-	cp -r "src/main/bash" "$bliman_src_folder"
+	cp -r "/tmp/bliman/BLIman-${BLIMAN_VERSION}/contrib/" "$BLIMAN_DIR"
+	cp -r "/tmp/bliman/BLIman-${BLIMAN_VERSION}/src/main/bash" "$bliman_src_folder"
 	mkdir -p "$BLIMAN_DIR/bin/"
 	mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/"
 	# rm -f "$bliman_src_folder"/*
 	# cp -rf "${bliman_tmp_folder}"/bliman-*/* "$BLIMAN_DIR"
 
 	# clean up
-	# echo "* Cleaning up..."
-	# rm -rf "$bliman_tmp_folder"/bliman-*
+	echo "* Cleaning up..."
+	rm -rf /tmp/bliman
 	# rm -rf "$bliman_zip_file"
 
 	echo ""
@@ -661,21 +644,13 @@ function __bliman_load_genesis_file() {
 	if [[ -z $genesis_path ]];then
 	   present_working_dir=`pwd`
 	   if [ -f "$BLIMAN_DIR/$genesis_file_name" ];then
-             export BLIMAN_GENSIS_FILE_PATH="$BLIMAN_DIR/$genesis_file_name"
              __bliman_load_export_vars "$BLIMAN_DIR/$genesis_file_name"
 	   elif [ -f "$present_working_dir/$genesis_file_name" ];then 
-             export BLIMAN_GENSIS_FILE_PATH="$present_working_dir"
 	     __bliman_load_export_vars "$present_working_dir/$genesis_file_name"
-	   else
-             echo "Genesis file not found at default locations." 
-	     echo "Provide genesis file location with --genesis_path option in command." && return 1
 	   fi
 	else
 	   if [ -f $genesis_path/$genesis_file_name ];then
-	      export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
               __bliman_load_export_vars "$genesis_path/$genesis_file_name"
-	   else
-	      echo "Genesis file not found at path provided." && return 1
 	   fi
 	fi
 } 
@@ -785,6 +760,36 @@ function __bliman_load_export_vars() {
 	
 	source_file="$BLIMAN_DIR/tmp/source.sh"
 	__bliman_convert_yaml_to_sh "$genesis_data" "$source_file"
+
+        source $source_file
+}
+
+function __bliman_find_genesis_file ()
+{
+  local genesis_path genesis_file_name genesis_file_url present_working_dir
+        genesis_file_name="beslab_genesis.yaml"
+        genesis_path=$1
+        genesis_file_url="$genesis_path/$genesis_file_name"
+
+        if [[ -z $genesis_path ]];then
+           present_working_dir=`pwd`
+           if [ -f "$BLIMAN_DIR/$genesis_file_name" ];then
+             export BLIMAN_GENSIS_FILE_PATH="$BLIMAN_DIR/$genesis_file_name"
+           elif [ -f "$present_working_dir/$genesis_file_name" ];then
+             export BLIMAN_GENSIS_FILE_PATH="$present_working_dir"
+           else
+             echo "Genesis file not found at default locations." 
+             echo "Provide genesis file location with --genesis_path option in command."
+             exit 1
+           fi
+        else
+           if [ -f $genesis_path/$genesis_file_name ];then
+              export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
+           else
+              echo "Genesis file not found at path provided."
+              exit 1
+           fi
+        fi
 }
 
 #### MAIN STARTS HERE
@@ -804,9 +809,9 @@ done
 [[ -z $command ]] && command="${args[0]}"
 case $command in
      install)
-	     ([[ ${#opts[@]} -lt 1 ]] && __bliman_quick_install) ||
-		     ([[ ${#opts[@]} -eq 1 ]] && __bliman_quick_install "${args[1]}") ||
-		     ([[ ${#opts[@]} -eq 2 ]] && __bliman_quick_install "${opts[0]}" "$opts[1]")
+           ([[ ${#opts[@]} -lt 1 ]] && __bliman_find_genesis_file && __bliman_quick_install ) ||
+             ([[ ${#opts[@]} -eq 1 ]] && __bliman_find_genesis_file "${args[1]}" && __bliman_quick_install "${args[1]}") ||
+             ([[ ${#opts[@]} -eq 2 ]] && __bliman_find_genesis_file "${opts[0]}" && __bliman_quick_install "${opts[0]}" "$opts[1]")
        ;;
      remove | rm)
        echo "TODO"

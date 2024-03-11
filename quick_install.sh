@@ -260,8 +260,21 @@ EOF
 		fi
 	fi
 
-	source "$BLIMAN_DIR/tmp/source.sh"
+        echo "Looking for git..."
+        if [ -z $(command -v git) ]; then
+                        echo "Not found."
+                        echo ""
+                        echo "======================================================================================================"
+                        echo " Please install git on your system using your favourite package manager."
+                        echo ""
+                        echo " Restart after installing git."
+                        echo "======================================================================================================"
+                        echo ""
+                        exit 1
+        fi
 
+	[[ -f "$BLIMAN_DIR/tmp/source.sh" ]] && source "$BLIMAN_DIR/tmp/source.sh"
+        [[ ! -f "$BLIMAN_DIR/tmp/source.sh" ]] && echo "Source file not generated" && exit 1
 	echo "Installing BLIMAN scripts..."
 
 	echo "Getting available candidates..."
@@ -298,88 +311,22 @@ EOF
 		echo "bliman_insecure_ssl=false" >> "$bliman_config_file"
 	fi
 	# script cli distribution
-	echo "Installing script cli archive..."
-	# fetch distribution
-	# bliman_zip_file="${bliman_tmp_folder}/bliman-${BLIMAN_VERSION}.zip"
-	# echo "* Downloading..."
-	# curl --fail --location --progress-bar "${BLIMAN_SERVICE}/broker/download/bliman/install/${BLIMAN_VERSION}/${BLIMAN_PLATFORM}" > "$bliman_zip_file"
-
-	# check integrity
-	# echo "* Checking archive integrity..."
-	# ARCHIVE_OK=$(unzip -qt "$bliman_zip_file" | grep 'No errors detected in compressed data')
-	# if [[ -z "$ARCHIVE_OK" ]]; then
-	# 	echo "Downloaded zip archive corrupt. Are you connected to the internet?"
-	# 	echo ""
-	# 	echo "If problems persist, please ask for help on our Slack:"
-	# 	echo "* easy sign up: https://slack.bliman.io/"
-	# 	echo "* report on channel: https://bliman.slack.com/app_redirect?channel=user-issues"
-	# 	exit
-	# fi
-
-	# extract archive
-	# echo "* Extracting archive..."
-	# if [[ "$cygwin" == 'true' ]]; then
-	# 	bliman_tmp_folder=$(cygpath -w "$bliman_tmp_folder")
-	# 	bliman_zip_file=$(cygpath -w "$bliman_zip_file")
-	# fi
-	# unzip -qo "$bliman_zip_file" -d "$bliman_tmp_folder"
+	echo "Installing BLIman from code repository..."
+	git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/BLIman.git /tmp/BLIman
 
 	# copy in place
 	echo "* Copying archive contents..."
-	cp -r "contrib/" "$BLIMAN_DIR"
-	cp -r "src/main/bash" "$bliman_src_folder"
+	cp -r "/tmp/BLIman/contrib/" "$BLIMAN_DIR"
+	cp -r "/tmp/BLIman/src/main/bash" "$bliman_src_folder"
 	mkdir -p "$BLIMAN_DIR/bin/"
 	mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/"
-	# rm -f "$bliman_src_folder"/*
-	# cp -rf "${bliman_tmp_folder}"/bliman-*/* "$BLIMAN_DIR"
 
 	# clean up
-	# echo "* Cleaning up..."
-	# rm -rf "$bliman_tmp_folder"/bliman-*
-	# rm -rf "$bliman_zip_file"
+	 echo "* Cleaning up..."
+	 rm -rf "/tmp/BLIman"
 
 	echo ""
-
-	# # native cli distribution
-	# if [[ "$BLIMAN_PLATFORM" != "exotic" ]]; then
-	# # fetch distribution
-	# bliman_zip_file="${bliman_tmp_folder}/bliman-native-${BLIMAN_NATIVE_VERSION}.zip"
-	# echo "* Downloading..."
-	# curl --fail --location --progress-bar "${BLIMAN_SERVICE}/broker/download/native/install/${BLIMAN_NATIVE_VERSION}/${BLIMAN_PLATFORM}" > "$bliman_zip_file"
-
-	# # check integrity
-	# echo "* Checking archive integrity..."
-	# ARCHIVE_OK=$(unzip -qt "$bliman_zip_file" | grep 'No errors detected in compressed data')
-	# if [[ -z "$ARCHIVE_OK" ]]; then
-	# 	echo "Downloaded zip archive corrupt. Are you connected to the internet?"
-	# 	echo ""
-	# 	echo "If problems persist, please ask for help on our Slack:"
-	# 	echo "* easy sign up: https://slack.bliman.io/"
-	# 	echo "* report on channel: https://bliman.slack.com/app_redirect?channel=user-issues"
-	# 	exit
-	# fi
-
-	# # extract archive
-	# echo "* Extracting archive..."
-	# if [[ "$cygwin" == 'true' ]]; then
-	# 	bliman_tmp_folder=$(cygpath -w "$bliman_tmp_folder")
-	# 	bliman_zip_file=$(cygpath -w "$bliman_zip_file")
-	# fi
-	# unzip -qo "$bliman_zip_file" -d "$bliman_tmp_folder"
-
-	# # copy in place
-	# echo "* Copying archive contents..."
-	# rm -f "$bliman_libexec_folder"/*
-	# cp -rf "${bliman_tmp_folder}"/bliman-*/* "$BLIMAN_DIR"
-
-	# # clean up
-	# echo "* Cleaning up..."
-	# rm -rf "$bliman_tmp_folder"/bliman-*
-	# rm -rf "$bliman_zip_file"
-
-	# echo ""
-	# fi
-
+	
 	echo "Set version to $BLIMAN_VERSION ..."
 	echo "$BLIMAN_VERSION" >"${BLIMAN_DIR}/var/version"
 
@@ -661,21 +608,13 @@ function __bliman_load_genesis_file() {
 	if [[ -z $genesis_path ]];then
 	   present_working_dir=`pwd`
 	   if [ -f "$BLIMAN_DIR/$genesis_file_name" ];then
-             export BLIMAN_GENSIS_FILE_PATH="$BLIMAN_DIR/$genesis_file_name"
              __bliman_load_export_vars "$BLIMAN_DIR/$genesis_file_name"
 	   elif [ -f "$present_working_dir/$genesis_file_name" ];then 
-             export BLIMAN_GENSIS_FILE_PATH="$present_working_dir"
 	     __bliman_load_export_vars "$present_working_dir/$genesis_file_name"
-	   else
-             echo "Genesis file not found at default locations." 
-	     echo "Provide genesis file location with --genesis_path option in command." && return 1
 	   fi
 	else
 	   if [ -f $genesis_path/$genesis_file_name ];then
-	      export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
               __bliman_load_export_vars "$genesis_path/$genesis_file_name"
-	   else
-	      echo "Genesis file not found at path provided." && return 1
 	   fi
 	fi
 } 
@@ -720,6 +659,7 @@ function __bliman_convert_yaml_to_sh()
 
 	multi_values=""
 	multi_values_flag=false
+        [[ ! -f $source_file ]] && touch $source_file
 	echo "#!/bin/bash" > "$source_file"
 	while read -r line 
 	do
@@ -784,7 +724,38 @@ function __bliman_load_export_vars() {
 	genesis_data=$(<"$genesis_file_path")
 	
 	source_file="$BLIMAN_DIR/tmp/source.sh"
+        
 	__bliman_convert_yaml_to_sh "$genesis_data" "$source_file"
+
+	source $source_file
+}
+
+function __bliman_find_genesis_file ()
+{
+  local genesis_path genesis_file_name genesis_file_url present_working_dir
+        genesis_file_name="beslab_genesis.yaml"
+        genesis_path=$1
+        genesis_file_url="$genesis_path/$genesis_file_name"
+
+        if [[ -z $genesis_path ]];then
+           present_working_dir=`pwd`
+           if [ -f "$BLIMAN_DIR/$genesis_file_name" ];then
+             export BLIMAN_GENSIS_FILE_PATH="$BLIMAN_DIR/$genesis_file_name"
+           elif [ -f "$present_working_dir/$genesis_file_name" ];then
+             export BLIMAN_GENSIS_FILE_PATH="$present_working_dir"
+           else
+             echo "Genesis file not found at default locations." 
+	     echo "Provide genesis file location with --genesis_path option in command."
+             exit 1
+           fi
+        else
+           if [ -f $genesis_path/$genesis_file_name ];then
+              export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
+           else
+              echo "Genesis file not found at path provided."
+              exit 1
+           fi
+        fi
 }
 
 #### MAIN STARTS HERE
@@ -804,9 +775,9 @@ done
 [[ -z $command ]] && command="${args[0]}"
 case $command in
      install)
-	     ([[ ${#opts[@]} -lt 1 ]] && __bliman_quick_install) ||
-		     ([[ ${#opts[@]} -eq 1 ]] && __bliman_quick_install "${args[1]}") ||
-		     ([[ ${#opts[@]} -eq 2 ]] && __bliman_quick_install "${opts[0]}" "$opts[1]")
+	     ([[ ${#opts[@]} -lt 1 ]] && __bliman_find_genesis_file && __bliman_quick_install ) ||
+             ([[ ${#opts[@]} -eq 1 ]] && __bliman_find_genesis_file "${args[1]}" && __bliman_quick_install "${args[1]}") ||
+	     ([[ ${#opts[@]} -eq 2 ]] && __bliman_find_genesis_file "${opts[0]}" && __bliman_quick_install "${opts[0]}" "$opts[1]")
        ;;
      remove | rm)
        echo "TODO"
