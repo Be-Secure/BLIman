@@ -30,8 +30,8 @@ function bli() {
 	QUALIFIER="$2"
 
 	case "$COMMAND" in
-	l)
-		COMMAND="list"
+	load)
+		COMMAND="loadGensis"
 		;;
 	ls)
 		COMMAND="list"
