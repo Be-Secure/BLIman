@@ -79,7 +79,7 @@ function infer_platform() {
 	esac
 }
 
-function __bliman_quick_install() {
+function __bliman_install() {
 
 	local genesis_path force_flag
         genesis_path=$1	
@@ -730,40 +730,35 @@ function __bliman_load_export_vars() {
 	source $source_file
 }
 
-function __bliman_find_genesis_file ()
+function __bliman_get_genesis_file ()
 {
   local genesis_path genesis_file_name genesis_file_url present_working_dir
-        genesis_file_name="beslab_genesis.yaml"
-        genesis_path=$1
-        genesis_file_url="$genesis_path/$genesis_file_name"
+  genesis_file_name="beslab_genesis.yaml"
+  genesis_path=$1
+  genesis_file_url="$genesis_path/$genesis_file_name"
 
-        if [[ -z $genesis_path ]];then
+  if [[ -z $genesis_path ]];then
+           echo -e "Genesis file path not provided."
            present_working_dir=`pwd`
-           if [ -f "$BLIMAN_DIR/$genesis_file_name" ];then
-             export BLIMAN_GENSIS_FILE_PATH="$BLIMAN_DIR/$genesis_file_name"
-           elif [ -f "$present_working_dir/$genesis_file_name" ];then
-             export BLIMAN_GENSIS_FILE_PATH="$present_working_dir"
-           else
-             echo "Genesis file not found at default locations." 
-	     echo "Provide genesis file location with --genesis_path option in command."
-             exit 1
-           fi
-        else
-           if [ -f $genesis_path/$genesis_file_name ];then
-              export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
-           else
-              echo "Genesis file not found at path provided."
-              exit 1
-           fi
-        fi
+           export BLIMAN_GENSIS_FILE_PATH="$present_working_dir/$genesis_file_name"
+	   echo -e "Downloading default genesis file from Be-Secure community."
+	   curl -o $genesis_file_name https://github.com/Be-Secure/BeSLab/$genesis_file_name
+  else
+           echo -e "Genesis file path provided is $genesis_path."
+	   export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
+           cp $BLIMAN_GENSIS_FILE_PATH .
+  fi
 }
-
+__bliman_setup_help ()
+{
+    echo "TODO"
+}
 #### MAIN STARTS HERE
 opts=()
 args=()
 while [[ -n "$1" ]]; do
   case "$1" in
-        --genesis_path | --force)         
+        --genesisPath | --force)         
            opts=("${opts[@]}" "$1")
 	   ;; ## genesis file path on local system
         *)          
@@ -775,19 +770,23 @@ done
 [[ -z $command ]] && command="${args[0]}"
 case $command in
      install)
-	     ([[ ${#opts[@]} -lt 1 ]] && __bliman_find_genesis_file && __bliman_quick_install ) ||
-             ([[ ${#opts[@]} -eq 1 ]] && __bliman_find_genesis_file "${args[1]}" && __bliman_quick_install "${args[1]}") ||
-	     ([[ ${#opts[@]} -eq 2 ]] && __bliman_find_genesis_file "${opts[0]}" && __bliman_quick_install "${opts[0]}" "$opts[1]")
+	     ([[ ${#opts[@]} -lt 1 ]] && __bliman_get_genesis_file && __bliman_install ) ||
+             ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_get_genesis_file "${args[1]}" && __bliman_install) ||
+	     ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--force" ]] && __bliman_get_genesis_file && __bliman_install "${opts[0]}") ||
+	     ([[ ${#opts[@]} -eq 2 ]] && __bliman_get_genesis_file "${args[1]}" && __bliman_install "$opts[1]")
        ;;
      remove | rm)
        echo "TODO"
        ;;
+     update | up)
+       echo "TODO"
+       ;;  
      reinstall)
        echo "TODO"
        ;;
      *)
-        echo -e "Not valid command\n"
-        echo -e "Use ./quicksetup install --genesis_path <path of genesis file on local system>"
-        echo -e "For force use ./quicksetup install --genesis_path <path of genesis file on local system> --force"
+        echo -e "Not a valid bliman setup command\n"
+	__bliman_setup_help
+        exit 1
         ;;
-     esac
+esac
