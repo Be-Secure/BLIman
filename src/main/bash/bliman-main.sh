@@ -31,7 +31,10 @@ function bli() {
 
 	case "$COMMAND" in
 	load)
-		COMMAND="loadGensis"
+		COMMAND="load-genesis"
+		;;
+	gv)
+		COMMAND="generate-vagrantfile"
 		;;
 	ls)
 		COMMAND="list"
