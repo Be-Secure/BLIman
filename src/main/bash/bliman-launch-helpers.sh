@@ -19,7 +19,7 @@ function __bliman_launch_bare_mode() {
 
 }
 
-function __bliman_launch_light_mode() {
+function __bliman_launch_lite_mode() {
 	__bliman_check_besman || return 1
 	__bliman_set_env_repo || return 1
 	__bliman_install_beslab_env
@@ -41,7 +41,7 @@ function __bliman_clone_substrate() {
 	}
 
 function __bliman_set_env_repo() {
-	bes set BESMAN_LIGHT_MODE True
+	bes set BESMAN_LITE_MODE True
 	bes set BESMAN_LOCAL_ENV False
 	bes set BESMAN_ENV_REPOS "$BLIMAN_NAMESPACE/BeSLab" || return 1
 	git clone "https://github.com/$BLIMAN_NAMESPACE/BeSLab" /tmp/BeSLab

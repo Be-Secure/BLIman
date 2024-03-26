@@ -13,6 +13,19 @@ echo_failed_command() {
 	fi
 }
 
+createlogfile () {
+   logfile="$1/$2"
+
+   [[ ! -f $logfile ]] && touch $logfile
+}
+
+bliman_log() {
+   datetime=$(date)
+   while IFS= read -r line; do
+     echo "$datetime : $line" >> $BLIMAN_INSTALL_LOG_FILE
+   done
+}
+
 function infer_platform() {
 	local kernel
 	local machine
@@ -161,15 +174,6 @@ function __bliman_install() {
 
 	local genesis_path force_flag
 	
-	force_flag=$1
-        
-	if [[ (-n $force_flag) && ($force_flag == "--force") ]]; then
-
-		echo "Removing current installation of bliman"
-		rm -rf "$HOME/.bliman"
-	fi
-
-	set -e
 	trap track_last_command DEBUG
 	trap echo_failed_command EXIT
 
@@ -179,6 +183,8 @@ function __bliman_install() {
         else
                 export BLIMAN_DIR_RAW="$BLIMAN_DIR"
         fi
+         
+	echo "BLIMAN DIRECTORY is set to : $BLIMAN_DIR"
 
 	# Local variables
         bliman_src_folder="${BLIMAN_DIR}/src"
@@ -186,6 +192,7 @@ function __bliman_install() {
         bliman_ext_folder="${BLIMAN_DIR}/ext"
         bliman_etc_folder="${BLIMAN_DIR}/etc"
         bliman_var_folder="${BLIMAN_DIR}/var"
+	bliman_log_folder="${BLIMAN_DIR}/log"
         bliman_candidates_folder="${BLIMAN_DIR}/candidates"
         bliman_config_file="${bliman_etc_folder}/config"
         bliman_bash_profile="${HOME}/.bash_profile"
@@ -207,6 +214,14 @@ EOF
         mkdir -p "$bliman_etc_folder"
         mkdir -p "$bliman_var_folder"
         mkdir -p "$bliman_candidates_folder"
+        mkdir -p "$bliman_log_folder"
+
+
+        DATE=$(date +"%Y-%m-%d-%k-%M")
+        logfilename=bliman-install-log-$DATE.log
+
+        createlogfile $bliman_log_folder $logfilename
+        export BLIMAN_INSTALL_LOG_FILE="$bliman_log_folder/$logfilename"
 
 	export BLIMAN_PLATFORM="$(infer_platform)"
 	
@@ -257,18 +272,18 @@ EOF
 	# script cli distribution
 	if [ ! -z  ${BLIMAN_BROWSER_URL} ] && [ ! -z ${BLIMAN_NAMESPACE} ];then
 	  echo "Installing BLIman from ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/BLIman.git"
-	  git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_name.git $default_tmp_location
+	  git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_name.git $default_tmp_location | log
 	
         elif  [ -z  ${BLIMAN_BROWSER_URL} ] && [ ! -z ${BLIMAN_NAMESPACE} ];then
           echo "Installing BLIman from $default_repo_url/${BLIMAN_NAMESPACE}/BLIman.git"
-          git clone $default_repo_url/${BLIMAN_NAMESPACE}/$default_repo_name.git $default_tmp_location
+          git clone $default_repo_url/${BLIMAN_NAMESPACE}/$default_repo_name.git $default_tmp_location | log
 	
         elif  [ ! -z  ${BLIMAN_BROWSER_URL} ] && [ -z ${BLIMAN_NAMESPACE} ];then
           echo "Installing BLIman from ${BLIMAN_BROWSER_URL}/$default_repo_namespace/BLIman.git"
-          git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_namespace/$default_repo_name.git $default_tmp_location
+          git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_namespace/$default_repo_name.git $default_tmp_location | log
 	else
            echo "Installing BLIman from $default_repo_url/$default_repo_namespace/BLIman.git"
-           git clone $default_repo_url/$default_repo_namespace/$default_repo_name.git $default_tmp_location
+           git clone $default_repo_url/$default_repo_namespace/$default_repo_name.git $default_tmp_location | log
         fi
 
         if [ ! -d $default_tmp_location ];then
@@ -287,13 +302,13 @@ EOF
         echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
 
 	# copy in place
-	cp -r "$default_tmp_location/contrib/" "$BLIMAN_DIR"
-	cp -r "$default_tmp_location/src/main/bash" "$bliman_src_folder"
-	mkdir -p "$BLIMAN_DIR/bin/"
-	mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/"
+	cp -r "$default_tmp_location/contrib/" "$BLIMAN_DIR" | log
+	cp -r "$default_tmp_location/src/main/bash" "$bliman_src_folder" | log
+	mkdir -p "$BLIMAN_DIR/bin/" | log
+	mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/" | log
 
         echo "Prime the config file..."
-        touch "$bliman_config_file"
+        touch "$bliman_config_file" | log
         echo "bliman_auto_answer=false" >>"$bliman_config_file"
         if [ -z "$ZSH_VERSION" -a -z "$BASH_VERSION" ]; then
                 echo "bliman_auto_complete=false" >>"$bliman_config_file"
@@ -323,7 +338,7 @@ EOF
 
 	# clean up
 	echo "* Cleaning up..."
-	rm -rf "$default_tmp_location"
+	rm -rf "$default_tmp_location" | log
 
 	echo ""
 	
@@ -334,7 +349,7 @@ EOF
 	echo "$BLIMAN_NATIVE_VERSION" >"${BLIMAN_DIR}/var/version_native"
 
 	if [[ $darwin == true ]]; then
-		touch "$bliman_bash_profile"
+		touch "$bliman_bash_profile" | log
 		echo "Attempt update of login bash profile on OSX..."
 		if [[ -z $(grep 'bliman-init.sh' "$bliman_bash_profile") ]]; then
 			echo -e "\n$bliman_init_snippet" >>"$bliman_bash_profile"
@@ -342,7 +357,7 @@ EOF
 		fi
 	else
 		echo "Attempt update of interactive bash profile on regular UNIX..."
-		touch "${bliman_bashrc}"
+		touch "${bliman_bashrc}" | log
 		if [[ -z $(grep 'bliman-init.sh' "$bliman_bashrc") ]]; then
 			echo -e "\n$bliman_init_snippet" >>"$bliman_bashrc"
 			echo "Added bliman init snippet to $bliman_bashrc"
@@ -350,26 +365,27 @@ EOF
 	fi
 
 	echo "Attempt update of zsh profile..."
-	touch "$bliman_zshrc"
+	touch "$bliman_zshrc" | log
 	if [[ -z $(grep 'bliman-init.sh' "$bliman_zshrc") ]]; then
 		echo -e "\n$bliman_init_snippet" >>"$bliman_zshrc"
 		echo "Updated existing ${bliman_zshrc}"
 	fi
 
+	if [ -f  $BLIMAN_DIR/src/bliman-init.sh ];then
+	   source $BLIMAN_DIR/src/bliman-init.sh
+	else
+	   echo ""
+	   echo "BLIman not able to install properly."
+	   echo ""
+	   echo "   Please refer log file at $BLIMAN_INSTALL_LOG_FILE"
+	fi
+
 	echo -e "\n\n\nAll done!\n\n"
 
-	echo "You are subscribed to the STABLE channel."
-
-	echo ""
-	echo "Please open a new terminal, or run the following in the existing one:"
-	echo ""
-	echo "    source \"${BLIMAN_DIR}/bin/bliman-init.sh\""
-	echo ""
-	echo "Then issue the following command:"
+	echo "Issue the following command to verify installation:"
 	echo ""
 	echo "    bli help"
 	echo ""
-	echo "Enjoy!!!"
 
 }
 

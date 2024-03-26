@@ -143,6 +143,9 @@ elif [[ -n "$BASH_VERSION" ]]; then
 	bash_shell=true
 fi
 
+#source the utility file first.
+source "${BLIMAN_DIR}/src/bliman-utils.sh"
+
 # Source bliman module scripts and extension files.
 #
 # Extension files are prefixed with 'bliman-' and found in the ext/ folder.
@@ -151,7 +154,7 @@ fi
 # <https://github.com/bliman/bliman-extensions>.
 OLD_IFS="$IFS"
 IFS=$'\n'
-scripts=($(find "${BLIMAN_DIR}/src" "${BLIMAN_DIR}/ext" -type f -name 'bliman-*.sh'))
+scripts=($(find "${BLIMAN_DIR}/src" "${BLIMAN_DIR}/ext" -type f -name 'bliman-*.sh' ! -name 'bliman-utils.sh'))
 for f in "${scripts[@]}"; do
 	source "$f"
 done
@@ -255,4 +258,4 @@ if [[ "$bliman_auto_env" == "true" ]]; then
 	bliman_auto_env
 fi
 
-source "$BLIMAN_DIR/tmp/source.sh"
+[[ -f "$BLIMAN_DIR/tmp/source.sh" ]] && source "$BLIMAN_DIR/tmp/source.sh"

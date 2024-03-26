@@ -22,11 +22,11 @@ In this mode, we are installing all the tools for lab in the user's machine itse
 
 `bli launch`
 
-## Light mode
+## Lite mode
 
 In this mode, we are installing the tools using pure shell scripts using [BeSman](https://github.com/Be-Secure/BeSman).
 
-`bli install light`
+`bli install lite`
 
 `bli launch`
 

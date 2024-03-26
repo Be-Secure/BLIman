@@ -1,1 +1,1 @@
-host,bare,light
+host,bare,lite

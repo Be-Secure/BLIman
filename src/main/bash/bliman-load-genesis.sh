@@ -88,7 +88,7 @@ function __bliman_convert_yaml_to_sh()
 
 function __bliman_load_export_vars() {
 	local genesis_file_path source_file genesis_data
-	 __bliman_echo_no_color  "Loading Genesis file ..."
+	 __bliman_echo_no_colour  "Loading Genesis file ..."
 	genesis_file_path=$1
 
         tmp_genesis_file=/tmp/tmp_genesis.yaml
@@ -104,11 +104,11 @@ function __bliman_load_export_vars() {
 	source $source_file
 }
 
-function __bliman_load_genesis_file() {
+function __bli_load_genesis() {
 
 	local Genesis_File_location="";
 
-        if [ ! -z $BLIMAN_GENSIS_FILE_PATH ];then
+        if [ -z $BLIMAN_GENSIS_FILE_PATH ];then
               __bliman_echo_yellow  ""
               __bliman_echo_yellow  "======================================================================================================"
               __bliman_echo_yellow  " Genesis file path is not set using default locations."
@@ -132,7 +132,7 @@ function __bliman_load_genesis_file() {
               Genesis_File_location=$PWD/$default_genesis_file_name
 	   else
 	      __bliman_echo_yellow "Genesis file not found at present working directory."
-	      __bliman_echo_yellow "Checking Genesis file at BLIMAN_DIR"
+	      __bliman_echo_yellow "Checking Genesis file at $BLIMAN_DIR"
 
 	      if [ -z $BLIMAN_DIR ];then
                  __bliman_echo_yellow "BLIMAN_DIR is not set. Checking Gensis file at default bliman directory."
@@ -155,7 +155,7 @@ function __bliman_load_genesis_file() {
 		     __bliman_echo_red  "======================================================================================================"
                      __bliman_echo_red  " Genesis file not found at $BLIMAN_DIR."
                      __bliman_echo_red  ""
-                     __bliman_echo_red  " Populate the Genesis file at $BLIMAN_DIR and try again."
+                     __bliman_echo_red  " Populate the Genesis file at $PWD or $BLIMAN_DIR and try again."
                      __bliman_echo_red  "======================================================================================================"
                      exit 1
                   fi
@@ -164,5 +164,6 @@ function __bliman_load_genesis_file() {
            fi
 	fi
         __bliman_load_export_vars "$Genesis_File_location"
-} 
-__bliman_load_genesis_file
+
+	source "$BLIMAN_DIR/tmp/source.sh"
+}

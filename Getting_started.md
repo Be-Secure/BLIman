@@ -92,7 +92,7 @@ You wont have to worry about pre-requisites. It will be installed by BLIman.
 2. Make sure you have installed bliman by running, `bli help`
 3. Run the below command.
 
-   `bli install light`
+   `bli install lite`
 
 4. Next step, you can launch the lab.
 
