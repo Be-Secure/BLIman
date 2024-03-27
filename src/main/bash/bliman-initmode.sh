@@ -58,10 +58,6 @@ function __bli_initmode() {
 	fi
 }
 
-
-
-
-
 function __bliman_install_candidate_version() {
 	local candidate version
 
@@ -70,11 +66,11 @@ function __bliman_install_candidate_version() {
 	BLIMAN_LAB_MODE="$candidate"
 	export BLIMAN_LAB_MODE
 	__bliman_echo_yellow "Setting lab mode as $candidate"
-	mkdir -p "${BLIMAN_CANDIDATES_DIR}/${candidate}/current
+	mkdir -p "${BLIMAN_CANDIDATES_DIR}/${candidate}/current"
  
 	__bliman_download "$candidate" "$version" || return 1
-        touch "${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version
-	echo "$version" >> "${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version"
+        touch "${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version"
+	echo "$version" >> ${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version
 
 	# rm -rf "${BLIMAN_DIR}/tmp/out"
 	# unzip -oq "${BLIMAN_DIR}/tmp/${candidate}-${version}.zip" -d "${BLIMAN_DIR}/tmp/out"
