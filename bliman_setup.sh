@@ -272,18 +272,18 @@ EOF
 	# script cli distribution
 	if [ ! -z  ${BLIMAN_BROWSER_URL} ] && [ ! -z ${BLIMAN_NAMESPACE} ];then
 	  echo "Installing BLIman from ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/BLIman.git"
-	  git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_name.git $default_tmp_location | log
+	  git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_name.git $default_tmp_location | bliman_log
 	
         elif  [ -z  ${BLIMAN_BROWSER_URL} ] && [ ! -z ${BLIMAN_NAMESPACE} ];then
           echo "Installing BLIman from $default_repo_url/${BLIMAN_NAMESPACE}/BLIman.git"
-          git clone $default_repo_url/${BLIMAN_NAMESPACE}/$default_repo_name.git $default_tmp_location | log
+          git clone $default_repo_url/${BLIMAN_NAMESPACE}/$default_repo_name.git $default_tmp_location | bliman_log
 	
         elif  [ ! -z  ${BLIMAN_BROWSER_URL} ] && [ -z ${BLIMAN_NAMESPACE} ];then
           echo "Installing BLIman from ${BLIMAN_BROWSER_URL}/$default_repo_namespace/BLIman.git"
-          git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_namespace/$default_repo_name.git $default_tmp_location | log
+          git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_namespace/$default_repo_name.git $default_tmp_location | bliman_log
 	else
            echo "Installing BLIman from $default_repo_url/$default_repo_namespace/BLIman.git"
-           git clone $default_repo_url/$default_repo_namespace/$default_repo_name.git $default_tmp_location | log
+           git clone $default_repo_url/$default_repo_namespace/$default_repo_name.git $default_tmp_location | bliman_log
         fi
 
         if [ ! -d $default_tmp_location ];then
@@ -302,13 +302,13 @@ EOF
         echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
 
 	# copy in place
-	cp -r "$default_tmp_location/contrib/" "$BLIMAN_DIR" | log
-	cp -r "$default_tmp_location/src/main/bash" "$bliman_src_folder" | log
-	mkdir -p "$BLIMAN_DIR/bin/" | log
-	mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/" | log
+	cp -r "$default_tmp_location/contrib/" "$BLIMAN_DIR" | bliman_log
+	cp -r "$default_tmp_location/src/main/bash" "$bliman_src_folder" | bliman_log
+	mkdir -p "$BLIMAN_DIR/bin/" | bliman_log
+	mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/" | bliman_log
 
         echo "Prime the config file..."
-        touch "$bliman_config_file" | log
+        touch "$bliman_config_file" | bliman_log
         echo "bliman_auto_answer=false" >>"$bliman_config_file"
         if [ -z "$ZSH_VERSION" -a -z "$BASH_VERSION" ]; then
                 echo "bliman_auto_complete=false" >>"$bliman_config_file"
@@ -338,7 +338,7 @@ EOF
 
 	# clean up
 	echo "* Cleaning up..."
-	rm -rf "$default_tmp_location" | log
+	rm -rf "$default_tmp_location" | bliman_log
 
 	echo ""
 	
@@ -349,7 +349,7 @@ EOF
 	echo "$BLIMAN_NATIVE_VERSION" >"${BLIMAN_DIR}/var/version_native"
 
 	if [[ $darwin == true ]]; then
-		touch "$bliman_bash_profile" | log
+		touch "$bliman_bash_profile" | bliman_log
 		echo "Attempt update of login bash profile on OSX..."
 		if [[ -z $(grep 'bliman-init.sh' "$bliman_bash_profile") ]]; then
 			echo -e "\n$bliman_init_snippet" >>"$bliman_bash_profile"
@@ -357,7 +357,7 @@ EOF
 		fi
 	else
 		echo "Attempt update of interactive bash profile on regular UNIX..."
-		touch "${bliman_bashrc}" | log
+		touch "${bliman_bashrc}" | bliman_log
 		if [[ -z $(grep 'bliman-init.sh' "$bliman_bashrc") ]]; then
 			echo -e "\n$bliman_init_snippet" >>"$bliman_bashrc"
 			echo "Added bliman init snippet to $bliman_bashrc"
@@ -371,21 +371,22 @@ EOF
 		echo "Updated existing ${bliman_zshrc}"
 	fi
 
-	if [ -f  $BLIMAN_DIR/src/bliman-init.sh ];then
-	   source $BLIMAN_DIR/src/bliman-init.sh
+	if [ -f  $BLIMAN_DIR/bin/bliman-init.sh ];then
+	   #source $BLIMAN_DIR/bin/bliman-init.sh
+	   echo -e "\n\n\nAll done!\n\n"
+
+           echo "Issue the following command to verify installation:"
+           echo ""
+           echo "    bli help"
+           echo ""
+            
+	   bash -l
 	else
 	   echo ""
 	   echo "BLIman not able to install properly."
 	   echo ""
 	   echo "   Please refer log file at $BLIMAN_INSTALL_LOG_FILE"
 	fi
-
-	echo -e "\n\n\nAll done!\n\n"
-
-	echo "Issue the following command to verify installation:"
-	echo ""
-	echo "    bli help"
-	echo ""
 
 }
 
@@ -399,13 +400,13 @@ function __bliman_get_genesis_file ()
   if [[ -z $genesis_path ]];then
            echo -e "Genesis file path not provided."
            present_working_dir=`pwd`
-           export BLIMAN_GENSIS_FILE_PATH="$present_working_dir/$genesis_file_name"
+           export BLIMAN_GENSIS_FILE_PATH="$present_working_dir/$genesis_file_name" 
 	   echo -e "Downloading default genesis file from Be-Secure community."
-	   curl -o $genesis_file_name https://github.com/Be-Secure/BeSLab/$genesis_file_name
+	   curl -o $genesis_file_name https://github.com/Be-Secure/BeSLab/$genesis_file_name | bliman_log
   else
            echo -e "Genesis file path provided is $genesis_path."
 	   export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
-           cp $BLIMAN_GENSIS_FILE_PATH .
+           cp $BLIMAN_GENSIS_FILE_PATH . | bliman_log
   fi
 }
 
@@ -428,38 +429,30 @@ __bliman_setup_help ()
     echo "BLIman is the command line utiltiy to install the BeSLab.        "
     echo ""
     echo "================================================================="
-
+    echo ""
     echo "bliman_setup is utility to install/ update / remove the BLIman   "
     echo "and loads the default beslab genesis file to the current         "
     echo "directory if no path is provided in install command.             "
-
     echo ""
+    echo "================================================================="
     echo "comands and usage"
     echo "================================================================="
     echo ""
     echo "./bliman_setup.sh install"
+    echo " [Install the BLIman with default beslab_genesis file from Be-Se "
+    echo "   cure community.]                                                "
     echo ""
-    echo "installs the BLIman with default beslab_genesis file from Be-Se  "
-    echo "cure community.                                                  "
-    echo ""
-    echo "./bliman_setup.sh install --genesisPath < Path of genesis file > "
-    echo ""
-    echo "install the BLIman and uses the genesis file from the genesisPath"
+    echo "./bliman_setup.sh install --genesisPath < Path of genesis file >   "
+    echo " [install the BLIman and uses the genesis file from the genesisPath]"
     echo ""
     echo "./bliman_setup.sh remove"
-    echo ""
-    echo "Remove the BLIman installed"
-    echo ""
-    echo "./bliman_setup.sh remove --force"
-    echo "Remove the BLiman forcefully"
+    echo " [Remove the BLIman installed] "
     echo ""
     echo "./bliman_setup.sh update"
-    echo ""
-    echo "updates the BLIman to higher version if available."
+    echo " [updates the BLIman to higher version if available.] "
     echo ""
     echo "./bliman_setup.sh update --force"
-    echo ""
-    echo "Updates the BLIman forcefully."
+    echo " [Updates the BLIman forcefully.]"
 
 }
 #### MAIN STARTS HERE

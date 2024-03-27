@@ -16,7 +16,7 @@
 #   limitations under the License.
 #
 
-function __bliman_write_tmpl_vagrantfile()
+function __bli_generate_vagrantfile()
 {
 	local vagrantfile_path
 	if [ ! -z $BLIMAN_DIR ];then
@@ -250,6 +250,3 @@ end
 EOF
 __bliman_echo_green "Generated vagrantfile at $vagrantfile_path"
 }
-
-__bliman_write_tmpl_vagrantfile
-
