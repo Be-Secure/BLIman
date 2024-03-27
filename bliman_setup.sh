@@ -91,6 +91,7 @@ function infer_platform() {
 		;;
 	esac
 }
+
 function __bliman_download ()
 {
     default_repo_url='https://github.com/'
@@ -217,8 +218,7 @@ function __bliman_install() {
 	trap track_last_command DEBUG
 	trap echo_failed_command EXIT
 
-        bli_version=$2
-
+  bli_version=$2
         if [ -z "$BLIMAN_DIR" ]; then
                 export BLIMAN_DIR="$HOME/.bliman"
                 export BLIMAN_DIR_RAW="$HOME/.bliman"
@@ -304,12 +304,10 @@ EOF
 	echo ' B::::::::::::::::B  L::::::::::::::::::::::LI::::::::IM::::::M               M::::::M A:::::A                 A:::::A N::::::N        N::::::N '
 
 	# Sanity checks
-        __bliman_sanatiy_check
+  __bliman_sanatiy_check
 
-        #__bliman_download "$bli_version"
-
-        BLIMAN_CANDIDATES_CSV=$(cat "$default_tmp_location/candidates.txt")
-        echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
+  #__bliman_download "$bli_version"
+  echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
 
 	# copy in place
 	cp -r "$default_tmp_location/contrib/" "$BLIMAN_DIR" | bliman_log
@@ -402,7 +400,6 @@ EOF
 
 function __bliman_get_genesis_file ()
 {
-  
   genesis_file_name="beslab_genesis.yaml"
   genesis_path=$1
   genesis_file_url="$genesis_path/$genesis_file_name"
@@ -475,8 +472,7 @@ args=()
 
 while [[ -n "$1" ]]; do
   case "$1" in
-        --genesisPath | --force | --version)
-	   	
+        --genesisPath | --force | --version)	   	
            opts=("${opts[@]}" "$1")
 	   ;; ## genesis file path on local system
         *)          
@@ -489,6 +485,7 @@ done
 [[ -z $command ]] && command="${args[0]}"
 case $command in
      install)
+
 
        ([[ ${#opts[@]} -lt 1 ]] && __bliman_download && __bliman_get_genesis_file && __bliman_install ) ||
        ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download && __bliman_get_genesis_file "${args[1]}" && __bliman_install) ||
