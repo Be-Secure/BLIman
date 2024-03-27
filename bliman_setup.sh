@@ -390,6 +390,7 @@ EOF
            echo ""
             
 	   bash -l
+           exit 0
 	else
 	   echo ""
 	   echo "BLIman not able to install properly."
