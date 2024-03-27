@@ -365,7 +365,7 @@ EOF
 	fi
 
 	echo "Attempt update of zsh profile..."
-	touch "$bliman_zshrc" | log
+	touch "$bliman_zshrc" | bliman_log
 	if [[ -z $(grep 'bliman-init.sh' "$bliman_zshrc") ]]; then
 		echo -e "\n$bliman_init_snippet" >>"$bliman_zshrc"
 		echo "Updated existing ${bliman_zshrc}"

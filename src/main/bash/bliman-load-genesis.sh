@@ -101,6 +101,8 @@ function __bliman_load_export_vars() {
         
 	__bliman_convert_yaml_to_sh "$genesis_data" "$source_file"
 
+	[[ -f $tmp_genesis_file ]] && rm $tmp_genesis_file
+
 	source $source_file
 }
 
@@ -164,6 +166,4 @@ function __bli_load_genesis() {
            fi
 	fi
         __bliman_load_export_vars "$Genesis_File_location"
-
-	source "$BLIMAN_DIR/tmp/source.sh"
 }

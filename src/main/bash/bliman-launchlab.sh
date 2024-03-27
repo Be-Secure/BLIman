@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function __bli_launch()
+function __bli_launchlab()
 {
     if [[ "$BLIMAN_LAB_MODE" == "host" ]]; then
         __bliman_launch_host_mode
@@ -9,9 +9,6 @@ function __bli_launch()
     elif [[ "$BLIMAN_LAB_MODE" == "lite" ]]; then
         __bliman_launch_lite_mode
     fi
-
-
-
 }
 
 

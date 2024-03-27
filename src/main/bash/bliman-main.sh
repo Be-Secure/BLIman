@@ -45,8 +45,8 @@ function bli() {
 	u)
 		COMMAND="use"
 		;;
-	launch)
-		COMMAND="launch"
+	launchlab)
+		COMMAND="launchlab"
 		;;
 	rm)
 		COMMAND="uninstall"

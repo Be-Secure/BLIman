@@ -22,10 +22,11 @@
 # 	BLIMAN_NAMESPACE="Be-Secure"
 # 	export BLIMAN_NAMESPACE
 # fi
-export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
-export BLIMAN_NAMESPACE="Be-Secure"
-export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
-export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
+[[ -z  BLIMAN_HOSTED_URL ]] && export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
+[[ -z  BLIMAN_NAMESPACE ]] && export BLIMAN_NAMESPACE="Be-Secure"
+[[ -z  BLIMAN_REPO_URL ]] && export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
+[[ -z  BLIMAN_LAB_URL ]]  && export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
+
 if [ -z "$BLIMAN_CANDIDATES_REPO" ]; then
 	export BLIMAN_CANDIDATES_REPO="https://raw.githubusercontent.com/$BLIMAN_NAMESPACE/BLIman/main"
 fi
