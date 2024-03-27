@@ -30,8 +30,11 @@ function bli() {
 	QUALIFIER="$2"
 
 	case "$COMMAND" in
-	l)
-		COMMAND="list"
+	load)
+		COMMAND="load-genesis"
+		;;
+	gv)
+		COMMAND="generate-vagrantfile"
 		;;
 	ls)
 		COMMAND="list"
@@ -42,8 +45,8 @@ function bli() {
 	u)
 		COMMAND="use"
 		;;
-	launch)
-		COMMAND="launch"
+	launchlab)
+		COMMAND="launchlab"
 		;;
 	rm)
 		COMMAND="uninstall"

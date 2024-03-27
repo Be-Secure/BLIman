@@ -37,7 +37,7 @@ Tools installed -
 
 Bare minimum tools for running RT/BT activities will be installed in the user's 
 machine using BeSLab env scripts.
-                                                          $ bli install light
+                                                          $ bli install lite
 
 
 

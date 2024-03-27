@@ -22,10 +22,11 @@
 # 	BLIMAN_NAMESPACE="Be-Secure"
 # 	export BLIMAN_NAMESPACE
 # fi
-export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
-export BLIMAN_NAMESPACE="Be-Secure"
-export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
-export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
+[[ -z  BLIMAN_HOSTED_URL ]] && export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
+[[ -z  BLIMAN_NAMESPACE ]] && export BLIMAN_NAMESPACE="Be-Secure"
+[[ -z  BLIMAN_REPO_URL ]] && export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
+[[ -z  BLIMAN_LAB_URL ]]  && export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
+
 if [ -z "$BLIMAN_CANDIDATES_REPO" ]; then
 	export BLIMAN_CANDIDATES_REPO="https://raw.githubusercontent.com/$BLIMAN_NAMESPACE/BLIman/main"
 fi
@@ -143,6 +144,9 @@ elif [[ -n "$BASH_VERSION" ]]; then
 	bash_shell=true
 fi
 
+#source the utility file first.
+source "${BLIMAN_DIR}/src/bliman-utils.sh"
+
 # Source bliman module scripts and extension files.
 #
 # Extension files are prefixed with 'bliman-' and found in the ext/ folder.
@@ -151,7 +155,7 @@ fi
 # <https://github.com/bliman/bliman-extensions>.
 OLD_IFS="$IFS"
 IFS=$'\n'
-scripts=($(find "${BLIMAN_DIR}/src" "${BLIMAN_DIR}/ext" -type f -name 'bliman-*.sh'))
+scripts=($(find "${BLIMAN_DIR}/src" "${BLIMAN_DIR}/ext" -type f -name 'bliman-*.sh' ! -name 'bliman-utils.sh'))
 for f in "${scripts[@]}"; do
 	source "$f"
 done
@@ -255,4 +259,4 @@ if [[ "$bliman_auto_env" == "true" ]]; then
 	bliman_auto_env
 fi
 
-source "$BLIMAN_DIR/tmp/source.sh"
+[[ -f "$BLIMAN_DIR/tmp/source.sh" ]] && source "$BLIMAN_DIR/tmp/source.sh"
