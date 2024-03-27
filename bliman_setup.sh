@@ -91,6 +91,46 @@ function infer_platform() {
 		;;
 	esac
 }
+function __bliman_download ()
+{
+    default_repo_url='https://github.com/'
+    default_repo_namespace='Be-Secure'
+    default_repo_name='BLIman'
+    default_tmp_location="/tmp/$default_repo_name"
+    
+    bliversion="$1"
+
+    # script cli distribution
+    if [ ! -z  ${BLIMAN_BROWSER_URL} ] && [ ! -z ${BLIMAN_NAMESPACE} ];then
+       echo "Installing BLIman from ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/BLIman.git"
+       git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_name.git $default_tmp_location | bliman_log
+
+    elif  [ -z  ${BLIMAN_BROWSER_URL} ] && [ ! -z ${BLIMAN_NAMESPACE} ];then
+       echo "Installing BLIman from $default_repo_url/${BLIMAN_NAMESPACE}/BLIman.git"
+       git clone $default_repo_url/${BLIMAN_NAMESPACE}/$default_repo_name.git $default_tmp_location | bliman_log
+
+    elif  [ ! -z  ${BLIMAN_BROWSER_URL} ] && [ -z ${BLIMAN_NAMESPACE} ];then
+       echo "Installing BLIman from ${BLIMAN_BROWSER_URL}/$default_repo_namespace/BLIman.git"
+       git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_namespace/$default_repo_name.git $default_tmp_location | bliman_log
+    else
+       echo "Installing BLIman from $default_repo_url/$default_repo_namespace/BLIman.git"
+       git clone $default_repo_url/$default_repo_namespace/$default_repo_name.git $default_tmp_location | bliman_log
+    fi
+
+    if [ ! -d $default_tmp_location ];then
+           echo ""
+           echo ""
+           echo "======================================================================================================"
+           echo " Not able to clone the BLIman."
+           echo ""
+           echo " Exit."
+           echo "======================================================================================================"
+           echo ""
+           exit 1
+    fi
+
+}
+
 function __bliman_sanatiy_check ()
 {
    
@@ -176,6 +216,8 @@ function __bliman_install() {
 	
 	trap track_last_command DEBUG
 	trap echo_failed_command EXIT
+
+        bli_version=$2
 
         if [ -z "$BLIMAN_DIR" ]; then
                 export BLIMAN_DIR="$HOME/.bliman"
@@ -264,39 +306,7 @@ EOF
 	# Sanity checks
         __bliman_sanatiy_check
 
-	default_repo_url='https://github.com/'
-	default_repo_namespace='Be-Secure'
-        default_repo_name='BLIman'
-	default_tmp_location="/tmp/$default_repo_name"
-
-	# script cli distribution
-	if [ ! -z  ${BLIMAN_BROWSER_URL} ] && [ ! -z ${BLIMAN_NAMESPACE} ];then
-	  echo "Installing BLIman from ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/BLIman.git"
-	  git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_name.git $default_tmp_location | bliman_log
-	
-        elif  [ -z  ${BLIMAN_BROWSER_URL} ] && [ ! -z ${BLIMAN_NAMESPACE} ];then
-          echo "Installing BLIman from $default_repo_url/${BLIMAN_NAMESPACE}/BLIman.git"
-          git clone $default_repo_url/${BLIMAN_NAMESPACE}/$default_repo_name.git $default_tmp_location | bliman_log
-	
-        elif  [ ! -z  ${BLIMAN_BROWSER_URL} ] && [ -z ${BLIMAN_NAMESPACE} ];then
-          echo "Installing BLIman from ${BLIMAN_BROWSER_URL}/$default_repo_namespace/BLIman.git"
-          git clone ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_namespace/$default_repo_name.git $default_tmp_location | bliman_log
-	else
-           echo "Installing BLIman from $default_repo_url/$default_repo_namespace/BLIman.git"
-           git clone $default_repo_url/$default_repo_namespace/$default_repo_name.git $default_tmp_location | bliman_log
-        fi
-
-        if [ ! -d $default_tmp_location ];then
-           echo ""
-           echo ""
-           echo "======================================================================================================"
-           echo " Not able to clone the BLIman."
-           echo ""
-           echo " Exit."
-           echo "======================================================================================================"
-           echo ""
-           exit 1
-	fi	
+        #__bliman_download "$bli_version"
 
         BLIMAN_CANDIDATES_CSV=$(cat "$default_tmp_location/candidates.txt")
         echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
@@ -461,7 +471,7 @@ args=()
 
 while [[ -n "$1" ]]; do
   case "$1" in
-        --genesisPath | --force)
+        --genesisPath | --force | --version)
 	   	
            opts=("${opts[@]}" "$1")
 	   ;; ## genesis file path on local system
@@ -476,15 +486,15 @@ done
 case $command in
      install)
 
-       ([[ ${#opts[@]} -lt 1 ]] && __bliman_get_genesis_file && __bliman_install ) ||
-       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_get_genesis_file "${opts[0]}" "${args[1]}" "" && __bliman_install) ||
-       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--force" ]] && __bliman_get_genesis_file && __bliman_install "${opts[0]}" "" "") ||
-       ([[ ${#opts[@]} -eq 2 ]] && __bliman_get_genesis_file "${args[1]}" && __bliman_install "${opts[0]}" "${args[1]}" "$opts[1]") ||
+       ([[ ${#opts[@]} -lt 1 ]] && __bliman_download && __bliman_get_genesis_file && __bliman_install ) ||
+       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--genesisPath" ]] __bliman_downlaod && __bliman_get_genesis_file "${args[1]}" && __bliman_install) ||
+       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--version" ]] && __bliman_download "${args[1]}" && __bliman_get_genesis_file && __bliman_install "${opts[0]}" "${args[1]}") ||
+       ([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--version" ]] && __bliman_download "${args[1]}" && __bliman_get_genesis_file "${args[2]}" && __bliman_install "${opts[0]}" "${args[1]}") ||
+       ([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download "${args[2]}" && __bliman_get_genesis_file "${args[1]}" && __bliman_install "${opts[1]}" "${args[2]}") ||
        ( echo ""; echo "Not a valid command."; __bliman_setup_help)
        ;;
      remove)
-       ([[ ${#opts[@]} -lt 1 ]] &&  __bliman_setup_remove) ||	     
-       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--force" ]] && __bliman_setup_remove "${opts[0]}") ||
+       ([[ ${#opts[@]} -lt 1 ]] &&  __bliman_setup_remove) ||
        ( echo ""; echo "Not a valid command."; __bliman_setup_help)
        ;;
      update)

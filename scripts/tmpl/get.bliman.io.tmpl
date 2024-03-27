@@ -13,6 +13,19 @@ echo_failed_command() {
 	fi
 }
 
+createlogfile () {
+   logfile="$1/$2"
+
+   [[ ! -f $logfile ]] && touch $logfile
+}
+
+bliman_log() {
+   datetime=$(date)
+   while IFS= read -r line; do
+     echo "$datetime : $line" >> $BLIMAN_INSTALL_LOG_FILE
+   done
+}
+
 function infer_platform() {
 	local kernel
 	local machine
@@ -78,30 +91,153 @@ function infer_platform() {
 		;;
 	esac
 }
+function __bliman_download ()
+{
+    default_repo_url='https://github.com/'
+    default_repo_namespace='Be-Secure'
+    default_repo_name='BLIman'
+    default_tmp_location="/tmp/$default_repo_name"
+    zip_location="/tmp"
 
-function __bliman_quick_install() {
+    if [ ! -z $1 ];then
+       bliversion="$1"
+       export BLIMAN_VERSION="$1"
+    else
+       bliversion="0.0.1"
+       export BLIMAN_VERSION="0.0.1"
+    fi
 
-	local genesis_path force_flag
-        genesis_path=$1	
-	force_flag=$2
-        
-	if [[ (-n $force_flag) && (($force_flag == "--force") || ($force_flag == -F)) ]]; then
+    # echo "* Downloading..."
+    [[ ! -d $default_tmp_location ]] && mkdir -p $default_tmp_location
 
-		echo "Removing current installation of bliman"
-		rm -rf "$HOME/.bliman"
+     if [ ! -z  ${BLIMAN_BROWSER_URL} ] && [ ! -z ${BLIMAN_NAMESPACE} ];then
+       echo "Installing BLIman from ${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/BLIman.git"
+       curl -o $zip_location/bliman-${bliversion}.zip --fail --location --progress-bar "${BLIMAN_BROWSER_URL}/${BLIMAN_NAMESPACE}/$default_repo_name/archieve/refs/tags/${bliversion}.zip" | bliman_log
+
+    elif  [ -z  ${BLIMAN_BROWSER_URL} ] && [ ! -z ${BLIMAN_NAMESPACE} ];then
+       echo "Installing BLIman from $default_repo_url/${BLIMAN_NAMESPACE}/BLIman.git"
+       curl -o $zip_location/bliman-${bliversion}.zip --fail --location --progress-bar "${default_repo_url}/${BLIMAN_NAMESPACE}/$default_repo_name/archieve/refs/tags/${bliversion}.zip" | bliman_log
+
+    elif  [ ! -z  ${BLIMAN_BROWSER_URL} ] && [ -z ${BLIMAN_NAMESPACE} ];then
+       echo "Installing BLIman from ${BLIMAN_BROWSER_URL}/$default_repo_namespace/BLIman.git"
+       curl -o $zip_location/bliman-${bliversion}.zip --fail --location --progress-bar "${BLIMAN_BROWSER_URL}/${default_repo_namespace}/$default_repo_name/archieve/refs/tags/${bliversion}.zip" | bliman_log
+    else
+       echo "Installing BLIman from $default_repo_url/$default_repo_namespace/BLIman.git"
+        curl -o $zip_location/bliman-${bliversion}.zip --fail --location --progress-bar "$default_repo_url/$default_repo_namespace/$default_repo_name/archieve/refs/tags/${bliversion}.zip" |  bliman_log
+    fi
+
+    unzip -qo $zip_location/bliman-${bliversion}.zip -d $default_tmp_location
+
+    if [ ! -d $default_tmp_location ];then
+           echo ""
+           echo ""
+           echo "======================================================================================================"
+           echo " Not able to clone the BLIman."
+           echo ""
+           echo " Exit."
+           echo "======================================================================================================"
+           echo ""
+           exit 1
+    fi
+
+}
+
+function __bliman_sanatiy_check ()
+{
+   
+	echo "Looking for a previous installation of BLIMAN..."
+	if [ -d "$BLIMAN_DIR/bin/" ]; then
+		echo "BLIMAN found."
+		echo ""
+		echo "======================================================================================================"
+		echo " You already have BLIMAN installed."
+		echo " BLIMAN was found at:"
+		echo ""
+		echo "    ${BLIMAN_DIR}"
+		echo ""
+		echo " Please consider running the following if you need to upgrade."
+		echo ""
+		echo "    $ bli selfupdate force"
+		echo ""
+		echo "======================================================================================================"
+		echo ""
+		exit 0
 	fi
 
-	set -e
+	echo "Looking for curl..."
+	if ! command -v curl > /dev/null; then
+		echo "Not found."
+		echo ""
+		echo "======================================================================================================"
+		echo " Please install curl on your system using your favourite package manager."
+		echo ""
+		echo " Restart after installing curl."
+		echo "======================================================================================================"
+		echo ""
+		exit 1
+	fi
+
+	if [[ "$solaris" == true ]]; then
+		echo "Looking for gsed..."
+		if [ -z $(which gsed) ]; then
+			echo "Not found."
+			echo ""
+			echo "======================================================================================================"
+			echo " Please install gsed on your solaris system."
+			echo ""
+			echo " BLIMAN uses gsed extensively."
+			echo ""
+			echo " Restart after installing gsed."
+			echo "======================================================================================================"
+			echo ""
+			exit 1
+		fi
+	else
+		echo "Looking for sed..."
+		if [ -z $(command -v sed) ]; then
+			echo "Not found."
+			echo ""
+			echo "======================================================================================================"
+			echo " Please install sed on your system using your favourite package manager."
+			echo ""
+			echo " Restart after installing sed."
+			echo "======================================================================================================"
+			echo ""
+			exit 1
+		fi
+	fi
+
+        echo "Looking for git..."
+        if [ -z $(command -v git) ]; then
+                        echo "Not found."
+                        echo ""
+                        echo "======================================================================================================"
+                        echo " Please install git on your system using your favourite package manager."
+                        echo ""
+                        echo " Restart after installing git."
+                        echo "======================================================================================================"
+                        echo ""
+                        exit 1
+        fi
+
+}
+function __bliman_install() {
+
+	local genesis_path force_flag
+	
 	trap track_last_command DEBUG
 	trap echo_failed_command EXIT
 
+        bli_version=$2
+
         if [ -z "$BLIMAN_DIR" ]; then
-                BLIMAN_DIR="$HOME/.bliman"
-                BLIMAN_DIR_RAW="$HOME/.bliman"
+                export BLIMAN_DIR="$HOME/.bliman"
+                export BLIMAN_DIR_RAW="$HOME/.bliman"
         else
-                BLIMAN_DIR_RAW="$BLIMAN_DIR"
+                export BLIMAN_DIR_RAW="$BLIMAN_DIR"
         fi
-        export BLIMAN_DIR
+         
+	echo "BLIMAN DIRECTORY is set to : $BLIMAN_DIR"
 
 	# Local variables
         bliman_src_folder="${BLIMAN_DIR}/src"
@@ -109,6 +245,7 @@ function __bliman_quick_install() {
         bliman_ext_folder="${BLIMAN_DIR}/ext"
         bliman_etc_folder="${BLIMAN_DIR}/etc"
         bliman_var_folder="${BLIMAN_DIR}/var"
+	bliman_log_folder="${BLIMAN_DIR}/log"
         bliman_candidates_folder="${BLIMAN_DIR}/candidates"
         bliman_config_file="${bliman_etc_folder}/config"
         bliman_bash_profile="${HOME}/.bash_profile"
@@ -130,12 +267,17 @@ EOF
         mkdir -p "$bliman_etc_folder"
         mkdir -p "$bliman_var_folder"
         mkdir -p "$bliman_candidates_folder"
+        mkdir -p "$bliman_log_folder"
 
-	__bliman_load_genesis_file "$genesis_path"
-        __bliman_write_tmpl_vagrantfile
 
-	BLIMAN_PLATFORM="$(infer_platform)"
-	export BLIMAN_PLATFORM
+        DATE=$(date +"%Y-%m-%d-%k-%M")
+        logfilename=bliman-install-log-$DATE.log
+
+        createlogfile $bliman_log_folder $logfilename
+        export BLIMAN_INSTALL_LOG_FILE="$bliman_log_folder/$logfilename"
+
+	export BLIMAN_PLATFORM="$(infer_platform)"
+	
 	# OS specific support (must be 'true' or 'false').
 	cygwin=false
 	darwin=false
@@ -173,196 +315,54 @@ EOF
 	echo ' B::::::::::::::::B  L::::::::::::::::::::::LI::::::::IM::::::M               M::::::M A:::::A                 A:::::A N::::::N        N::::::N '
 
 	# Sanity checks
+        __bliman_sanatiy_check
 
-	echo "Looking for a previous installation of BLIMAN..."
-	if [ -d "$BLIMAN_DIR/bin/" ]; then
-		echo "BLIMAN found."
-		echo ""
-		echo "======================================================================================================"
-		echo " You already have BLIMAN installed."
-		echo " BLIMAN was found at:"
-		echo ""
-		echo "    ${BLIMAN_DIR}"
-		echo ""
-		echo " Please consider running the following if you need to upgrade."
-		echo ""
-		echo "    $ bli selfupdate force"
-		echo ""
-		echo "======================================================================================================"
-		echo ""
-		exit 0
-	fi
+        #__bliman_download "$bli_version"
 
-	# echo "Looking for unzip..."
-	# if ! command -v unzip > /dev/null; then
-	# 	echo "Not found."
-	# 	echo "======================================================================================================"
-	# 	echo " Please install unzip on your system using your favourite package manager."
-	# 	echo ""
-	# 	echo " Restart after installing unzip."
-	# 	echo "======================================================================================================"
-	# 	echo ""
-	# 	exit 1
-	# fi
-
-	# echo "Looking for zip..."
-	# if ! command -v zip > /dev/null; then
-	# 	echo "Not found."
-	# 	echo "======================================================================================================"
-	# 	echo " Please install zip on your system using your favourite package manager."
-	# 	echo ""
-	# 	echo " Restart after installing zip."
-	# 	echo "======================================================================================================"
-	# 	echo ""
-	# 	exit 1
-	# fi
-
-	# echo "Looking for curl..."
-	# if ! command -v curl > /dev/null; then
-	# 	echo "Not found."
-	# 	echo ""
-	# 	echo "======================================================================================================"
-	# 	echo " Please install curl on your system using your favourite package manager."
-	# 	echo ""
-	# 	echo " Restart after installing curl."
-	# 	echo "======================================================================================================"
-	# 	echo ""
-	# 	exit 1
-	# fi
-
-	if [[ "$solaris" == true ]]; then
-		echo "Looking for gsed..."
-		if [ -z $(which gsed) ]; then
-			echo "Not found."
-			echo ""
-			echo "======================================================================================================"
-			echo " Please install gsed on your solaris system."
-			echo ""
-			echo " BLIMAN uses gsed extensively."
-			echo ""
-			echo " Restart after installing gsed."
-			echo "======================================================================================================"
-			echo ""
-			exit 1
-		fi
-	else
-		echo "Looking for sed..."
-		if [ -z $(command -v sed) ]; then
-			echo "Not found."
-			echo ""
-			echo "======================================================================================================"
-			echo " Please install sed on your system using your favourite package manager."
-			echo ""
-			echo " Restart after installing sed."
-			echo "======================================================================================================"
-			echo ""
-			exit 1
-		fi
-	fi
-
-	source "$BLIMAN_DIR/tmp/source.sh"
-
-	echo "Installing BLIMAN scripts..."
-
-	echo "Getting available candidates..."
-	echo "from ${BLIMAN_REPO_URL}/candidates.txt"
-	BLIMAN_CANDIDATES_CSV=$(curl -k -s "${BLIMAN_REPO_URL}/candidates.txt")
-	echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
-
-	echo "Prime the config file..."
-	touch "$bliman_config_file"
-	echo "bliman_auto_answer=false" >>"$bliman_config_file"
-	if [ -z "$ZSH_VERSION" -a -z "$BASH_VERSION" ]; then
-		echo "bliman_auto_complete=false" >>"$bliman_config_file"
-	else
-		echo "bliman_auto_complete=false" >>"$bliman_config_file"
-	fi
-	touch "$bliman_config_file"
-	{
-		echo "bliman_auto_env=false"
-		echo "bliman_auto_update=true"
-		echo "bliman_beta_channel=false"
-		echo "bliman_checksum_enable=true"
-		echo "bliman_colour_enable=true"
-		echo "bliman_curl_connect_timeout=7"
-		echo "bliman_curl_max_time=10"
-		echo "bliman_debug_mode=false"
-		echo "bliman_insecure_ssl=false"
-		echo "bliman_rosetta2_compatible=false"
-		echo "bliman_selfupdate_feature=true"
-	} >>"$bliman_config_file"
-
-	if [[ $BLIMAN_PLATFORM == "windowsx64" ]]; then
-		echo "bliman_insecure_ssl=true" >> "$bliman_config_file"
-	else
-		echo "bliman_insecure_ssl=false" >> "$bliman_config_file"
-	fi
-	# script cli distribution
-	echo "Installing script cli archive..."
-	# fetch distribution
-	# bliman_zip_file="${bliman_tmp_folder}/bliman-${BLIMAN_VERSION}.zip"
-	# echo "* Downloading..."
-        [[ ! -d /tmp/bliman ]] && mkdir -p /tmp/bliman
-	curl -o /tmp/bliman/bliman-${BLIMAN_VERSION}.zip --fail --location --progress-bar "https://github.com/Be-Secure/BLIman/archieve/refs/tags/${BLIMAN_VERSION}.zip"
-        
-        unzip -qo /tmp/bliman/bliman-${BLIMAN_VERSION}.zip -d /tmp/bliman/
+        BLIMAN_CANDIDATES_CSV=$(cat "$default_tmp_location/candidates.txt")
+        echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
 
 	# copy in place
-	echo "* Copying archive contents..."
-	cp -r "/tmp/bliman/BLIman-${BLIMAN_VERSION}/contrib/" "$BLIMAN_DIR"
-	cp -r "/tmp/bliman/BLIman-${BLIMAN_VERSION}/src/main/bash" "$bliman_src_folder"
-	mkdir -p "$BLIMAN_DIR/bin/"
-	mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/"
-	# rm -f "$bliman_src_folder"/*
-	# cp -rf "${bliman_tmp_folder}"/bliman-*/* "$BLIMAN_DIR"
+	cp -r "$default_tmp_location/contrib/" "$BLIMAN_DIR" | bliman_log
+	cp -r "$default_tmp_location/src/main/bash" "$bliman_src_folder" | bliman_log
+	mkdir -p "$BLIMAN_DIR/bin/" | bliman_log
+	mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/" | bliman_log
+
+        echo "Prime the config file..."
+        touch "$bliman_config_file" | bliman_log
+        echo "bliman_auto_answer=false" >>"$bliman_config_file"
+        if [ -z "$ZSH_VERSION" -a -z "$BASH_VERSION" ]; then
+                echo "bliman_auto_complete=false" >>"$bliman_config_file"
+        else
+                echo "bliman_auto_complete=false" >>"$bliman_config_file"
+        fi
+        touch "$bliman_config_file"
+        {
+                echo "bliman_auto_env=false"
+                echo "bliman_auto_update=true"
+                echo "bliman_beta_channel=false"
+                echo "bliman_checksum_enable=true"
+                echo "bliman_colour_enable=true"
+                echo "bliman_curl_connect_timeout=7"
+                echo "bliman_curl_max_time=10"
+                echo "bliman_debug_mode=false"
+                echo "bliman_insecure_ssl=false"
+                echo "bliman_rosetta2_compatible=false"
+                echo "bliman_selfupdate_feature=true"
+        } >>"$bliman_config_file"
+
+        if [[ $BLIMAN_PLATFORM == "windowsx64" ]]; then
+                echo "bliman_insecure_ssl=true" >> "$bliman_config_file"
+        else
+                echo "bliman_insecure_ssl=false" >> "$bliman_config_file"
+        fi
 
 	# clean up
 	echo "* Cleaning up..."
-	rm -rf /tmp/bliman
-	# rm -rf "$bliman_zip_file"
+	rm -rf "$default_tmp_location" | bliman_log
 
 	echo ""
-
-	# # native cli distribution
-	# if [[ "$BLIMAN_PLATFORM" != "exotic" ]]; then
-	# # fetch distribution
-	# bliman_zip_file="${bliman_tmp_folder}/bliman-native-${BLIMAN_NATIVE_VERSION}.zip"
-	# echo "* Downloading..."
-	# curl --fail --location --progress-bar "${BLIMAN_SERVICE}/broker/download/native/install/${BLIMAN_NATIVE_VERSION}/${BLIMAN_PLATFORM}" > "$bliman_zip_file"
-
-	# # check integrity
-	# echo "* Checking archive integrity..."
-	# ARCHIVE_OK=$(unzip -qt "$bliman_zip_file" | grep 'No errors detected in compressed data')
-	# if [[ -z "$ARCHIVE_OK" ]]; then
-	# 	echo "Downloaded zip archive corrupt. Are you connected to the internet?"
-	# 	echo ""
-	# 	echo "If problems persist, please ask for help on our Slack:"
-	# 	echo "* easy sign up: https://slack.bliman.io/"
-	# 	echo "* report on channel: https://bliman.slack.com/app_redirect?channel=user-issues"
-	# 	exit
-	# fi
-
-	# # extract archive
-	# echo "* Extracting archive..."
-	# if [[ "$cygwin" == 'true' ]]; then
-	# 	bliman_tmp_folder=$(cygpath -w "$bliman_tmp_folder")
-	# 	bliman_zip_file=$(cygpath -w "$bliman_zip_file")
-	# fi
-	# unzip -qo "$bliman_zip_file" -d "$bliman_tmp_folder"
-
-	# # copy in place
-	# echo "* Copying archive contents..."
-	# rm -f "$bliman_libexec_folder"/*
-	# cp -rf "${bliman_tmp_folder}"/bliman-*/* "$BLIMAN_DIR"
-
-	# # clean up
-	# echo "* Cleaning up..."
-	# rm -rf "$bliman_tmp_folder"/bliman-*
-	# rm -rf "$bliman_zip_file"
-
-	# echo ""
-	# fi
-
+	
 	echo "Set version to $BLIMAN_VERSION ..."
 	echo "$BLIMAN_VERSION" >"${BLIMAN_DIR}/var/version"
 
@@ -370,7 +370,7 @@ EOF
 	echo "$BLIMAN_NATIVE_VERSION" >"${BLIMAN_DIR}/var/version_native"
 
 	if [[ $darwin == true ]]; then
-		touch "$bliman_bash_profile"
+		touch "$bliman_bash_profile" | bliman_log
 		echo "Attempt update of login bash profile on OSX..."
 		if [[ -z $(grep 'bliman-init.sh' "$bliman_bash_profile") ]]; then
 			echo -e "\n$bliman_init_snippet" >>"$bliman_bash_profile"
@@ -378,7 +378,7 @@ EOF
 		fi
 	else
 		echo "Attempt update of interactive bash profile on regular UNIX..."
-		touch "${bliman_bashrc}"
+		touch "${bliman_bashrc}" | bliman_log
 		if [[ -z $(grep 'bliman-init.sh' "$bliman_bashrc") ]]; then
 			echo -e "\n$bliman_init_snippet" >>"$bliman_bashrc"
 			echo "Added bliman init snippet to $bliman_bashrc"
@@ -386,418 +386,104 @@ EOF
 	fi
 
 	echo "Attempt update of zsh profile..."
-	touch "$bliman_zshrc"
+	touch "$bliman_zshrc" | bliman_log
 	if [[ -z $(grep 'bliman-init.sh' "$bliman_zshrc") ]]; then
 		echo -e "\n$bliman_init_snippet" >>"$bliman_zshrc"
 		echo "Updated existing ${bliman_zshrc}"
 	fi
 
-	echo -e "\n\n\nAll done!\n\n"
+	if [ -f  $BLIMAN_DIR/bin/bliman-init.sh ];then
+	   #source $BLIMAN_DIR/bin/bliman-init.sh
+	   echo -e "\n\n\nAll done!\n\n"
 
-	echo "You are subscribed to the STABLE channel."
-
-	echo ""
-	echo "Please open a new terminal, or run the following in the existing one:"
-	echo ""
-	echo "    source \"${BLIMAN_DIR}/bin/bliman-init.sh\""
-	echo ""
-	echo "Then issue the following command:"
-	echo ""
-	echo "    bli help"
-	echo ""
-	echo "Enjoy!!!"
-
-}
-
-function __bliman_write_tmpl_vagrantfile()
-{
-	local vagrantfile_path
-	
-	vagrantfile_path="$BLIMAN_DIR/tmp/Vagrantfile"
-	touch "$vagrantfile_path"
-	cat <<EOF >>"$vagrantfile_path"
-# # -*- mode: ruby -*-
-# # vi: set ft=ruby :
-
-VAGRANTFILE_API_VERSION = "2"
-Vagrant.require_version '>= 1.8.1'
-
-
-# Cross-platform way of finding an executable in the \$PATH.
-def which(cmd)
-  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
-  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-    exts.each { |ext|
-      exe = File.join(path, "#{cmd}#{ext}")
-      return exe if File.executable?(exe) && !File.directory?(exe)
-    }
-  end
-  return nil
-end
-
-# Use oah-config.yml for basic VM configuration.
-require 'yaml'
-
-
-#dir = File.dirname(File.expand_path(__FILE__))
-dir = File.dirname("../../../")
-
-if !File.exist?("#{dir}/oah-config.yml")
-  raise "Configuration file #{dir}/oah-config.yml not found!  Please copy example.oah-config.yml to oah-config.yml and try again."
-end
-vconfig = YAML::load_file("#{dir}/oah-config.yml")
-
-
-\$script = <<SCRIPT
-echo "create user vagrant"
-adduser --disabled-password --gecos "" vagrant
-echo 'vagrant:vagrant' | chpasswd
-ls -al /home/
-echo "add sudo privilege to user vagrant"
-cp /etc/sudoers.d/90-cloud-init-users /etc/sudoers.d/admin
-chmod +w /etc/sudoers.d/admin
-ls -al /etc/sudoers.d/
-sed -i 's/ubuntu/vagrant/g' /etc/sudoers.d/admin
-cat /etc/sudoers.d/admin
-echo "enable ssh access for user vagrant"
-echo "generating authorized_keys"
-ls /home/ubuntu/.ssh/
-cp /home/ubuntu/.ssh/id_rsa.pub /home/ubuntu/.ssh/authorized_keys
-chmod 600 /home/ubuntu/.ssh/authorized_keys
-mkdir -p /home/vagrant/.ssh
-echo "listing contents of under /home/ubuntu/.ssh"
-ls /home/ubuntu/.ssh
-chown vagrant:vagrant /home/vagrant/.ssh
-cat /home/ubuntu/.ssh/authorized_keys >> /home/vagrant/.ssh/authorized_keys
-echo "value of authorized_keys under ubuntu"
-cat /home/ubuntu/.ssh/authorized_keys
-echo "value of authorized_keys under vagrant"
-cat /home/vagrant/.ssh/authorized_keys
-chown vagrant:vagrant /home/vagrant/.ssh/authorized_keys
-su - vagrant -c "cat /home/vagrant/.ssh/authorized_keys"
-chmod 600 /home/vagrant/.ssh/authorized_keys
-ls -al /home/vagrant/.ssh
-chmod 700 /home/vagrant/.ssh
-ls -al /home/vagrant
-sudo apt update -y
-sudo apt-get install -y --no-install-recommends ansible
-sudo apt full-upgrade -y
-sudo apt-get autoremove -y
-test -e /usr/bin/python || (sudo apt -y update && apt install -y python-minimal)
-sudo systemctl disable apt-daily.service
-sudo systemctl disable apt-daily.timer
-SCRIPT
-
-
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.hostname = vconfig['vagrant_hostname']
-  config.vm.box = vconfig['vagrant_box']
-  if vconfig['vagrant_ip'] == "0.0.0.0" && Vagrant.has_plugin?("vagrant-auto_network")
-    config.vm.network :private_network, :ip => vconfig['vagrant_ip'], :auto_network => true
-  else
-    config.vm.network :private_network, ip: vconfig['vagrant_ip']
-  end
-
-  if !vconfig['vagrant_public_ip'].empty? && vconfig['vagrant_public_ip'] == "0.0.0.0"
-    config.vm.network :public_network
-  elsif !vconfig['vagrant_public_ip'].empty?
-    config.vm.network :public_network, ip: vconfig['vagrant_public_ip']
-  end
-
-  # # Autoconfigure hosts. This will copy the private network addresses from
-  # # each VM and update hosts entries on all other machines. No further
-  # # configuration is needed.
-  # Vagrant.configure('2') do |config|
-
-  #   config.vm.define :first do |node|
-  #     node.vm.box = ""
-  #     node.vm.network :private_network, :ip => '10.20.1.2'
-  #     node.vm.provision :hosts, :sync_hosts => true
-  #   end
-
-  #   config.vm.define :second do |node|
-  #     node.vm.box = "ubuntu/bionic64"
-  #     node.vm.network :private_network, :ip => '10.20.1.3'
-  #     node.vm.provision :hosts, :sync_hosts => true
-  #   end
-  # end
-
-  # config.ssh.insert_key = true
-  # config.ssh.forward_agent = true
-  # config.ssh.username = vconfig['vagrant_user']
-
-  Vagrant.configure("2") do |config|
-    config.vm.provision "ansible" do |ansible|
-      ansible.version = "2.14.4" # Specify the version you want to useend
-    end
-    config.ssh.insert_key = true
-    config.ssh.private_key_path = "~/.ssh/id_rsa"
-    config.ssh.private_key_path = ['~/.vagrant.d/insecure_private_key', '~/.ssh/id_rsa']
-    config.ssh.forward_agent = true
-    config.ssh.username = vconfig['vagrant_user']
-  end
-
-  #config.ssh.private_key_path = ['~/.vagrant.d/insecure_private_key', '~/.ssh/id_rsa']
-
-
-  # If hostsupdater plugin is installed, add all server names as aliases.
-  # if Vagrant.has_plugin?("vagrant-hostsupdater")
-  #   config.hostsupdater.aliases = []
-  #   # Add all hosts that aren't defined as Ansible vars.
-  #   if vconfig['oahvm_webserver'] == "apache"
-  #     for host in vconfig['apache_vhosts']
-  #       unless host['servername'].include? "{{"
-  #         config.hostsupdater.aliases.push(host['servername'])
-  #       end
-  #     end
-  #   else
-  #     for host in vconfig['nginx_hosts']
-  #       unless host['server_name'].include? "{{"
-  #         config.hostsupdater.aliases.push(host['server_name'])
-  #       end
-  #     end
-  #   end
-  # end
-
-  for synced_folder in vconfig['vagrant_synced_folders'];
-    config.vm.synced_folder synced_folder['local_path'], synced_folder['destination'],
-      type: synced_folder['type'],
-      rsync__auto: "true",
-      rsync__exclude: synced_folder['excluded_paths'],
-      rsync__args: ["--verbose", "--archive", "--delete", "-z", "--chmod=ugo=rwX"],
-      id: synced_folder['id'],
-      create: synced_folder.include?('create') ? synced_folder['create'] : false,
-      mount_options: synced_folder.include?('mount_options') ? synced_folder['mount_options'] : []
-  end
-  
-  beslab_user = ENV['BESLAB_USER']
-  beslab_password = ENV['BESLAB_PWD']
-  bliman_dir = ENV['BLIMAN_DIR']
-  oah_dir = ENV['OAH_DIR']
-
-  if which('ansible-playbook')
-    # Provision using Ansible provisioner if Ansible is installed on host.
-    bliman_dir = ENV['BLIMAN_DIR']
-    config.vm.provision "shell", path: "#{bliman_dir}/tmp/source.sh"
-    config.vm.provision "shell", inline: <<-SHELL, env: { "BESLAB_USER" => beslab_user, "BESLAB_USER_PASSWORD" => beslab_password }
-		encrypted_password=$(openssl passwd -1 \$BESLAB_USER_PASSWORD)
-		# sudo userdel -r "\$BESLAB_USER"
-		sudo useradd -m -p "\$encrypted_password" "\$BESLAB_USER"
-		sudo usermod -aG sudo "\$BESLAB_USER"
-		cp -r /home/vagrant/.ssh /home/\$BESLAB_USER/
-		chown \$BESLAB_USER:\$BESLAB_USER /home/\$BESLAB_USER/.ssh/authorized_keys
-    SHELL
-
-    config.vm.provision "ansible" do |ansible|
-	  command = ENV['BLIMAN_COMMAND']
-      ansible.playbook = "#{dir}/provisioning/oah-#{command}.yml"
-      ansible.galaxy_role_file = "#{dir}/provisioning/oah-requirements.yml"
-      ansible.become = true                                                                                                                
-    end
-  else
-	config.vm.provision "shell", inline: <<-SHELL, env: {"BESLAB_USER" => beslab_user, "BESLAB_USER_PASSWORD" => beslab_password }
-		encrypted_password=\$(openssl passwd -1 \$BESLAB_USER_PASSWORD)
-		# sudo userdel -r "\$BESLAB_USER"
-		sudo useradd -m -p "\$encrypted_password" "\$BESLAB_USER"
-		sudo usermod -aG sudo "\$BESLAB_USER"
-		cp -r /home/vagrant/.ssh /home/\$BESLAB_USER/
-		chown \$BESLAB_USER:\$BESLAB_USER /home/\$BESLAB_USER/.ssh/authorized_keys
-		mkdir -p /home/\$BESLAB_USER/oah-bes-vm
-		mkdir -p /home/\$BESLAB_USER/bliman_tmp
-	SHELL
-
-	config.vm.synced_folder "#{bliman_dir}/tmp", "/home/#{beslab_user}/bliman_tmp"
-	config.vm.synced_folder "#{oah_dir}/data/env/oah-bes-vm", "/home/#{beslab_user}/oah-bes-vm"
-
-	config.vm.provision "shell", inline: <<-SHELL, env: {"BESLAB_USER" => beslab_user, "BESLAB_USER_PASSWORD" => beslab_password }
-		sudo apt-add-repository ppa:ansible/ansible
-		sudo apt update
-		sudo apt install ansible -y
-		source /home/\$BESLAB_USER/bliman_tmp/source.sh
-		mkdir -p "/home/\$BESLAB_USER/oah-bes-vm/roles"
-		ansible-galaxy install -r /home/\$BESLAB_USER/oah-bes-vm/provisioning/oah-requirements.yml -p /home/\$BESLAB_USER/oah-bes-vm/provisioning/roles
-		ansible-playbook /home/\$BESLAB_USER/oah-bes-vm/provisioning/oah-install.yml --ask-become-pass
-	SHELL
-  end
-
-
-  # VirtualBox.
-  config.vm.provider :virtualbox do |v|
-    v.name = vconfig['vagrant_hostname']
-    v.memory = vconfig['vagrant_memory']
-    v.cpus = vconfig['vagrant_cpus']
-    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    v.customize ["modifyvm", :id, "--ioapic", "on"]
-    v.gui=vconfig['oah_vm_gui']
-  end
-  config.vm.define vconfig['vagrant_machine_name'] do |d|
-  end
-end
-EOF
-}
-function __bliman_load_genesis_file() {
-	local genesis_path genesis_file_name genesis_file_url present_working_dir
-	genesis_file_name="beslab_genesis.yaml"
-	genesis_path=$1
-	genesis_file_url="$genesis_path/$genesis_file_name"
-
-	if [[ -z $genesis_path ]];then
-	   present_working_dir=`pwd`
-	   if [ -f "$BLIMAN_DIR/$genesis_file_name" ];then
-             __bliman_load_export_vars "$BLIMAN_DIR/$genesis_file_name"
-	   elif [ -f "$present_working_dir/$genesis_file_name" ];then 
-	     __bliman_load_export_vars "$present_working_dir/$genesis_file_name"
-	   fi
+           echo "Issue the following command to verify installation:"
+           echo ""
+           echo "    bli help"
+           echo ""
+            
+	   bash -l
 	else
-	   if [ -f $genesis_path/$genesis_file_name ];then
-              __bliman_load_export_vars "$genesis_path/$genesis_file_name"
-	   fi
-	fi
-} 
-
-#function __bliman_check_genesis_file_available() {
-#	local url response
-#	url=$1
-#	echo "Checking if genesis file available $url"
-#	response=$(curl -k --head --silent "$url" | head -n 1 | awk '{print $2}')
-#	if [[ $response -eq 200 ]]; then
-#		echo "Genesis file found"
-#		return 0
-#	else
-#		echo "Could not find genesis file $url"
-#		return 1
-#	fi
-#
-#}
-
-#function __bliman_get_genesis_file() {
-#	local url default_genesis_file_path
-#	url=$1
-#	default_genesis_file_path=$2
-#	[[ -f "$default_genesis_file_path" ]] && rm "$default_genesis_file_path"
-#	touch "$default_genesis_file_path"
-#	echo "Downloading genesis file"
-#	curl -k -sL "$url" >>"$default_genesis_file_path"
-#
-#}
-
-
-function __bliman_convert_yaml_to_sh()
-{
-	local genesis_data source_file
-	genesis_data=$1
-	source_file=$2
-
-	while read -r key 
-	do
-		echo "$key" | sed "s/:/=/" | sed "s/ //g" >> "$HOME/tmp.sh"
-	done <<< "$genesis_data" 
-
-	multi_values=""
-	multi_values_flag=false
-	echo "#!/bin/bash" > "$source_file"
-	while read -r line 
-	do
-		if echo "$line" | grep -qe "^#" 
-		then
-			continue
-		fi
-		if [[ ( "$line" == "" ) || ( $line == "---" ) ]] 
-		then
-			continue
-		fi
-		key=$(echo "$line" | cut -d "=" -f 1)
-		value=$(echo "$line" | cut -d "=" -f 2)
-		if [ $multi_values_flag == true ] && ! echo "$key" | grep -qe "^-" 
-		then
-			multi_values_flag=false
-			echo "export $key_save=$multi_values" | sed "s/,//1" >> "$source_file"
-			multi_values=""
-		fi
-		if [[ "$line" == "" ]]; then
-			multi_values_flag=false
-			echo "export $key_save=$multi_values" | sed "s/,//1" >> "$source_file"
-			multi_values=""
-		fi
-		if [[ $value == "" ]]; then
-			multi_values_flag=true
-			key_save=$key
-			continue
-		elif [[ $multi_values_flag == false ]] 
-		then
-			
-			echo "export $key=$value" >> "$source_file"
-		fi
-		if [[ $multi_values_flag == "true" ]] 
-		then
-			if echo "$line" | grep -qe "^-" 
-			then
-				value_2=$(echo "$line" | sed "s/-//1")
-				multi_values+=",$value_2"
-				continue
-
-			else
-				multi_values_flag=false
-				echo "export $key_save=$multi_values"
-			fi
-		fi
-	done < "$HOME/tmp.sh"
-
-	if ! grep "$key_save" "$source_file" 
-	then
-		echo "export $key_save=$multi_values" | sed "s/,//1" >> "$source_file"
+	   echo ""
+	   echo "BLIman not able to install properly."
+	   echo ""
+	   echo "   Please refer log file at $BLIMAN_INSTALL_LOG_FILE"
 	fi
 
-	[[ -f "$HOME/tmp.sh" ]] && rm "$HOME/tmp.sh"
 }
 
-function __bliman_load_export_vars() {
-	local genesis_file_path source_file genesis_data
-	echo "Loading genesis file parameters"
-	genesis_file_path=$1
-	sed -i '/^$/d' "$genesis_file_path" # Delete empty lines
-	genesis_data=$(<"$genesis_file_path")
-	
-	source_file="$BLIMAN_DIR/tmp/source.sh"
-	__bliman_convert_yaml_to_sh "$genesis_data" "$source_file"
-
-        source $source_file
-}
-
-function __bliman_find_genesis_file ()
+function __bliman_get_genesis_file ()
 {
   local genesis_path genesis_file_name genesis_file_url present_working_dir
-        genesis_file_name="beslab_genesis.yaml"
-        genesis_path=$1
-        genesis_file_url="$genesis_path/$genesis_file_name"
+  genesis_file_name="beslab_genesis.yaml"
+  genesis_path=$1
+  genesis_file_url="$genesis_path/$genesis_file_name"
 
-        if [[ -z $genesis_path ]];then
+  if [[ -z $genesis_path ]];then
+           echo -e "Genesis file path not provided."
            present_working_dir=`pwd`
-           if [ -f "$BLIMAN_DIR/$genesis_file_name" ];then
-             export BLIMAN_GENSIS_FILE_PATH="$BLIMAN_DIR/$genesis_file_name"
-           elif [ -f "$present_working_dir/$genesis_file_name" ];then
-             export BLIMAN_GENSIS_FILE_PATH="$present_working_dir"
-           else
-             echo "Genesis file not found at default locations." 
-             echo "Provide genesis file location with --genesis_path option in command."
-             exit 1
-           fi
-        else
-           if [ -f $genesis_path/$genesis_file_name ];then
-              export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
-           else
-              echo "Genesis file not found at path provided."
-              exit 1
-           fi
-        fi
+           export BLIMAN_GENSIS_FILE_PATH="$present_working_dir/$genesis_file_name" 
+	   echo -e "Downloading default genesis file from Be-Secure community."
+	   curl -o $genesis_file_name https://github.com/Be-Secure/BeSLab/$genesis_file_name | bliman_log
+  else
+           echo -e "Genesis file path provided is $genesis_path."
+	   export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
+           cp $BLIMAN_GENSIS_FILE_PATH . | bliman_log
+  fi
 }
 
+__bliman_setup_update ()
+{
+    echo "TODO"
+}
+
+
+__bliman_setup_remove ()
+{
+    echo "TODO"
+}
+
+__bliman_setup_help ()
+{
+    echo ""
+    echo "================================================================="
+    echo ""
+    echo "BLIman is the command line utiltiy to install the BeSLab.        "
+    echo ""
+    echo "================================================================="
+    echo ""
+    echo "bliman_setup is utility to install/ update / remove the BLIman   "
+    echo "and loads the default beslab genesis file to the current         "
+    echo "directory if no path is provided in install command.             "
+    echo ""
+    echo "================================================================="
+    echo "comands and usage"
+    echo "================================================================="
+    echo ""
+    echo "./bliman_setup.sh install"
+    echo " [Install the BLIman with default beslab_genesis file from Be-Se "
+    echo "   cure community.]                                                "
+    echo ""
+    echo "./bliman_setup.sh install --genesisPath < Path of genesis file >   "
+    echo " [install the BLIman and uses the genesis file from the genesisPath]"
+    echo ""
+    echo "./bliman_setup.sh remove"
+    echo " [Remove the BLIman installed] "
+    echo ""
+    echo "./bliman_setup.sh update"
+    echo " [updates the BLIman to higher version if available.] "
+    echo ""
+    echo "./bliman_setup.sh update --force"
+    echo " [Updates the BLIman forcefully.]"
+
+}
 #### MAIN STARTS HERE
 opts=()
 args=()
+
 while [[ -n "$1" ]]; do
   case "$1" in
-        --genesis_path | --force)         
+        --genesisPath | --force | --version)
+	   	
            opts=("${opts[@]}" "$1")
 	   ;; ## genesis file path on local system
         *)          
@@ -806,22 +492,30 @@ while [[ -n "$1" ]]; do
   esac
   shift
 done
+
 [[ -z $command ]] && command="${args[0]}"
 case $command in
      install)
-           ([[ ${#opts[@]} -lt 1 ]] && __bliman_find_genesis_file && __bliman_quick_install ) ||
-             ([[ ${#opts[@]} -eq 1 ]] && __bliman_find_genesis_file "${args[1]}" && __bliman_quick_install "${args[1]}") ||
-             ([[ ${#opts[@]} -eq 2 ]] && __bliman_find_genesis_file "${opts[0]}" && __bliman_quick_install "${opts[0]}" "$opts[1]")
+
+       ([[ ${#opts[@]} -lt 1 ]] && __bliman_download && __bliman_get_genesis_file && __bliman_install ) ||
+       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--genesisPath" ]] __bliman_downlaod && __bliman_get_genesis_file "${args[1]}" && __bliman_install) ||
+       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--version" ]] && __bliman_download "${args[1]}" && __bliman_get_genesis_file && __bliman_install "${opts[0]}" "${args[1]}") ||
+       ([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--version" ]] && __bliman_download "${args[1]}" && __bliman_get_genesis_file "${args[2]}" && __bliman_install "${opts[0]}" "${args[1]}") ||
+       ([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download "${args[2]}" && __bliman_get_genesis_file "${args[1]}" && __bliman_install "${opts[1]}" "${args[2]}") ||
+       ( echo ""; echo "Not a valid command."; __bliman_setup_help)
        ;;
-     remove | rm)
-       echo "TODO"
+     remove)
+       ([[ ${#opts[@]} -lt 1 ]] &&  __bliman_setup_remove) ||
+       ( echo ""; echo "Not a valid command."; __bliman_setup_help)
        ;;
-     reinstall)
-       echo "TODO"
+     update)
+       ([[ ${#opts[@]} -lt 1 ]] &&  __bliman_setup_update) ||
+       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--force" ]] && __bliman_setup_update "${opts[0]}") ||
+       ( echo ""; echo "Not a valid command."; __bliman_setup_help) 
        ;;
      *)
-        echo -e "Not valid command\n"
-        echo -e "Use ./quicksetup install --genesis_path <path of genesis file on local system>"
-        echo -e "For force use ./quicksetup install --genesis_path <path of genesis file on local system> --force"
+        echo -e "Not a valid bliman setup command\n"
+	__bliman_setup_help
+        exit 1
         ;;
-     esac
+esac
