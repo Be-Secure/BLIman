@@ -9,22 +9,14 @@ Before getting started, you should know what [BeSLab](https://github.com/Be-Secu
 1. Open your git bash
 2. Run the below command to download the binaries
    
-   `curl -k https://be-secure.github.io/BLIman/get.bliman.io | bash`
-
-3. Run the below command to load BLIman.
-
-   `source $HOME/.bliman/bin/bliman-init.sh`
+   `curl -k https://be-secure.github.io/BLIman/get.bliman.io | bash -s --version 0.0.1`
 
 **For linux users**
 
 1. Open your terminal
 2. Run the below command to download the binaries
 
-   `curl -s https://be-secure.github.io/BLIman/get.bliman.io | bash`
-
-3. Run the below command to load BLIman.
-
-   `source $HOME/.bliman/bin/bliman-init.sh`
+   `curl -s https://be-secure.github.io/BLIman/get.bliman.io | bash  -s --version 0.0.1`
 
 ## The 3 modes of BeSLab
 
@@ -50,13 +42,17 @@ To use this mode, you will have to install the following tools.
 
 1. Open your git bash
 2. Make sure you have installed bliman by running, `bli help`
-3. Run the below command.
+3. Load the genesis file. Run
 
-   `bli install host`
+   `bli load`
 
-4. Next step, you can launch the lab.
+4. Run the below command.
 
-   `bli launch`
+   `bli initmode host`
+
+5. Next step, you can launch the lab.
+
+   `bli launchlab`
 
 ### 2. Bare metal mode
 
@@ -70,13 +66,17 @@ You don't need to install a pre-requisites for this as it is done using BLIman i
 
 1. Open your terminal
 2. Make sure you have installed bliman by running, `bli help`
-3. Run the below command.
+3. Load the genesis file. Run
 
-   `bli install bare`
+   `bli load`
 
-4. Next step, you can launch the lab.
+4. Run the below command.
 
-   `bli launch`
+   `bli initmode bare`
+
+5. Next step, you can launch the lab.
+
+   `bli launchlab`
 
 ### 3. Lightweight mode
 
@@ -90,10 +90,14 @@ You wont have to worry about pre-requisites. It will be installed by BLIman.
 
 1. Open your terminal
 2. Make sure you have installed bliman by running, `bli help`
-3. Run the below command.
+3. Load the genesis file. Run
 
-   `bli install lite`
+   `bli load`
 
-4. Next step, you can launch the lab.
+4. Run the below command.
 
-   `bli launch`
+   `bli initmode lite`
+
+5. Next step, you can launch the lab.
+
+   `bli launchlab`
