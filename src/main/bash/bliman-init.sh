@@ -28,17 +28,32 @@
 [[ -z  BLIMAN_LAB_URL ]]  && export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
 
 if [ -z "$BLIMAN_CANDIDATES_REPO" ]; then
-	export BLIMAN_CANDIDATES_REPO="https://raw.githubusercontent.com/$BLIMAN_NAMESPACE/BLIman/main"
+	if [ ! -z $BLIMAN_HOSTED_URL ] && [ ! -z $BLIMAN_NAMESPACE ];then
+           export BLIMAN_CANDIDATES_REPO="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
+        elif [ -z $BLIMAN_HOSTED_URL ] && [ ! -z $BLIMAN_NAMESPACE ];then
+           export BLIMAN_CANDIDATES_REPO="https://raw.githubusercontent.com/$BLIMAN_NAMESPACE/BLIman/main"
+        elif [ ! -z $BLIMAN_HOSTED_URL ] && [ -z $BLIMAN_NAMESPACE ];then
+           export BLIMAN_CANDIDATES_REPO="$BLIMAN_HOSTED_URL/Be-Secure/BLIman/main"
+        else
+           export BLIMAN_CANDIDATES_REPO="https://raw.githubusercontent.com/Be-Secure/BLIman/main"
+        fi
+
 fi
 
 if [ -z "$BLIMAN_DIR" ]; then
 	export BLIMAN_DIR="$HOME/.bliman"
 fi
 
-
-
 if [[ -z "$BLIMAN_LAB_URL" ]]; then
-	export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
+	if [ ! -z $BLIMAN_HOSTED_URL ] && [ ! -z $BLIMAN_NAMESPACE ];then
+	   export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
+	elif [ -z $BLIMAN_HOSTED_URL ] && [ ! -z $BLIMAN_NAMESPACE ];then
+           export BLIMAN_LAB_URL="https://raw.githubusercontent.com/$BLIMAN_NAMESPACE/BeSLab/main"
+        elif [ ! -z $BLIMAN_HOSTED_URL ] && [ -z $BLIMAN_NAMESPACE ];then
+	   export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/Be-Secure/BeSLab/main"
+	else
+           export BLIMAN_LAB_URL="https://raw.githubusercontent.com/Be-Secure/BeSLab/main"
+	fi
 fi
 
 # Load the bliman config if it exists.

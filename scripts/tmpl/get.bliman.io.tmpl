@@ -413,21 +413,24 @@ EOF
 
 function __bliman_get_genesis_file ()
 {
-  local genesis_path genesis_file_name genesis_file_url present_working_dir
   genesis_file_name="beslab_genesis.yaml"
   genesis_path=$1
   genesis_file_url="$genesis_path/$genesis_file_name"
+  present_working_dir=`pwd`
 
-  if [[ -z $genesis_path ]];then
+  if [ ! -f $present_working_dir/$genesis_file_name ];then
+    if [[ -z $genesis_path ]];then
            echo -e "Genesis file path not provided."
-           present_working_dir=`pwd`
-           export BLIMAN_GENSIS_FILE_PATH="$present_working_dir/$genesis_file_name" 
-	   echo -e "Downloading default genesis file from Be-Secure community."
-	   curl -o $genesis_file_name https://github.com/Be-Secure/BeSLab/$genesis_file_name | bliman_log
-  else
+           export BLIMAN_GENSIS_FILE_PATH="$present_working_dir/$genesis_file_name"
+           echo -e "Downloading default genesis file from Be-Secure community."
+           curl -o $genesis_file_name https://raw.githubusercontent.com/Be-Secure/BeSLab/main/$genesis_file_name | bliman_log
+    else
            echo -e "Genesis file path provided is $genesis_path."
-	   export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
-           cp $BLIMAN_GENSIS_FILE_PATH . | bliman_log
+           export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
+           cp $BLIMAN_GENSIS_FILE_PATH $present_working_dir | bliman_log
+    fi
+  else
+     echo "Genesis file already present. Skipping ..."
   fi
 }
 
@@ -498,7 +501,7 @@ case $command in
      install)
 
        ([[ ${#opts[@]} -lt 1 ]] && __bliman_download && __bliman_get_genesis_file && __bliman_install ) ||
-       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--genesisPath" ]] __bliman_downlaod && __bliman_get_genesis_file "${args[1]}" && __bliman_install) ||
+       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download && __bliman_get_genesis_file "${args[1]}" && __bliman_install) ||
        ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--version" ]] && __bliman_download "${args[1]}" && __bliman_get_genesis_file && __bliman_install "${opts[0]}" "${args[1]}") ||
        ([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--version" ]] && __bliman_download "${args[1]}" && __bliman_get_genesis_file "${args[2]}" && __bliman_install "${opts[0]}" "${args[1]}") ||
        ([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download "${args[2]}" && __bliman_get_genesis_file "${args[1]}" && __bliman_install "${opts[1]}" "${args[2]}") ||
