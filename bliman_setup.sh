@@ -304,10 +304,11 @@ EOF
 	echo ' B::::::::::::::::B  L::::::::::::::::::::::LI::::::::IM::::::M               M::::::M A:::::A                 A:::::A N::::::N        N::::::N '
 
 	# Sanity checks
-  __bliman_sanatiy_check
+        __bliman_sanatiy_check
 
-  #__bliman_download "$bli_version"
-  echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
+        #__bliman_download "$bli_version"
+	BLIMAN_CANDIDATES_CSV=$(cat "$default_tmp_location/candidates.txt")
+        echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
 
 	# copy in place
 	cp -r "$default_tmp_location/contrib/" "$BLIMAN_DIR" | bliman_log
