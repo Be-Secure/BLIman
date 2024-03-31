@@ -33,13 +33,16 @@ function bli() {
 	load)
 		COMMAND="load-genesis"
 		;;
-	gv)
+	status)
+		COMMAND="status"
+		;;
+	generate-vagrant)
 		COMMAND="generate-vagrantfile"
 		;;
-	ls)
+	list)
 		COMMAND="list"
 		;;
-	v)
+	-V | --version)
 		COMMAND="version"
 		;;
 	u)
@@ -68,6 +71,34 @@ function bli() {
 		;;
 	re)
 		COMMAND="reload"
+		;;
+	help)
+		if [ ! -z $2 ];then
+                 case ${args[1]} in
+                                        load)
+                                                __bli_help_load
+                                        ;;
+                                        initmode)
+                                                __bli_help_initmode
+                                        ;;
+                                        list)
+                                                __bli_help_list
+                                        ;;
+                                        status)
+                                                __bli_help_status
+                                        ;;
+                                        launchlab)
+                                                __bli_help_launchlab
+                                        ;;
+                                        help)
+                                                __bli_help
+                                        ;;
+		
+	         esac
+      	       else
+                  __bli_help
+	       fi
+	       ;;
 	esac
 
 	#
