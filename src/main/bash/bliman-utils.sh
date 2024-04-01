@@ -95,7 +95,7 @@ function __bliman_echo_yellow() {
 	__bliman_echo "33m" "$1"
 }
 
-function __besman_echo_white {
+function __bliman_echo_white {
 	__bliman_echo "1m" "$1"
 }
 
