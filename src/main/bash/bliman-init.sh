@@ -213,7 +213,7 @@ for candidate_name in "${BLIMAN_CANDIDATES[@]}"; do
 	candidate_dir="${BLIMAN_CANDIDATES_DIR}/${candidate_name}/current"
 	if [[ -h "$candidate_dir" || -d "${candidate_dir}" ]]; then
                 export BLIMAN_LAB_MODE=${candidate_name}
-		export BLIMAN_LAB_VERSION=$(cat "${BLIMAN_CANDIDATES_DIR}/${candidate_name}/current/version")
+		[[ -f "${BLIMAN_CANDIDATES_DIR}/${candidate_name}/current/version" ]] && export BLIMAN_LAB_VERSION=$(cat "${BLIMAN_CANDIDATES_DIR}/${candidate_name}/current/version")
 		__bliman_export_candidate_home "$candidate_name" "$candidate_dir"
 		__bliman_prepend_candidate_to_path "$candidate_dir"
 	fi
