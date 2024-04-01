@@ -73,8 +73,9 @@ function bli() {
 		COMMAND="reload"
 		;;
 	help)
+		
 		if [ ! -z $2 ];then
-                 case ${args[1]} in
+                 case "$2" in
                                         load)
                                                 __bli_help_load
                                         ;;
@@ -98,6 +99,7 @@ function bli() {
       	       else
                   __bli_help
 	       fi
+	       exit 0
 	       ;;
 	esac
 
