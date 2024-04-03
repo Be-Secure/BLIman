@@ -44,6 +44,7 @@ function __bliman_set_env_repo() {
 	bes set BESMAN_LITE_MODE True
 	bes set BESMAN_LOCAL_ENV False
 	bes set BESMAN_ENV_REPOS "$BLIMAN_NAMESPACE/BeSLab" || return 1
+        [[ -d /tmp/BeSLab ]] && rm -rf /tmp/BeSLab
 	git clone "https://github.com/$BLIMAN_NAMESPACE/BeSLab" /tmp/BeSLab
 	cp /tmp/BeSLab/beslab/0.0.1/* "$HOME/.besman/envs/"
 	source "$HOME/.besman/bin/besman-init.sh"
