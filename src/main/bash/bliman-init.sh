@@ -277,3 +277,14 @@ if [[ "$bliman_auto_env" == "true" ]]; then
 fi
 
 [[ -f "$BLIMAN_DIR/tmp/source.sh" ]] && source "$BLIMAN_DIR/tmp/source.sh"
+
+if [ -d "$HOME/.besman" ];then
+      gitlab_user_data_file_path="$HOME/.besman/gitlabUserDetails"
+elif [ -d "$HOME/.bliman" ];then
+      gitlab_user_data_file_path="$HOME/.bliman/gitlabUserDetails"
+fi
+
+GITUSER=`cat $gitlab_user_data_file_path | grep "GITLAB_USERNAME:" | awk '{print $2}'`
+GITUSERTOKEN=`cat $gitlab_user_data_file_path | grep "GITLAB_USERTOKEN:" | awk '{print $2}'`
+
+beslighthousePath="/opt/BeSLighthouse/"
