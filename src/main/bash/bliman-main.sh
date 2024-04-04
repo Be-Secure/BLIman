@@ -99,7 +99,7 @@ function bli() {
       	       else
                   __bli_help
 	       fi
-	       exit 0
+	       return 0
 	       ;;
 	esac
 
