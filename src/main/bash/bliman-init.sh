@@ -284,7 +284,24 @@ elif [ -d "$HOME/.bliman" ];then
       gitlab_user_data_file_path="$HOME/.bliman/gitlabUserDetails"
 fi
 
-GITUSER=`cat $gitlab_user_data_file_path | grep "GITLAB_USERNAME:" | awk '{print $2}'`
-GITUSERTOKEN=`cat $gitlab_user_data_file_path | grep "GITLAB_USERTOKEN:" | awk '{print $2}'`
+if [ -f $gitlab_user_data_file_path ];then
+  GITUSER=`cat $gitlab_user_data_file_path | grep "GITLAB_USERNAME:" | awk '{print $2}'`
+  GITUSERTOKEN=`cat $gitlab_user_data_file_path | grep "GITLAB_USERTOKEN:" | awk '{print $2}'`
+fi
 
-beslighthousePath="/opt/BeSLighthouse/"
+if [ -d "$HOME/.besman" ];then
+
+        beslighthousedatafile="$HOME/.besman/beslighthousedata"
+elif  [ -d "$HOME/.bliman" ];then
+         beslighthousedatafile="$HOME/.bliman/beslighthousedata"
+fi
+
+if [ -f $beslighthousedatafile ];then
+   beslighthousePath=`cat $beslighthousedatafile | grep "BESLIGHTHOUSE_DIR:" | awk '{print $2}'`
+   beslighthouse_config_path=$beslighthousePath/src/apiDetailsConfig.json
+   sed -i '/"activeTool"/c\"activeTool": "gitlab"' $beslighthouse_config_path
+   sed -i "/\"namespace\"/c\"namespace\": \"$GITUSER\"," $beslighthouse_config_path
+   sed -i "/\"token\"/c\"token\": \"$GITUSERTOKEN\"," $beslighthouse_config_path
+   myip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+   sed -i "/\"apiUrl\"/c\"apiUrl\": \"http://$myip/\"," $beslighthouse_config_path
+fi
