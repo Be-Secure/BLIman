@@ -147,7 +147,7 @@ function __bli_load_genesis() {
                      __bliman_echo_red  ""
                      __bliman_echo_red  " Populate the Genesis file to current location or default locations and try again."
                      __bliman_echo_red  "======================================================================================================"
-		     exit 1
+		     return 1
 	         fi
 	      else
 		  if [ -f $BLIMAN_DIR/$default_genesis_file_name ];then    
@@ -159,7 +159,7 @@ function __bli_load_genesis() {
                      __bliman_echo_red  ""
                      __bliman_echo_red  " Populate the Genesis file at $PWD or $BLIMAN_DIR and try again."
                      __bliman_echo_red  "======================================================================================================"
-                     exit 1
+                     return 1
                   fi
               fi
 
