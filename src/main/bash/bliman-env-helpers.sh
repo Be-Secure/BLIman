@@ -16,7 +16,7 @@
 #   limitations under the License.
 #
 
-function __bliman_check_candidate_present() {
+function __bliman_check_candidate_available() {
 	local candidate="$1"
 
 	if [ -z "$candidate" ]; then
@@ -25,17 +25,34 @@ function __bliman_check_candidate_present() {
 		__bli_help
 		return 1
 	fi
+	if [[ -d "${BLIMAN_CANDIDATES_DIR}/${candidate}" || -L "${BLIMAN_CANDIDATES_DIR}/${candidate}" ]]; then
+
+		echo ""
+		__bliman_echo_green "candidate ${candidate} is available to install."
+		return 0
+        else
+		echo ""
+                __bliman_echo_red "candidate ${candidate} not available to install."
+                __bli_help
+                return 1
+	fi
 }
 
-function __bliman_check_version_present() {
-	local version="$1"
+function __bliman_check_candidate_installed() {
+	local candidate="$1"
 
-	if [ -z "$version" ]; then
-		echo ""
-		__bliman_echo_red "No candidate version provided."
-		__bli_help
-		return 1
+        if [[ -d "${BLIMAN_CANDIDATES_DIR}/${candidate}/current" || -L "${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version" ]]; then
+            echo ""
+	    __bliman_echo_green "candidate ${candidate} is already installed."
+	    export INSTALLED_CANDIDATE_VERSION=`cat ${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version`
+	    __bliman_echo_green "installed version for candidate ${candidate} is $INSTALLED_CANDIDATE_VERSION."
+	else
+            echo ""
+	    __bliman_echo_yellow "candidate ${candidate} is not installed already."
+            __bliman_check_other_candidate_installed "$candidate"
+            __bliman_echo_green "candidate ${candidate} will be installed."
 	fi
+
 }
 
 function __bliman_determine_version() {
@@ -44,6 +61,14 @@ function __bliman_determine_version() {
 	candidate="$1"
 	version="$2"
 	folder="$3"
+
+        if [ ! -z $INSTALLED_CANDIDATE_VERSION ];then
+
+             VESION=$INSTALLED_CANDIDATE_VERSION
+	     return 0
+        fi
+
+        
 
 	if [[ "$BLIMAN_AVAILABLE" == "false" && -n "$version" && -d "${BLIMAN_CANDIDATES_DIR}/${candidate}/${version}" ]]; then
 		VERSION="$version"

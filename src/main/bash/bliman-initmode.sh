@@ -23,39 +23,49 @@ function __bli_initmode() {
 	version="$2"
 	folder="$3"
 
-	__bliman_check_candidate_present "$candidate" || return 1
-	__bliman_determine_version "$candidate" "$version" "$folder" || return 1
+	__bliman_echo_white ""
+        __bliman_echo_yellow "##############################################################################"
+        __bliman_echo_yellow "                       Setting lab mode as $candidate                         "
+        __bliman_echo_yellow "##############################################################################"
+        __bliman_echo_white ""
 
-	if [[ -d "${BLIMAN_CANDIDATES_DIR}/${candidate}/${VERSION}" || -L "${BLIMAN_CANDIDATES_DIR}/${candidate}/${VERSION}" ]]; then
+	__bliman_check_candidate_available "$candidate" || return 1
+	__bliman_check_cadidate_installed "$candidate"
+	#__bliman_determine_version "$candidate" "$version" "$folder" || return 1
+
+	if [[ ! -z "${INSTALLED_CANDIDATE_VERSION}" ]] && [[ "${INSTALLED_CANDIDATE_VERSION}" == "$version" ]]; then
 		echo ""
-		__bliman_echo_yellow "${candidate} ${VERSION} is already installed."
+		__bliman_echo_yellow "${candidate} is already installed with the same version."
+		echo ""
 		return 0
-	fi
-
-	if [[ ${VERSION_VALID} == 'valid' ]]; then
-		__bliman_determine_current_version "$candidate"
-		__bliman_install_candidate_version "$candidate" "$VERSION" || return 1
-
-		if [[ "$bliman_auto_answer" != 'true' && "$auto_answer_upgrade" != 'true' && -n "$CURRENT" ]]; then
-			__bliman_echo_confirm "Do you want ${candidate} ${VERSION} to be set as default? (Y/n): "
-			read USE
-		fi
-
-		if [[ -z "$USE" || "$USE" == "y" || "$USE" == "Y" ]]; then
-			echo ""
-			__bliman_echo_green "Setting ${candidate} ${VERSION} as default."
-			# __bliman_link_candidate_version "$candidate" "$VERSION"
-			__bliman_add_to_path "$candidate"
-		fi
-
-		return 0
-	elif [[ "$VERSION_VALID" == 'invalid' && -n "$folder" ]]; then
-		__bliman_install_local_version "$candidate" "$VERSION" "$folder" || return 1
 	else
-		echo ""
-		__bliman_echo_red "Stop! $1 is not a valid ${candidate} version."
-		return 1
+		__bliman_install_candidate_version "$candidate" "$version" || return 1
 	fi
+
+	#if [[ ${VERSION_VALID} == 'valid' ]]; then
+	#	__bliman_determine_current_version "$candidate"
+	#	__bliman_install_candidate_version "$candidate" "$VERSION" || return 1
+
+	#	if [[ "$bliman_auto_answer" != 'true' && "$auto_answer_upgrade" != 'true' && -n "$CURRENT" ]]; then
+	#		__bliman_echo_confirm "Do you want ${candidate} ${VERSION} to be set as default? (Y/n): "
+	#		read USE
+	#	fi
+
+	#	if [[ -z "$USE" || "$USE" == "y" || "$USE" == "Y" ]]; then
+	#		echo ""
+	#		__bliman_echo_green "Setting ${candidate} ${VERSION} as default."
+			# __bliman_link_candidate_version "$candidate" "$VERSION"
+	#		__bliman_add_to_path "$candidate"
+	#	fi
+
+	#	return 0
+	#elif [[ "$VERSION_VALID" == 'invalid' && -n "$folder" ]]; then
+	#	__bliman_install_local_version "$candidate" "$VERSION" "$folder" || return 1
+	#else
+	#	echo ""
+	#	__bliman_echo_red "Stop! $1 is not a valid ${candidate} version."
+	#	return 1
+	#fi
 }
 
 function __bliman_install_candidate_version() {
@@ -63,20 +73,29 @@ function __bliman_install_candidate_version() {
 
 	candidate="$1"
 	version="$2"
-	BLIMAN_LAB_MODE="$candidate"
-	export BLIMAN_LAB_MODE
-	__bliman_echo_yellow "Setting lab mode as $candidate"
-	mkdir -p "${BLIMAN_CANDIDATES_DIR}/${candidate}/current"
- 
+	export BLIMAN_LAB_MODE="$candidate"
+
+	mkdir -p "${BLIMAN_CANDIDATES_DIR}/${candidate}/current" | __bliman_log
+        [[ ! -d "${BLIMAN_CANDIDATES_DIR}/active" ]] && mkdir ${BLIMAN_CANDIDATES_DIR}  
+        if [ ! -f "${BLIMAN_CANDIDATES_DIR}/active/mode" ];then
+	   touch "${BLIMAN_CANDIDATES_DIR}/active/mode" | __bliman_log
+	fi
+	echo "$candidate" > "${BLIMAN_CANDIDATES_DIR}/active/mode"
+        
 	__bliman_download "$candidate" "$version" || return 1
-        touch "${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version"
+        touch "${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version" | __bliman_log
 	echo "$version" >> ${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version
+
+	__bliman_echo_green "Lab mode is set to $candidate"
+	echo ""
+	__bliman_echo_yellow "Execute \"bli launchlab\" to install beslab in $candidate mode."
+	echo ""
 
 	# rm -rf "${BLIMAN_DIR}/tmp/out"
 	# unzip -oq "${BLIMAN_DIR}/tmp/${candidate}-${version}.zip" -d "${BLIMAN_DIR}/tmp/out"
 	# mv -f "$BLIMAN_DIR"/tmp/out/* "${BLIMAN_CANDIDATES_DIR}/${candidate}/${version}"
-	__bliman_echo_green "Done installing!"
-	echo ""
+	#__bliman_echo_green "Done installing!"
+	#echo ""
 }
 
 function __bliman_install_local_version() {
@@ -106,7 +125,7 @@ function __bliman_install_local_version() {
 
 	if [[ -d "$folder" ]]; then
 		__bliman_echo_green "Linking ${candidate} ${version} to ${folder}"
-		ln -s "$folder" "${BLIMAN_CANDIDATES_DIR}/${candidate}/${version}"
+		ln -s "$folder" "${BLIMAN_CANDIDATES_DIR}/${candidate}/${version}" | __bliman_log
 		__bliman_echo_green "Done installing!"
 	else
 		__bliman_echo_red "Invalid path! Refusing to link ${candidate} ${version} to ${folder}."
@@ -123,10 +142,10 @@ function __bliman_download() {
 	version="$2"
 
 	metadata_folder="${BLIMAN_DIR}/var/metadata"
-	mkdir -p ${metadata_folder}
+	mkdir -p ${metadata_folder} | __bliman_log
 		
 	local platform_parameter="$BLIMAN_PLATFORM"
-	local download_url="${BLIMAN_CANDIDATES_REPO}/candidates/download/${candidate}/${version}/${platform_parameter}/installer.sh"
+	local download_url="${BLIMAN_CANDIDATES_REPO}/candidates/download/${candidate}/${platform_parameter}/installer.sh"
 	# local base_name="${candidate}-${version}"
 	# local tmp_headers_file="${BLIMAN_DIR}/tmp/${base_name}.headers.tmp"
 	# local headers_file="${metadata_folder}/${base_name}.headers"
@@ -141,7 +160,7 @@ function __bliman_download() {
 	# echo ""
 
 	# download binary
-	__bliman_secure_curl "$download_url" | bash
+	__bliman_secure_curl "$download_url" | bash | __bliman_log
 	# __bliman_secure_curl_download "${download_url}" --output "${binary_input}" --dump-header "${tmp_headers_file}"
 	# grep '^X-Bliman' "${tmp_headers_file}" > "${headers_file}"
 	# __bliman_echo_debug "Downloaded binary to: ${binary_input} (HTTP headers written to: ${headers_file})"
@@ -168,7 +187,7 @@ function __bliman_validate_zip() {
 	zip_archive="$1"
 	zip_ok=$(unzip -t "$zip_archive" | grep 'No errors detected in compressed data')
 	if [ -z "$zip_ok" ]; then
-		rm -f "$zip_archive"
+		rm -f "$zip_archive" | __bliman_log
 		echo ""
 		__bliman_echo_red "Stop! The archive was corrupt and has been removed! Please try installing again."
 		return 1
@@ -223,7 +242,7 @@ function __bliman_checksum_zip() {
 				__bliman_echo_no_colour "Verifying artifact: ${zip_archive} (${algorithm}:${checksum})"
 
 				if ! eval "$cmd"; then
-					rm -f "$zip_archive"
+					rm -f "$zip_archive" | __bliman_log
 					echo ""
 					__bliman_echo_red "Stop! An invalid checksum was detected and the archive removed! Please try re-installing."
 					return 1

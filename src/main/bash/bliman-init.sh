@@ -22,6 +22,9 @@
 # 	BLIMAN_NAMESPACE="Be-Secure"
 # 	export BLIMAN_NAMESPACE
 # fi
+LabConfigs="$BLIMAN_DIR/etc/genesis_data.sh"
+source $LabConfigs
+
 [[ -z  $BLIMAN_HOSTED_URL ]] && export BLIMAN_HOSTED_URL="https://raw.githubusercontent.com"
 [[ -z  $BLIMAN_NAMESPACE ]] && export BLIMAN_NAMESPACE="Be-Secure"
 [[ -z  $BLIMAN_REPO_URL ]] && export BLIMAN_REPO_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"

@@ -1,4 +1,19 @@
 #!/bin/bash
+#
+#   Copyright 2023 BeS Community
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 
 function __bliman_launch_host_mode() {
 	__bliman_clone_substrate
@@ -28,39 +43,42 @@ function __bliman_launch_lite_mode() {
 function __bliman_prime_vagrantfile() {
 	__bliman_echo_yellow "Prime vagrantfile"
 	[[ -f $HOME/oah-bes-vm/host/vagrant/Vagrantfile ]] && rm "$HOME/oah-bes-vm/host/vagrant/Vagrantfile"
-	cp "$BLIMAN_DIR/tmp/Vagrantfile" "$HOME/oah-bes-vm/host/vagrant/Vagrantfile"
+	cp "$BLIMAN_DIR/tmp/Vagrantfile" "$HOME/oah-bes-vm/host/vagrant/Vagrantfile" | __bliman_log
 }
 
 function __bliman_clone_substrate() {
-	echo "Setting OAH_ENV_BASE as $HOME"
+	__bliman_echo_yellow "Setting OAH_ENV_BASE as $HOME"
 	OAH_ENV_BASE="$HOME"
 	export OAH_ENV_BASE
-	echo "OAH_ENV_BASE=$OAH_ENV_BASE"
+	__bliman_echo_yellow "OAH_ENV_BASE=$OAH_ENV_BASE"
 	[[ -d "$HOME/oah-bes-vm" ]] && echo "oah-bes-vm found" && return
-	git clone "https://github.com/$BLIMAN_NAMESPACE/oah-bes-vm" "$HOME/oah-bes-vm"
+	git clone "https://github.com/$BLIMAN_NAMESPACE/oah-bes-vm" "$HOME/oah-bes-vm" | __bliman_log
 	}
 
 function __bliman_set_env_repo() {
+	__bliman_echo_yellow "Set BeSMan environment."
 	bes set BESMAN_LITE_MODE True
 	bes set BESMAN_LOCAL_ENV False
 	bes set BESMAN_ENV_REPOS "$BLIMAN_NAMESPACE/BeSLab" || return 1
+	__bliman_echo_yellow "Installing BeSLab to besman envs."
         [[ -d /tmp/BeSLab ]] && rm -rf /tmp/BeSLab
-	git clone "https://github.com/$BLIMAN_NAMESPACE/BeSLab" /tmp/BeSLab
-	cp /tmp/BeSLab/beslab/0.0.1/* "$HOME/.besman/envs/"
-	source "$HOME/.besman/bin/besman-init.sh"
-        bes list > /dev/null 2>&1
+	git clone "https://github.com/$BLIMAN_NAMESPACE/BeSLab" /tmp/BeSLab | __bliman_log
+	cp /tmp/BeSLab/src/* "$HOME/.besman/envs/" | __bliman_log
+	source "$HOME/.besman/bin/besman-init.sh" 
+        bes list | __bliman_log
 }
 
 function __bliman_install_beslab_env() {
+	__bliman_echo_yellow "Called BesMan to install BeSLab."
 	bes install -env beslab-env -V 0.0.1
 }
 
 function __bliman_check_besman() {
 	if [[ ! -d $BESMAN_DIR ]]; then
-		echo "BeSman not found. Run install first"
+		__bliman_echo_red "BeSman not found. Execure \"bli initmode <modename> \" first. "
 		return 1
 	else
-		echo "BeSman found"
+		__bliman_echo_white "BeSman found."
 		return 0
 	fi
 }

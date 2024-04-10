@@ -28,6 +28,7 @@ function bli() {
 
 	COMMAND="$1"
 	QUALIFIER="$2"
+        __bliman_createlogfile
 
 	case "$COMMAND" in
 	load)

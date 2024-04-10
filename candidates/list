@@ -15,8 +15,9 @@ Tools installed -
 
 A VM is brought up after launching BeSLab with all the required tools inside.
 
-                                                          $ bli install host
-                                                          $ bli launch beslab
+                                                          $ bli load
+                                                          $ bli initmode host
+                                                          $ bli launchlab
 
 --------------------------------------------------------------------------------
 Bare Metal Mode
@@ -26,18 +27,21 @@ Tools installed -
   - ansible
 
 BeSLab is installed within the user's machine.
-                                                          $ bli install bare
-                                                          $ bli launch beslab
+                                                          $ bli load
+                                                          $ bli initmode bare
+                                                          $ bli launchlab
 
 --------------------------------------------------------------------------------
-Lightweight Mode
+Lite Mode
 
 Tools installed - 
   - BeSman
 
 Bare minimum tools for running RT/BT activities will be installed in the user's 
 machine using BeSLab env scripts.
-                                                          $ bli install lite
+                                                          $ bli load
+							  $ bli initmode lite
+                                                          $ bli launchlab
 
 
 

@@ -382,20 +382,22 @@ EOF
 
 	if [ -f  $BLIMAN_DIR/bin/bliman-init.sh ];then
 	   #source $BLIMAN_DIR/bin/bliman-init.sh
-	   echo -e "\n\n\nAll done!\n\n"
-
+	   echo -e "\nAll done! BLIMAN installed at $BLIMAN_DIR\n"
            echo "Issue the following command to verify installation:"
            echo ""
            echo "    bli help"
            echo ""
-            
+	   echo "On successful verification of bli help command, modify the default Genesis file available at present working directory(only if need to change)."
+	   echo "Load the genesis file after changes using \"bli load\" command."
+	   echo ""
 	   bash -l
-           exit 0
+           return 0
 	else
 	   echo ""
 	   echo "BLIman not able to install properly."
 	   echo ""
 	   echo "   Please refer log file at $BLIMAN_INSTALL_LOG_FILE"
+	   return 1
 	fi
 
 }
@@ -408,6 +410,7 @@ function __bliman_get_genesis_file ()
   present_working_dir=`pwd`
 
   if [ ! -f $present_working_dir/$genesis_file_name ];then
+    echo "Installing default genesis file ..."	  
     if [[ -z $genesis_path ]];then
            echo -e "Genesis file path not provided."
            export BLIMAN_GENSIS_FILE_PATH="$present_working_dir/$genesis_file_name" 
