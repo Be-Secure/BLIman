@@ -97,13 +97,14 @@ function __bliman_load_export_vars() {
 
 	genesis_data=$(<"$tmp_genesis_file") #Load genesis data
 	
-	source_file="$BLIMAN_DIR/tmp/genesis_data.sh"
+	source_file="$BLIMAN_DIR/etc/genesis_data.sh"
         
 	__bliman_convert_yaml_to_sh "$genesis_data" "$source_file"
 
 	[[ -f $tmp_genesis_file ]] && rm $tmp_genesis_file
 
 	source $source_file
+
 }
 
 function __bli_load_genesis() {
@@ -111,13 +112,9 @@ function __bli_load_genesis() {
 	local Genesis_File_location="";
 
         if [ -z $BLIMAN_GENSIS_FILE_PATH ];then
-              __bliman_echo_yellow  ""
-              __bliman_echo_yellow  "======================================================================================================"
-              __bliman_echo_yellow  " Genesis file path is not set using default locations."
-              __bliman_echo_yellow  ""
-              __bliman_echo_yellow  " default locations are present working direcotry OR BLIMAN installation directory."
-              __bliman_echo_yellow  "======================================================================================================"
-              __bliman_echo_yellow  ""
+              echo ""
+              __bliman_echo_yellow  " Genesis file path is not set checking file at default locations i.e PWD or $HOME/.bliman directory"
+	      echo ""
 	else
 	       __bliman_echo_yellow  "Using Genesis file path at $BLIMAN_GENSIS_FILE_PATH"	
               Genesis_File_location=$BLIMAN_GENSIS_FILE_PATH
@@ -125,39 +122,47 @@ function __bli_load_genesis() {
 	fi
 
 	if [ -z $Genesis_File_location ];then
-	   __bliman_echo_no_colour "Checking Genesis file at present working directory."
            PWD=`pwd`
 	   default_genesis_file_name=beslab_genesis.yaml
 
            if [ -f $PWD/$default_genesis_file_name ];then
-	      __bliman_echo_yellow "Genesis file $default_genesis_file_name is found at present workin direcotry." 	   
+	      __bliman_echo_yellow  ""
+              __bliman_echo_yellow  "======================================================================================================"
+              __bliman_echo_yellow  " Using genesis file found at $PWD.                                                                    "
+              __bliman_echo_yellow  "======================================================================================================"
+              __bliman_echo_yellow  "" 	   
               Genesis_File_location=$PWD/$default_genesis_file_name
 	   else
-	      __bliman_echo_yellow "Genesis file not found at present working directory."
-	      __bliman_echo_yellow "Checking Genesis file at $BLIMAN_DIR"
-
 	      if [ -z $BLIMAN_DIR ];then
-                 __bliman_echo_yellow "BLIMAN_DIR is not set. Checking Gensis file at default bliman directory."
 		 if [ -f $HOME/.bliman/$default_genesis_file_name ];then
-		    __bliman_echo_yellow  "Using Genesis file located at default location $HOME/.bliman/$default_genesis_file_name"	 
+	            __bliman_echo_yellow  ""
+                    __bliman_echo_yellow  "======================================================================================================"
+                    __bliman_echo_yellow  " Using genesis file present at $HOME/.bliman/$default_genesis_file_name.                              "
+                    __bliman_echo_yellow  "======================================================================================================"
+                    __bliman_echo_yellow  ""	 
                     Genesis_File_location=$HOME/.bliman/$default_genesis_file_name
 		 else
 	             __bliman_echo_red  "======================================================================================================"
-                     __bliman_echo_red  " Genesis file not found at default locations."
+                     __bliman_echo_red  " Genesis file not found at default locations.                                                         "
                      __bliman_echo_red  ""
-                     __bliman_echo_red  " Populate the Genesis file to current location or default locations and try again."
+                     __bliman_echo_red  " Provide the Genesis file to current location or at $HOME/.bliman and try again.                      "
                      __bliman_echo_red  "======================================================================================================"
 		     return 1
 	         fi
 	      else
 		  if [ -f $BLIMAN_DIR/$default_genesis_file_name ];then    
-		     __bliman_echo_yellow  "Using Genesis file located at specified by BLIMMAN_DIR $HOME/.bliman/$default_genesis_file_name"
+		    __bliman_echo_yellow  ""
+                    __bliman_echo_yellow  "======================================================================================================"
+                    __bliman_echo_yellow  " Using genesis file located at $BLIMAN_DIR/$default_genesis_file_name.                                "
+                    __bliman_echo_yellow  "======================================================================================================"
+                    __bliman_echo_yellow  ""
+
                      Genesis_File_location=$BLIMAN_DIR/$default_genesis_file_name 
 	          else
 		     __bliman_echo_red  "======================================================================================================"
-                     __bliman_echo_red  " Genesis file not found at $BLIMAN_DIR."
+                     __bliman_echo_red  " Genesis file not found at $BLIMAN_DIR.                                                               "
                      __bliman_echo_red  ""
-                     __bliman_echo_red  " Populate the Genesis file at $PWD or $BLIMAN_DIR and try again."
+                     __bliman_echo_red  " Provide the Genesis file at $PWD or $BLIMAN_DIR and try again.                                       "
                      __bliman_echo_red  "======================================================================================================"
                      return 1
                   fi
@@ -166,4 +171,10 @@ function __bli_load_genesis() {
            fi
 	fi
         __bliman_load_export_vars "$Genesis_File_location"
+	
+	__bliman_echo_green "Genesis file is loaded successfully!!"
+        echo ""
+        __bliman_echo_yellow "Execute \"bli initmode <modename>\" to set the beslab mode to install."
+        __bliman_echo_yellow "   use \"bli help initmode\" for more information."
+        echo ""
 }
