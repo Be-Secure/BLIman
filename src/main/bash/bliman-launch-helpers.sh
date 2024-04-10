@@ -57,8 +57,8 @@ function __bliman_clone_substrate() {
 
 function __bliman_set_env_repo() {
 	__bliman_echo_yellow "Set BeSMan environment."
-	bes set BESMAN_LITE_MODE True
-	bes set BESMAN_LOCAL_ENV ""
+	#bes set BESMAN_LITE_MODE True
+	#bes unset BESMAN_LOCAL_ENV
 	bes set BESMAN_ENV_REPOS "$BLIMAN_NAMESPACE/BeSLab" || return 1
 	__bliman_echo_yellow "Installing BeSLab to besman envs."
 
@@ -67,7 +67,7 @@ function __bliman_set_env_repo() {
 
         tmp_location="/tmp"
         unzip_location="/tmp/BeSLab"
-	if [ ! -z $BESLAB_VERSION ] && [ $BESLAB_VERSION == "latest" ];then
+	if [ ! -z $BESLAB_VERSION ] && [ "$BESLAB_VERSION" == "latest" ];then
 
            response=$(curl -s "https://api.github.com/repos/$BLIMAN_NAMESPACE/BeSLab/releases/latest")
            __bliman_echo_yellow "Installing JQ for JSON response readings."
@@ -89,7 +89,7 @@ function __bliman_set_env_repo() {
 	     unzip -qo $tmp_location/beslab-${latest_rel}.zip -d $unzip_location | __bliman_log
              #mkdir -p "$HOME/.besman/envs/${latest_rel}" | __bliman_log
 	     #cp "$unzip_location/src/*" "$HOME/.besman/envs/${latest_rel}" | __bliman_log
-             cp "$unzip_location/src/*" "$HOME/.besman/envs/" | __bliman_log
+             cp $unzip_location/src/* "$HOME/.besman/envs/" | __bliman_log
 
 	     rm -rf $unzip_location
 	     rm -f  $tmp_location/beslab-${latest_rel}.zip
@@ -100,7 +100,7 @@ function __bliman_set_env_repo() {
 	       __bliman_echo_red "exiting..."
 	       return 1
            fi
-        elif [ ! -z $BESLAB_VERSION ] && [ $BESLAB_VERSION != "latest" ] && [ $BESLAB_VERSION != "dev" ];then
+        elif [ ! -z $BESLAB_VERSION ] && [ "$BESLAB_VERSION" != "latest" ] && [ "$BESLAB_VERSION" != "dev" ];then
 
             [[ -d $unzip_location ]] && rm -rf $unzip_location
 
@@ -109,25 +109,25 @@ function __bliman_set_env_repo() {
              unzip -qo $tmp_location/beslab-${BESLAB_VERSION}.zip -d $unzip_location | __bliman_log
              #mkdir -p "$HOME/.besman/envs/${BESLAB_VERSION}" | __bliman_log
              #cp "$unzip_location/src/*" "$HOME/.besman/envs/${BESLAB_VERSION}" | __bliman_log
-             cp "$unzip_location/src/*" "$HOME/.besman/envs/" | __bliman_log
+             cp $unzip_location/src/* "$HOME/.besman/envs/" | __bliman_log
 
              rm -rf $unzip_location
              rm -f  $tmp_location/beslab-${BESLAB_VERSION}.zip
 	
-        elif [ $BESLAB_VERSION == "dev" ] || [ -z $BESLAB_VERSION ];then
+        elif [ -z $BESLAB_VERSION ] || [ "$BESLAB_VERSION" == "dev" ];then
 
            [[ -d $unzip_location ]] && rm -rf $unzip_location
 	   git clone "https://github.com/$BLIMAN_NAMESPACE/BeSLab" $unzip_location | __bliman_log     
 	   export BESLAB_VERSION="0.0.0"
            #mkdir -p "$HOME/.besman/envs/0.0.0" | __bliman_log 
 	   #cp "$unzip_location/src/*" "$HOME/.besman/envs/0.0.0" | __bliman_log
-	   cp "$unzip_location/src/*" "$HOME/.besman/envs/" | __bliman_log
+	   cp $unzip_location/src/* "$HOME/.besman/envs/" | __bliman_log
 	fi
 
         if [ -f "$HOME/.bliman/etc/genesis_data.sh" ];then
 
            if grep -q "BESLAB_VERSION" "/root/.bliman/etc/genesis_data.sh"; then
-              sed -i "/^export BESLAB_VERSION/c\ export BESLAB_VERSION=\"$BESLA_VERSION\"" "$HOME/.bliman/etc/genesis_data.sh"
+              sed -i "/^export BESLAB_VERSION/c\export BESLAB_VERSION=\"$BESLAB_VERSION\"" "$HOME/.bliman/etc/genesis_data.sh"
 	   else
               echo "export BESLAB_VERSION=\"$BESLAB_VERSION\"" >> "$HOME/.bliman/etc/genesis_data.sh"
 	   fi
@@ -139,7 +139,7 @@ function __bliman_set_env_repo() {
 
 function __bliman_install_beslab_env() {
 	__bliman_echo_yellow "Called BesMan to install BeSLab."
-	bes install -env beslab-env -V $BESLAB_VERSION
+	bes install -env src-env -V $BESLAB_VERSION
 }
 
 function __bliman_check_besman() {
