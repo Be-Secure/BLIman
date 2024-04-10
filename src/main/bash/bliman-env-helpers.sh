@@ -49,7 +49,7 @@ function __bliman_check_candidate_installed() {
 	else
             echo ""
 	    __bliman_echo_yellow "candidate ${candidate} is not installed already."
-            __bliman_check_other_candidate_installed "$candidate"
+            #__bliman_check_other_candidate_installed "$candidate"
             __bliman_echo_green "candidate ${candidate} will be installed."
 	fi
 

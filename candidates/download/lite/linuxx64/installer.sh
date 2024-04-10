@@ -36,9 +36,14 @@ if [[ ! -d $HOME/.besman ]]; then
           cd $prd
           #curl -L "https://raw.githubusercontent.com/Be-Secure/BeSman/master/quick_install.sh" | bash 
         else
-	   curl -L "https://raw.githubusercontent.com/Be-Secure/BeSman/dist/dist/get.besman.io" | bash | __bliman_log
+	   curl -L "https://raw.githubusercontent.com/Be-Secure/BeSman/dist/dist/get.besman.io" | bash
         fi
-	source "$HOME"/.besman/bin/besman-init.sh
+	if [  -f "$HOME/.besman/bin/besman-init.sh" ];then
+	   source "$HOME/.besman/bin/besman-init.sh"
+	else
+           echo "besman-init.sh not found. BeSMan not installed correctly. Exiting ..."
+	   return 1
+        fi
 else
 	echo "BeSman found"
 fi

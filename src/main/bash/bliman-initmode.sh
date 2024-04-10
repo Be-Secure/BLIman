@@ -81,8 +81,8 @@ function __bliman_install_candidate_version() {
         touch "${BLIMAN_CANDIDATES_DIR}/current/version" | __bliman_log
         touch "${BLIMAN_CANDIDATES_DIR}/current/mode" | __bliman_log
 
-	echo "$version" >> ${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version 
-        echo "$candidate" > "${BLIMAN_CANDIDATES_DIR}/active/mode"
+	echo "$version" >> ${BLIMAN_CANDIDATES_DIR}/current/version 
+        echo "$candidate" > "${BLIMAN_CANDIDATES_DIR}/current/mode"
 
 	__bliman_echo_green "Lab mode is set to $candidate"
 	echo ""
@@ -158,7 +158,7 @@ function __bliman_download() {
 	# echo ""
 
 	# download binary
-	__bliman_secure_curl "$download_url" | bash | __bliman_log
+	__bliman_secure_curl "$download_url" | bash 
 	# __bliman_secure_curl_download "${download_url}" --output "${binary_input}" --dump-header "${tmp_headers_file}"
 	# grep '^X-Bliman' "${tmp_headers_file}" > "${headers_file}"
 	# __bliman_echo_debug "Downloaded binary to: ${binary_input} (HTTP headers written to: ${headers_file})"
