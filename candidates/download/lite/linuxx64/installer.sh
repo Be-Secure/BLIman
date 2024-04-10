@@ -29,14 +29,14 @@ if [[ ! -d $HOME/.besman ]]; then
         if [  ! -z ${BLIMAN_IS_REL} ] && [ ${BLIMAN_IS_REL} == "false" ];then
 	  prd=`pwd`
           cd /opt/
-	  git clone https://github.com/Be-Secure/BeSman.git
+	  git clone https://github.com/Be-Secure/BeSman.git | __bliman_log
           cd BeSman
-	  ./quick_install.sh
-          rm -rf /opt/BeSman
+	  ./quick_install.sh | __bliman_log
+          rm -rf /opt/BeSman | __bliman_log
           cd $prd
-          #curl -L "https://raw.githubusercontent.com/Be-Secure/BeSman/master/quick_install.sh" | bash
+          #curl -L "https://raw.githubusercontent.com/Be-Secure/BeSman/master/quick_install.sh" | bash 
         else
-	   curl -L "https://raw.githubusercontent.com/Be-Secure/BeSman/dist/dist/get.besman.io" | bash
+	   curl -L "https://raw.githubusercontent.com/Be-Secure/BeSman/dist/dist/get.besman.io" | bash | __bliman_log
         fi
 	source "$HOME"/.besman/bin/besman-init.sh
 else

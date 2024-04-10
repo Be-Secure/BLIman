@@ -313,6 +313,7 @@ EOF
 	# copy in place
 	cp -r "$default_tmp_location/contrib/" "$BLIMAN_DIR" | bliman_log
 	cp -r "$default_tmp_location/src/main/bash" "$bliman_src_folder" | bliman_log
+	cp -r "$default_tmp_location/candidates/*" "$bliman_candidates_folder" | bliman_log
 	mkdir -p "$BLIMAN_DIR/bin/" | bliman_log
 	mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/" | bliman_log
 
@@ -387,8 +388,8 @@ EOF
            echo ""
            echo "    bli help"
            echo ""
-	   echo "On successful verification of bli help command, modify the default Genesis file available at present working directory(only if need to change)."
-	   echo "Load the genesis file after changes using \"bli load\" command."
+	   echo "Update the genesis file."
+	   echo "Load the genesis file using \"bli load\" command."
 	   echo ""
 	   bash -l
            return 0

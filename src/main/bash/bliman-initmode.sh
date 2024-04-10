@@ -30,7 +30,7 @@ function __bli_initmode() {
         __bliman_echo_white ""
 
 	__bliman_check_candidate_available "$candidate" || return 1
-	__bliman_check_cadidate_installed "$candidate"
+	__bliman_check_candidate_installed "$candidate"
 	#__bliman_determine_version "$candidate" "$version" "$folder" || return 1
 
 	if [[ ! -z "${INSTALLED_CANDIDATE_VERSION}" ]] && [[ "${INSTALLED_CANDIDATE_VERSION}" == "$version" ]]; then
@@ -75,16 +75,14 @@ function __bliman_install_candidate_version() {
 	version="$2"
 	export BLIMAN_LAB_MODE="$candidate"
 
-	mkdir -p "${BLIMAN_CANDIDATES_DIR}/${candidate}/current" | __bliman_log
-        [[ ! -d "${BLIMAN_CANDIDATES_DIR}/active" ]] && mkdir ${BLIMAN_CANDIDATES_DIR}  
-        if [ ! -f "${BLIMAN_CANDIDATES_DIR}/active/mode" ];then
-	   touch "${BLIMAN_CANDIDATES_DIR}/active/mode" | __bliman_log
-	fi
-	echo "$candidate" > "${BLIMAN_CANDIDATES_DIR}/active/mode"
+	[[ ! -d ${BLIMAN_CANDIDATES_DIR}/current ]] && mkdir -p "${BLIMAN_CANDIDATES_DIR}/current" | __bliman_log
         
 	__bliman_download "$candidate" "$version" || return 1
-        touch "${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version" | __bliman_log
-	echo "$version" >> ${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version
+        touch "${BLIMAN_CANDIDATES_DIR}/current/version" | __bliman_log
+        touch "${BLIMAN_CANDIDATES_DIR}/current/mode" | __bliman_log
+
+	echo "$version" >> ${BLIMAN_CANDIDATES_DIR}/${candidate}/current/version 
+        echo "$candidate" > "${BLIMAN_CANDIDATES_DIR}/active/mode"
 
 	__bliman_echo_green "Lab mode is set to $candidate"
 	echo ""

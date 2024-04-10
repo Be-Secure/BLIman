@@ -25,7 +25,7 @@ function __bliman_check_candidate_available() {
 		__bli_help
 		return 1
 	fi
-	if [[ -d "${BLIMAN_CANDIDATES_DIR}/${candidate}" || -L "${BLIMAN_CANDIDATES_DIR}/${candidate}" ]]; then
+	if [[ -d "${BLIMAN_CANDIDATES_DIR}/download/${candidate}" || -L "${BLIMAN_CANDIDATES_DIR}/download/${candidate}" ]]; then
 
 		echo ""
 		__bliman_echo_green "candidate ${candidate} is available to install."
