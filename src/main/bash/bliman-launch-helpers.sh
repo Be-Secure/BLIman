@@ -68,7 +68,7 @@ function __bliman_set_env_repo() {
         [[ ! -d $BESLAB_INSTALL_DIR ]] && mkdir -p $BESLAB_INSTALL_DIR 
 
         tmp_location="/tmp"
-        unzip_location="$BESLAB_INSTALL_DIR"
+        beslab_install_location="$BESLAB_INSTALL_DIR"
 
         __bliman_echo_yellow "Installing JQ for JSON response readings."
 	which jq
@@ -76,7 +76,7 @@ function __bliman_set_env_repo() {
           apt-get install jq -y | __bliman_log
         fi
 
-	if [ ! -z $BESLAB_VERSION ] && [ "$BESLAB_VERSION" == "latest" ];then
+	if [ ! -z $BESLAB_VERSION ] &&  [ "$BESLAB_VERSION" != "0.0.0" ] && [ "$BESLAB_VERSION" == "latest" ];then
 
            response=$(curl -s "https://api.github.com/repos/$BLIMAN_NAMESPACE/BeSLab/releases/latest")
 	   
@@ -95,22 +95,22 @@ function __bliman_set_env_repo() {
               curl -o $tmp_location/beslab-${beslab_ver}.zip --fail --location --progress-bar "${GITHUB_BROWSER_URL}/${GITHUB_NAMESPACE}/BeSLab/archive/refs/tags/${beslab_ver}.zip" | __bliman_log
 
 	      if [ -f  $tmp_location/beslab-${beslab_ver}.zip ];then
-	         [[ -d $unzip_location ]] && rm -rf $unzip_location/*
-	         unzip -qo $tmp_location/beslab-${beslab_ver}.zip -d $unzip_location | __bliman_log
+	         [[ -d $beslab_install_location ]] && rm -rf $beslab_install_location/*
+	         unzip -qo $tmp_location/beslab-${beslab_ver}.zip -d $beslab_install_location | __bliman_log
 
-	         if [ -d ${unzip_lication}/BeSLab-${beslab_ver} ];then
-                    mv ${unzip_lication}/BeSLab-${beslab_ver}/* ${unzip_lication}/
-	            rm-rf ${unzip_lication}/BeSLab-${beslab_ver}
+	         if [ -d ${beslab_install_location}/BeSLab-${beslab_ver} ];then
+                    mv ${beslab_install_location}/BeSLab-${beslab_ver}/* ${beslab_install_location}/
+	            rm -rf ${beslab_install_location}/BeSLab-${beslab_ver}
 	         fi
 
-	         mkdir -p $unzip_lication/beslab/${beslab_ver}
-	         cp $unzip_lication/src/besman-beslab-env.sh $unzip_lication/src/besman-beslab-env-config.yaml $unzip_lication/beslab/${beslab_ver}/
+	         mkdir -p ${beslab_install_location}/beslab/${beslab_ver}
+	         cp ${beslab_install_location}/src/besman-beslab-env.sh ${beslab_install_location}/src/besman-beslab-env-config.yaml ${beslab_install_location}/beslab/${beslab_ver}/
                  if [ ! -z $BESMAN_DIR ];then
                     besman_dir=$BESMAN_DIR
 	         else
                     besman_dir="$HOME/.besman"
 	         fi
-                 cp $unzip_location/src/* "$besman_dir/envs/" | __bliman_log
+                 cp ${beslab_install_location}/src/* "$besman_dir/envs/" | __bliman_log
 	         echo "Be-Secure/BeSlab/beslab-env,${beslab_ver}" > $besman_dir/var/list.txt
 
 	         rm -f  $tmp_location/beslab-${beslab_ver}.zip
@@ -126,7 +126,7 @@ function __bliman_set_env_repo() {
               __bliman_echo_red "Exiting..."
               return 1
            fi
-        elif [ ! -z $BESLAB_VERSION ] && [ "$BESLAB_VERSION" != "latest" ] && [ "$BESLAB_VERSION" != "dev" ];then
+        elif [ ! -z $BESLAB_VERSION ] &&  [ "$BESLAB_VERSION" != "0.0.0" ] && [ "$BESLAB_VERSION" != "latest" ] && [ "$BESLAB_VERSION" != "dev" ];then
 
 	    beslab_ver=$BESLAB_VERSION 	
             response=$(curl -s "https://api.github.com/repos/$BLIMAN_NAMESPACE/BeSLab/releases/tags/${BESLAB_VERSION}")
@@ -139,22 +139,22 @@ function __bliman_set_env_repo() {
 	    else
 
                 curl -o $tmp_location/beslab-${BESLAB_VERSION}.zip --fail --location --progress-bar "${GITHUB_BROWSER_URL}/${GITHUB_NAMESPACE}/BeSLab/archive/refs/tags/${BESLAB_VERSION}.zip" | __bliman_log
-                [[ -d $unzip_location ]] && rm -rf $unzip_location/*
-                 unzip -qo $tmp_location/beslab-${BESLAB_VERSION}.zip -d $unzip_location | __bliman_log
+                [[ -d ${beslab_install_location} ]] && rm -rf ${beslab_install_location}/*
+                 unzip -qo $tmp_location/beslab-${BESLAB_VERSION}.zip -d ${beslab_install_location} | __bliman_log
 
-                 if [ -d ${unzip_lication}/BeSLab-${BESLAB_VERSION} ];then
-                    mv ${unzip_lication}/BeSLab-${BESLAB_VERSION}/* ${unzip_lication}/
-                    rm-rf ${unzip_lication}/BeSLab-${BESLAB_VERSION}
+                 if [ -d ${beslab_install_location}/BeSLab-${BESLAB_VERSION} ];then
+                    mv ${beslab_install_location}/BeSLab-${BESLAB_VERSION}/* ${beslab_install_location}/
+                    rm -rf ${beslab_install_location}/BeSLab-${BESLAB_VERSION}
                  fi
 
-                 mkdir -p $unzip_lication/beslab/${BESLAB_VERSION}
-                 cp $unzip_lication/src/besman-beslab-env.sh $unzip_lication/src/besman-beslab-env-config.yaml $unzip_lication/beslab/${BESLAB_VERSION}/
+                 mkdir -p ${beslab_install_location}/beslab/${BESLAB_VERSION}
+                 cp ${beslab_install_location}/src/besman-beslab-env.sh ${beslab_install_location}/src/besman-beslab-env-config.yaml ${beslab_install_location}/beslab/${BESLAB_VERSION}/
                  if [ ! -z $BESMAN_DIR ];then
                     besman_dir=$BESMAN_DIR
                  else
                     besman_dir="$HOME/.besman"
                  fi
-                 cp $unzip_location/src/* "$besman_dir/envs/" | __bliman_log
+                 cp ${beslab_install_location}/src/* "$besman_dir/envs/" | __bliman_log
                  echo "Be-Secure/BeSlab/beslab-env,${BESLAB_VERSION}" > $besman_dir/var/list.txt
 
                  rm -f  $tmp_location/beslab-${BESLAB_VERSION}.zip
@@ -168,19 +168,19 @@ function __bliman_set_env_repo() {
            beslab_ver="0.0.0"
 	   export BESLAB_VERSION="${beslab_ver}"
            
-           mkdir -p $unzip_lication/beslab/${beslab_ver}
-	   mkdir -p $unzip_location/src
+           mkdir -p ${beslab_install_location}/beslab/${beslab_ver}
+	   mkdir -p ${beslab_install_location}/src
 
-           cp $tmp_location/beslab/src/* $unzip_location/src/
-	   cp $unzip_location/src/besman-beslab-env.sh $unzip_location/beslab/${beslab_ver}/
-	   cp $unzip_location/src/besman-beslab-env-config.yaml $unzip_location/beslab/${beslab_ver}/
+           cp $tmp_location/beslab/src/* ${beslab_install_location}/src/
+	   cp ${beslab_install_location}/src/besman-beslab-env.sh ${beslab_install_location}/beslab/${beslab_ver}/
+	   cp ${beslab_install_location}/src/besman-beslab-env-config.yaml ${beslab_install_location}/beslab/${beslab_ver}/
            if [ ! -z $BESMAN_DIR ];then
                     besman_dir=$BESMAN_DIR
            else
                     besman_dir="$HOME/.besman"
            fi
 
-	   cp $unzip_location/src/* "$besman_dir/envs/" | __bliman_log
+	   cp ${beslab_install_location}/src/* "$besman_dir/envs/" | __bliman_log
 	   echo "Be-Secure/BeSlab/beslab-env,${beslab_ver}" > $besman_dir/var/list.txt
 	fi
 
