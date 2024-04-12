@@ -159,16 +159,17 @@ function __bliman_set_env_repo() {
 	    fi
         elif [ -z $BESLAB_VERSION ] || [ "$BESLAB_VERSION" == "dev" ];then
 
-           mkdir $tmp_location/beslab
+           [[ -d  $tmp_location/beslab ]] && rm -rf  $tmp_location/beslab
+	   mkdir $tmp_location/beslab
 	   git clone "https://github.com/$BLIMAN_NAMESPACE/BeSLab" $tmp_location/beslab | __bliman_log     
 	   
            beslab_ver="0.0.0"
 	   export BESLAB_VERSION="${beslab_ver}"
            
+           [[ -d  ${beslab_install_location} ]] && rm -rf  ${beslab_install_location}/*
+
            mkdir -p ${beslab_install_location}/beslab/${beslab_ver}
 	   mkdir -p ${beslab_install_location}/src
-
-           [[ -d  ${beslab_install_location} ]] && rm -rf  ${beslab_install_location}/*
 
 	   cp $tmp_location/beslab/src/* ${beslab_install_location}/src/
 	   cp ${beslab_install_location}/src/besman-beslab-env.sh ${beslab_install_location}/beslab/${beslab_ver}/
@@ -180,8 +181,6 @@ function __bliman_set_env_repo() {
            fi
 
 	   cp ${beslab_install_location}/src/* "$besman_dir/envs/" | __bliman_log
-
-	   rm -rf $tmp_location/beslab
 	fi
 
 	echo "Be-Secure/BeSLab/beslab-env,${beslab_ver}" >> $besman_dir/var/list.txt
