@@ -166,7 +166,7 @@ function __bliman_set_env_repo() {
            beslab_ver="0.0.0"
 	   export BESLAB_VERSION="${beslab_ver}"
            
-           [[ -d  ${beslab_install_location} ]] && rm -rf  ${beslab_install_location}/*
+           [[ -d  ${beslab_install_location} ]] && rm -rf  ${beslab_install_location}/src && rm -rf  ${beslab_install_location}/beslab && rm  ${beslab_install_location}/list.txt
 
            mkdir -p ${beslab_install_location}/beslab/${beslab_ver}
 	   mkdir -p ${beslab_install_location}/src
