@@ -59,7 +59,7 @@ function __bliman_set_env_repo() {
 	__bliman_echo_yellow "Set BeSMan environment."
 	export BESLAB_INSTALL_DIR="$HOME/.beslab"
 
-	bes set BESMAN_LOCAL_ENV True
+	bes set BESMAN_LOCAL_ENV true
 	bes set BESMAN_LOCAL_ENV_DIR "$BESLAB_INSTALL_DIR"
 	bes set BESMAN_ENV_REPOS "$BLIMAN_NAMESPACE/BeSLab" || return 1
 
@@ -104,6 +104,8 @@ function __bliman_set_env_repo() {
 	         fi
 
 	         mkdir -p ${beslab_install_location}/beslab/${beslab_ver}
+		 [[ ! -f  ${beslab_install_location}/list.txt ]] && touch ${beslab_install_location}/list.txt
+
 	         cp ${beslab_install_location}/src/besman-beslab-env.sh ${beslab_install_location}/src/besman-beslab-env-config.yaml ${beslab_install_location}/beslab/${beslab_ver}/
                  if [ ! -z $BESMAN_DIR ];then
                     besman_dir=$BESMAN_DIR
@@ -146,6 +148,8 @@ function __bliman_set_env_repo() {
                  fi
 
                  mkdir -p ${beslab_install_location}/beslab/${BESLAB_VERSION}
+		 [[ ! -f  ${beslab_install_location}/list.txt ]] && touch ${beslab_install_location}/list.txt
+
                  cp ${beslab_install_location}/src/besman-beslab-env.sh ${beslab_install_location}/src/besman-beslab-env-config.yaml ${beslab_install_location}/beslab/${BESLAB_VERSION}/
                  if [ ! -z $BESMAN_DIR ];then
                     besman_dir=$BESMAN_DIR
@@ -166,10 +170,13 @@ function __bliman_set_env_repo() {
            beslab_ver="0.0.0"
 	   export BESLAB_VERSION="${beslab_ver}"
            
-           [[ -d  ${beslab_install_location} ]] && rm -rf  ${beslab_install_location}/src && rm -rf  ${beslab_install_location}/beslab && rm  ${beslab_install_location}/list.txt
+           [[ -d  ${beslab_install_location}/src ]] && rm -rf  ${beslab_install_location}/src 
+	   [[ -d  ${beslab_install_location}/beslab ]] && rm -rf  ${beslab_install_location}/beslab 
+	   [[ -f  ${beslab_install_location}/list.txt ]] && rm  ${beslab_install_location}/list.txt
 
            mkdir -p ${beslab_install_location}/beslab/${beslab_ver}
-	   mkdir -p ${beslab_install_location}/src
+       	   mkdir -p ${beslab_install_location}/src
+           touch ${beslab_install_location}/list.txt
 
 	   cp $tmp_location/beslab/src/* ${beslab_install_location}/src/
 	   cp ${beslab_install_location}/src/besman-beslab-env.sh ${beslab_install_location}/beslab/${beslab_ver}/
@@ -184,7 +191,6 @@ function __bliman_set_env_repo() {
 	fi
 
 	echo "Be-Secure/BeSLab/beslab-env,${beslab_ver}" >> $besman_dir/var/list.txt
-        [[ ! -f  ${beslab_install_dir}/list.txt ]] && touch  ${beslab_install_dir}/list.txt
 	echo "Be-Secure/BeSLab/beslab-env,${beslab_ver}" > ${beslab_install_dir}/list.txt
 
         if [ -f "$HOME/.bliman/etc/genesis_data.sh" ];then
