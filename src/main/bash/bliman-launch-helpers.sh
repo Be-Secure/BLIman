@@ -191,7 +191,7 @@ function __bliman_set_env_repo() {
 	fi
 
 	echo "Be-Secure/BeSLab/beslab-env,${beslab_ver}" >> $besman_dir/var/list.txt
-	echo "Be-Secure/BeSLab/beslab-env,${beslab_ver}" > ${beslab_install_dir}/list.txt
+	echo "Be-Secure/BeSLab/beslab-env,${beslab_ver}" > ${beslab_install_location}/list.txt
 
         if [ -f "$HOME/.bliman/etc/genesis_data.sh" ];then
 
