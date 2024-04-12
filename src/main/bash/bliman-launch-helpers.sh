@@ -168,7 +168,7 @@ function __bliman_set_env_repo() {
            mkdir -p $unzip_lication/beslab/${BESLAB_VERSION}
 	   mkdir -p $unzip_location/src
 
-           cp $tmp_location/beslab/BeSLab/src/* $unzip_location/src/
+           cp $tmp_location/beslab/src/* $unzip_location/src/
 	   cp $unzip_location/src/besman-beslab-env.sh $unzip_location/beslab/${BESLAB_VERSION}/
 	   cp $unzip_location/src/besman-beslab-env-config.yaml $unzip_location/beslab/${BESLAB_VERSION}/
            if [ ! -z $BESMAN_DIR ];then
@@ -191,9 +191,9 @@ function __bliman_set_env_repo() {
 	fi
 
 	if [[ ! -z $besman_dir ]];then
-	   source "$besman_dir/besman-init.sh"
+	   source "$besman_dir/bin/besman-init.sh"
 	else
-           source "$HOME/.besman/besman-init.sh"
+           source "$HOME/.besman/bin/besman-init.sh"
         fi
         bes list | __bliman_log
 	__bliman_echo_green "BeSMan environment is set."
