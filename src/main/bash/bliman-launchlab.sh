@@ -57,11 +57,17 @@ function __bli_launchlab()
     fi
 
     if [[ "$BLIMAN_LAB_MODE" == "host" ]]; then
+        __bliman_echo_white "Installing beslab in host mode"
         __bliman_launch_host_mode
+	__bliman_echo_green "Installed beslab in host mode"
     elif [[ "$BLIMAN_LAB_MODE" == "bare" ]]; then
+        __bliman_echo_white "Installing beslab in bare mode"
         __bliman_launch_bare_mode
+	__bliman_echo_green "Installed beslab in bare mode"
     elif [[ "$BLIMAN_LAB_MODE" == "lite" ]]; then
+        __bliman_echo_white "Installing beslab in lite mode"
         __bliman_launch_lite_mode
+	__bliman_echo_green "Installed beslab in lite mode"
     fi
     
     __bliman_echo_green ""
@@ -82,7 +88,7 @@ function __bli_launchlab()
       pubip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
       __bliman_echo_green ""
 
-      if [ $BESLAB_PRIVATE_LAB_CODECOLAB_TOOL == "gitlab-ce" ];then
+      if [ $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL == "gitlab-ce" ];then
 	  __bliman_echo_white " "
          __bliman_echo_white "Gitlab is accessible at $pubip "
 	 __bliman_echo_white "    Login to the gitlab using username as $BESMAN_LAB_NAME. Use default password."
