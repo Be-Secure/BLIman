@@ -22,7 +22,11 @@
 # 	BLIMAN_NAMESPACE="Be-Secure"
 # 	export BLIMAN_NAMESPACE
 # fi
-LabConfigs="$BLIMAN_DIR/etc/genesis_data.sh"
+if [ ! -z $BLIMAN_DIR ];then
+  LabConfigs="$BLIMAN_DIR/etc/genesis_data.sh"
+else
+  LabConfigs="$HOME/.bliman/etc/genesis_data.sh"
+fi
 
 [[ -f $LabConfigs ]] && source $LabConfigs
 
@@ -41,7 +45,6 @@ if [ -z "$BLIMAN_CANDIDATES_REPO" ]; then
         else
            export BLIMAN_CANDIDATES_REPO="https://raw.githubusercontent.com/Be-Secure/BLIman/main"
         fi
-
 fi
 
 if [ -z "$BLIMAN_DIR" ]; then
