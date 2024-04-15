@@ -56,15 +56,15 @@ function __bli_launchlab()
       __bliman_echo_yellow "    DASHBOARD TOOL VERSION = $BESLAB_DASHBOARD_RELEASE_VERSION"
     fi
 
-    if [[ "$BLIMAN_LAB_MODE" == "host" ]]; then
+    if [[ "$BESLAB_LAB_MODE" == "host" ]]; then
         __bliman_echo_white "Installing beslab in host mode"
         __bliman_launch_host_mode
 	__bliman_echo_green "Installed beslab in host mode"
-    elif [[ "$BLIMAN_LAB_MODE" == "bare" ]]; then
+    elif [[ "$BESLAB_LAB_MODE" == "bare" ]]; then
         __bliman_echo_white "Installing beslab in bare mode"
         __bliman_launch_bare_mode
 	__bliman_echo_green "Installed beslab in bare mode"
-    elif [[ "$BLIMAN_LAB_MODE" == "lite" ]]; then
+    elif [[ "$BESLAB_LAB_MODE" == "lite" ]]; then
         __bliman_echo_white "Installing beslab in lite mode"
         __bliman_launch_lite_mode
 	__bliman_echo_green "Installed beslab in lite mode"
