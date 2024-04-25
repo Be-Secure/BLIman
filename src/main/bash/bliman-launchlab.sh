@@ -23,7 +23,7 @@ function __bli_launchlab()
 	 currmode=`cat $BLIMAN_DIR/candidates/current/mode`
 	 if [ $currmode != "lite" ];then
             __bliman_echo_yellow ""
-            __bliman_echo_red "Lab mode is not set to \"lite\". Execute \"bli initmode lite\" first and try again!!"
+            __bliman_echo_red "Lab mode is not set to \"lite\" mode. Execute \"bli initmode lite\" first and try again!!"
             __bliman_echo_red "Exiting ..."
             __bliman_echo_yellow ""
 	    return 1
@@ -44,9 +44,12 @@ function __bli_launchlab()
     fi
     
     __bliman_echo_white "BLIMAN is going to install following lab components as configured in genesis file."
-    __bliman_echo_yellow "    LAB TYPE = $BESLAB_LAB_TYPE"
-    __bliman_echo_yellow "    LAB MODE = $BESLAB_LAB_MODE"
-    __bliman_echo_yellow "    LAB NAME = $BESMAN_LAB_NAME"
+    __bliman_echo_cyan "    BESLAB TYPE = $BESLAB_LAB_TYPE"
+    __bliman_echo_cyan "    BESLAB MODE = $BESLAB_LAB_MODE"
+    __bliman_echo_cyan "    BESLAB NAME = $BESMAN_LAB_NAME"
+    __bliman_echo_cyan "    BESLAB VERSION = $BESLAB_VERSION"
+    __bliman_echo_cyan "    BESMAN VERSION = $BESMAN_VER"
+    __bliman_echo_cyan ""
 
     if [ $BESLAB_LAB_TYPE == "private" ] && ([ $BESLAB_LAB_MODE == "lite" ] || [ $BESLAB_LAB_MODE == "bare" ]);then
       __bliman_echo_yellow "    CODE COLLABORATION TOOL = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL"
@@ -57,24 +60,20 @@ function __bli_launchlab()
     fi
 
     if [[ "$BESLAB_LAB_MODE" == "host" ]]; then
-        __bliman_echo_white "Installing beslab in host mode"
         __bliman_launch_host_mode
-	__bliman_echo_green "Installed beslab in host mode"
     elif [[ "$BESLAB_LAB_MODE" == "bare" ]]; then
-        __bliman_echo_white "Installing beslab in bare mode"
         __bliman_launch_bare_mode
-	__bliman_echo_green "Installed beslab in bare mode"
     elif [[ "$BESLAB_LAB_MODE" == "lite" ]]; then
-        __bliman_echo_white "Installing beslab in lite mode"
         __bliman_launch_lite_mode
-	__bliman_echo_green "Installed beslab in lite mode"
     fi
     
     __bliman_echo_green ""
-    __bliman_echo_yellow "BLIMAN installed following lab components to the system."
-    __bliman_echo_green "    LAB TYPE = $BESLAB_LAB_TYPE"
-    __bliman_echo_green "    LAB MODE = $BESLAB_LAB_MODE"
-    __bliman_echo_green "    LAB NAME = $BESMAN_LAB_NAME"
+    __bliman_echo_white "BLIMAN installed following lab components to the system."
+    __bliman_echo_green "    BESLAB TYPE = $BESLAB_LAB_TYPE"
+    __bliman_echo_green "    BESLAB MODE = $BESLAB_LAB_MODE"
+    __bliman_echo_green "    BESLAB NAME = $BESMAN_LAB_NAME"
+    __bliman_echo_green "    BESLAB VERSION = $BESLAB_VERSION"
+    __bliman_echo_green "    BESMAN VERSION = $BESMAN_VER"
     __bliman_echo_green ""
 
     if [ $BESLAB_LAB_TYPE == "private" ] && ([ $BESLAB_LAB_MODE == "lite" ] || [ $BESLAB_LAB_MODE == "bare" ]);then
@@ -89,13 +88,13 @@ function __bli_launchlab()
       __bliman_echo_green ""
 
       if [ $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL == "gitlab-ce" ];then
-	  __bliman_echo_white " "
+	 __bliman_echo_white " "
          __bliman_echo_white "Gitlab is accessible at $pubip "
 	 __bliman_echo_white "    Login to the gitlab using username as $BESMAN_LAB_NAME. Use default password."
-	  __bliman_echo_white " "
+	 __bliman_echo_white " "
       fi
 
-      if [ $BESLAB_DASHBOARD_TOOL == "beslighthouse" ];then
+      if [ $BESLAB_DASHBOARD_TOOL == "BeSLighthouse" ];then
           __bliman_echo_white " "
           __bliman_echo_white "BeSLighthouse is accessible at $pubip:3000 "
           __bliman_echo_white " "

@@ -73,7 +73,7 @@ function __bliman_convert_yaml_to_sh()
 
 			else
 				multi_values_flag=false
-				echo "export $key_save=$multi_values"
+				echo "export $key_save=$multi_values" | __bliman_log
 			fi
 		fi
 	done < "$HOME/tmp.sh"
@@ -113,7 +113,7 @@ function __bli_load_genesis() {
 
         if [ -z $BLIMAN_GENSIS_FILE_PATH ];then
               echo ""
-              __bliman_echo_yellow  " Genesis file path is not set checking file at default locations i.e PWD or $HOME/.bliman directory"
+              __bliman_echo_yellow  " Finding gnesis file at default locations i.e current directory or $HOME/.bliman directory"
 	      echo ""
 	else
 	       __bliman_echo_yellow  "Using Genesis file path at $BLIMAN_GENSIS_FILE_PATH"	
@@ -123,7 +123,7 @@ function __bli_load_genesis() {
 
 	if [ -z $Genesis_File_location ];then
            PWD=`pwd`
-	   default_genesis_file_name=beslab_genesis.yaml
+	   default_genesis_file_name=genesis.yaml
 
            if [ -f $PWD/$default_genesis_file_name ];then
 	      __bliman_echo_yellow  ""
@@ -172,9 +172,20 @@ function __bli_load_genesis() {
 	fi
         __bliman_load_export_vars "$Genesis_File_location"
 	
+
 	__bliman_echo_green "Genesis file is loaded successfully!!"
+	echo ""
+        __bliman_echo_white "======================================================================================================"
+        __bliman_echo_white "Lab name defined in genesis file is $BESMAN_LAB_NAME"
+	__bliman_echo_white "Lab type set in genesis file is $BESMAN_LAB_TYPE"
+	__bliman_echo_white "Lab deployment type defined in genesis file is $BESLAB_LAB_TYPE"
+	__bliman_echo_white "Lab version defined in genesis file is $BESLAB_VERSION"
+	__bliman_echo_white "Lab Name defined in genesis file is $BESMAN_LAB_NAME"
+        __bliman_echo_white "======================================================================================================"
         echo ""
-        __bliman_echo_yellow "Execute \"bli initmode <modename>\" to set the beslab mode to install."
-        __bliman_echo_yellow "   use \"bli help initmode\" for more information."
+        echo ""
+	__bliman_echo_yellow "======================================================================================================"
+        __bliman_echo_yellow "  Execute \"bli initmode <modename>\" to set the beslab mode to install.                              "
+	__bliman_echo_yellow "======================================================================================================"
         echo ""
 }

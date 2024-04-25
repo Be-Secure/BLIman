@@ -3,7 +3,7 @@
 function __bli_reload()
 {
 	local genesis_file_name genesis_file_url
-	genesis_file_name="beslab_genesis.yaml"
+	genesis_file_name="genesis.yaml"
 	genesis_file_url="$BLIMAN_LAB_URL/$genesis_file_name"
 
 	if [[ -f "$HOME/$genesis_file_name" ]]; then
