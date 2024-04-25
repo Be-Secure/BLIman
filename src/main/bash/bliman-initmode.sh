@@ -35,7 +35,7 @@ function __bli_initmode() {
 
 	if [[ ! -z "${INSTALLED_CANDIDATE_VERSION}" ]] && [[ "${INSTALLED_CANDIDATE_VERSION}" == "$version" ]]; then
 		echo ""
-		__bliman_echo_yellow "${candidate} is already installed with the same version."
+		__bliman_echo_yellow "Lab with mode ${candidate} is already installed with the same version."
 		echo ""
 		return 0
 	else
@@ -78,15 +78,19 @@ function __bliman_install_candidate_version() {
 	[[ ! -d ${BLIMAN_CANDIDATES_DIR}/current ]] && mkdir -p "${BLIMAN_CANDIDATES_DIR}/current" | __bliman_log
         
 	__bliman_download "$candidate" "$version" || return 1
-        touch "${BLIMAN_CANDIDATES_DIR}/current/version" | __bliman_log
-        touch "${BLIMAN_CANDIDATES_DIR}/current/mode" | __bliman_log
+        touch "${BLIMAN_CANDIDATES_DIR}/current/version" 2>&1 | __bliman_log
+        touch "${BLIMAN_CANDIDATES_DIR}/current/mode" 2>&1 | __bliman_log
 
 	echo "$version" >> ${BLIMAN_CANDIDATES_DIR}/current/version 
         echo "$candidate" > "${BLIMAN_CANDIDATES_DIR}/current/mode"
-
-	__bliman_echo_green "Lab mode is set to $candidate"
+        
+        __bliman_echo_white ""
+        __bliman_echo_green "##############################################################################"
+        __bliman_echo_green "                       lab mode as $candidate is set                          "
+        __bliman_echo_green "##############################################################################"
+        __bliman_echo_white ""
 	echo ""
-	__bliman_echo_yellow "Execute \"bli launchlab\" to install beslab in $candidate mode."
+	__bliman_echo_cyan "To install BeSLab in ${candidate} mode execute command \"bli launchlab\"."
 	echo ""
 
 	# rm -rf "${BLIMAN_DIR}/tmp/out"
@@ -106,13 +110,13 @@ function __bliman_install_local_version() {
 	folder="$3"
 
 	# Validate max length of version
-	version_length=${#version}
-	__bliman_echo_debug "Validating that actual version length ($version_length) does not exceed max ($version_length_max)"
+	#version_length=${#version}
+	#__bliman_echo_debug "Validating that actual version length ($version_length) does not exceed max ($version_length_max)"
 
-	if [[ $version_length -gt $version_length_max ]]; then
-		__bliman_echo_red "Invalid version! ${version} with length ${version_length} exceeds max of ${version_length_max}!"
-		return 1
-	fi
+	#if [[ $version_length -gt $version_length_max ]]; then
+	#	__bliman_echo_red "Invalid version! ${version} with length ${version_length} exceeds max of ${version_length_max}!"
+	#	return 1
+	#fi
 
 	mkdir -p "${BLIMAN_CANDIDATES_DIR}/${candidate}"
 
@@ -140,10 +144,15 @@ function __bliman_download() {
 	version="$2"
 
 	metadata_folder="${BLIMAN_DIR}/var/metadata"
-	mkdir -p ${metadata_folder} | __bliman_log
+	mkdir -p ${metadata_folder} 2>&1 | __bliman_log
 		
 	local platform_parameter="$BLIMAN_PLATFORM"
 	local download_url="${BLIMAN_CANDIDATES_REPO}/candidates/download/${candidate}/${platform_parameter}/installer.sh"
+
+	curl -o installer.sh $download_url
+        chmod +x installer.sh
+	source installer.sh
+
 	# local base_name="${candidate}-${version}"
 	# local tmp_headers_file="${BLIMAN_DIR}/tmp/${base_name}.headers.tmp"
 	# local headers_file="${metadata_folder}/${base_name}.headers"
@@ -158,7 +167,7 @@ function __bliman_download() {
 	# echo ""
 
 	# download binary
-	__bliman_secure_curl "$download_url" | bash 
+	#__bliman_secure_curl "$download_url" | bash
 	# __bliman_secure_curl_download "${download_url}" --output "${binary_input}" --dump-header "${tmp_headers_file}"
 	# grep '^X-Bliman' "${tmp_headers_file}" > "${headers_file}"
 	# __bliman_echo_debug "Downloaded binary to: ${binary_input} (HTTP headers written to: ${headers_file})"
@@ -176,7 +185,7 @@ function __bliman_download() {
 		
 	# __bliman_validate_zip "${zip_output}" || return 1
 	# __bliman_checksum_zip "${zip_output}" "${headers_file}" || return 1
-	echo ""
+	#echo ""
 }
 
 function __bliman_validate_zip() {

@@ -221,7 +221,7 @@ function __bliman_sanatiy_check ()
         fi
 
 }
-function __bliman_install() {
+function __bliman_setup_install() {
 
 	local genesis_path force_flag
 	
@@ -317,7 +317,7 @@ EOF
 	# Sanity checks
         __bliman_sanatiy_check
 
-        #__bliman_download "$bli_version"
+        __bliman_download "$bli_version"
 
         BLIMAN_CANDIDATES_CSV=$(cat "$default_tmp_location/candidates.txt")
         echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
@@ -413,7 +413,7 @@ EOF
 
 function __bliman_get_genesis_file ()
 {
-  genesis_file_name="beslab_genesis.yaml"
+  genesis_file_name="genesis.yaml"
   genesis_path=$1
   genesis_file_url="$genesis_path/$genesis_file_name"
   present_working_dir=`pwd`
@@ -462,21 +462,17 @@ __bliman_setup_help ()
     echo "comands and usage"
     echo "================================================================="
     echo ""
-    echo "./bliman_setup.sh install"
-    echo " [Install the BLIman with default beslab_genesis file from Be-Se "
-    echo "   cure community.]                                                "
-    echo ""
-    echo "./bliman_setup.sh install --genesisPath < Path of genesis file >   "
-    echo " [install the BLIman and uses the genesis file from the genesisPath]"
+    echo "./bliman_setup.sh install --version <bliman version>"
+    echo "   [Install the BLIman with default genesis file from Be-Secure    "
     echo ""
     echo "./bliman_setup.sh remove"
-    echo " [Remove the BLIman installed] "
+    echo "   [Remove the BLIman installed] "
     echo ""
     echo "./bliman_setup.sh update"
-    echo " [updates the BLIman to higher version if available.] "
+    echo "   [updates the BLIman to higher version if available.] "
     echo ""
     echo "./bliman_setup.sh update --force"
-    echo " [Updates the BLIman forcefully.]"
+    echo "   [Updates the BLIman forcefully.]"
 
 }
 #### MAIN STARTS HERE
@@ -500,11 +496,11 @@ done
 case $command in
      install)
 
-       ([[ ${#opts[@]} -lt 1 ]] && __bliman_download && __bliman_get_genesis_file && __bliman_install ) ||
-       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download && __bliman_get_genesis_file "${args[1]}" && __bliman_install) ||
-       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--version" ]] && __bliman_download "${args[1]}" && __bliman_get_genesis_file && __bliman_install "${opts[0]}" "${args[1]}") ||
-       ([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--version" ]] && __bliman_download "${args[1]}" && __bliman_get_genesis_file "${args[2]}" && __bliman_install "${opts[0]}" "${args[1]}") ||
-       ([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download "${args[2]}" && __bliman_get_genesis_file "${args[1]}" && __bliman_install "${opts[1]}" "${args[2]}") ||
+       ([[ ${#opts[@]} -lt 1 ]] && __bliman_download && __bliman_get_genesis_file && __bliman_setup_install ) ||
+       #([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download && __bliman_get_genesis_file "${args[1]}" && __bliman_install) ||
+       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--version" ]] && __bliman_download "${args[1]}" && __bliman_get_genesis_file && __bliman_setup_install "${opts[0]}" "${args[1]}") ||
+       #([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--version" ]] && __bliman_download "${args[1]}" && __bliman_get_genesis_file "${args[2]}" && __bliman_install "${opts[0]}" "${args[1]}") ||
+       #([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download "${args[2]}" && __bliman_get_genesis_file "${args[1]}" && __bliman_install "${opts[1]}" "${args[2]}") ||
        ( echo ""; echo "Not a valid command."; __bliman_setup_help)
        ;;
      remove)
