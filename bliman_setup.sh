@@ -1,4 +1,6 @@
 #!/bin/bash
+BLIMAN_INSTALL_LOG_FILE="./bliman-install.log"
+[[ ! -f $BLIMAN_INSTALL_LOG_FILE ]] && touch $BLIMAN_INSTALL_LOG_FILE
 
 track_last_command() {
 	last_command=$current_command
@@ -10,12 +12,6 @@ echo_failed_command() {
 	if [[ "$exit_code" != "0" ]]; then
 		echo "'$last_command': command failed with exit code $exit_code."
 	fi
-}
-
-createlogfile () {
-   logfile="$1/$2"
-
-   [[ ! -f $logfile ]] && touch $logfile 
 }
 
 bliman_setup_log() {
@@ -134,7 +130,7 @@ function bliman_setup_download ()
     which jq 2>&1 >/dev/null
     if [ xx"$?" != xx"0" ];then
 	bliman_setup_echo "yellow" "Installing JQ for JSON response readings."    
-        sudo apt-get install jq -y 2>&1 | bliman_setup_log
+        sudo apt-get install jq -y
     fi
 
     if [ -z $1 ];then
@@ -148,23 +144,37 @@ function bliman_setup_download ()
        else
              bliversion=$(echo "$response" | jq -r '.tag_name')
        fi
+    elif [ "$1" == "dev" ];then
+             response=$(curl -s "https://api.github.com/repos/$BLIMAN_NAMESPACE/BLIman/releases/latest")
+	     bliversion=$(echo "$response" | jq -r '.tag_name')
+	     bliversion=$bliversion"-dev" 
     else
 	    bliversion="$1"
     fi
     
-    if [ ! -z ${bliversion} ];then
+    if [ ! -z ${bliversion} ] && [[ ${bliversion} != *"-dev"* ]];then
               unset $BLIMAN_VERSION
               export BLIMAN_VERSION="${bliversion}"
-              curl -o $tmp_location/bliman-${bliversion}.zip --fail --location --progress-bar "${default_repo_url}/$BLIMAN_NAMESPACE/BLIman/archive/refs/tags/${bliversion}.zip" 2>&1 | bliman_setup_log
+              curl --silent -o $tmp_location/bliman-${bliversion}.zip --fail --location --progress-bar "${default_repo_url}/$BLIMAN_NAMESPACE/BLIman/archive/refs/tags/${bliversion}.zip"
 
               if [ -f  $tmp_location/bliman-${bliversion}.zip ];then
-                 unzip -qo $tmp_location/bliman-${bliversion}.zip -d $tmp_location 2>&1 | bliman_setup_log
+		 which unzip 2>&1 >/dev/null
+                 if [ xx"$?" != xx"0" ];then
+                      bliman_setup_echo "yellow" "Installing unzip."
+                      sudo apt-get install unzip -y
+                 fi     
+                 unzip -qo $tmp_location/bliman-${bliversion}.zip -d $tmp_location
               else
                 bliman_setup_echo "red" "BLIman release version $bliversion is not found."
                 bliman_setup_echo "red" "Please check the release version and try again."
                 bliman_setup_echo "red" "Exiting..."
                 return 1
               fi
+    elif [ ! -z ${bliversion} ] && [[ ${bliversion} == *"-dev"* ]];then
+	       unset $BLIMAN_VERSION
+               export BLIMAN_VERSION="${bliversion}"
+	       [[ -d $tmp_location/BLIman ]] && rm -rf $tmp_location/BLIman
+               git clone -b develop https://github.com/Be-Secure/BLIman.git $tmp_location/BLIman
     else
               bliman_setup_echo "red" "No valid latest release for BLIman found."
               bliman_setup_echo "red" "Please specify the release version and try again."
@@ -202,6 +212,7 @@ function bliman_setup_check ()
 		echo ""
 		exit 1
 	fi
+
 
 	if [[ "$solaris" == true ]]; then
 		echo "Looking for gsed..."
@@ -255,15 +266,27 @@ function bliman_setup_install() {
 	trap track_last_command DEBUG
 	trap echo_failed_command EXIT
 
-	if [ ! -z $2 ];then
-          bliversion=$2
-	else
+	if [ ! -z $2 ] && [ "$2" != "dev" ];then
+          
+	    if [ ${2:0:1} == "v" ];then
+	      bliversion=${2:1}
+            else
+              bliversion=${2}
+	    fi
+
+        elif [ ! -z ${BLIMAN_VERSION} ];then
 	
-	  if [ ${BLIMAN_VERSION:0:1} == "v" ]
+	  if [ ${BLIMAN_VERSION:0:1} == "v" ];then
 	    bliversion=${BLIMAN_VERSION:1}
+	  elif [ ${BLIMAN_VERSION:0-3} == "dev" ];then
+	     bliversion=${BLIMAN_VERSION:0-4}
 	  else
             bliversion=${BLIMAN_VERSION}
           fi
+	else
+		echo "Please provide BLIman version to install."
+		echo "exiting .."
+		return 1
 	fi
 
         if [ -z "$BLIMAN_DIR" ]; then
@@ -293,21 +316,23 @@ export BLIMAN_DIR="$BLIMAN_DIR_RAW"
 [[ -s "${BLIMAN_DIR_RAW}/bin/bliman-init.sh" ]] && source "${BLIMAN_DIR_RAW}/bin/bliman-init.sh"
 EOF
         )
+        
+	#[[ -d $BLIMAN_DIR ]] && rm -rf $BLIMAN_DIR/*
 
 	# Create directory structure
-        mkdir -p "$bliman_tmp_folder" 2>&1 | bliman_setup_log
-        mkdir -p "$bliman_ext_folder" 2>&1 | bliman_setup_log
-        mkdir -p "$bliman_etc_folder" 2>&1 | bliman_setup_log
-        mkdir -p "$bliman_var_folder" 2>&1 | bliman_setup_log
-        mkdir -p "$bliman_candidates_folder" 2>&1 | bliman_setup_log
-        mkdir -p "$bliman_log_folder" 2>&1 | bliman_setup_log
+        mkdir -p "$bliman_tmp_folder"
+        mkdir -p "$bliman_ext_folder"
+        mkdir -p "$bliman_etc_folder"
+        mkdir -p "$bliman_var_folder"
+        mkdir -p "$bliman_candidates_folder"
+        mkdir -p "$bliman_log_folder"
+        mkdir -p "$bliman_src_folder"
 
+        #DATE=$(date +"%Y-%m-%d-%k-%M")
+        #logfilename=bliman-install-log-$DATE.log
 
-        DATE=$(date +"%Y-%m-%d-%k-%M")
-        logfilename=bliman-install-log-$DATE.log
-
-        createlogfile $bliman_log_folder $logfilename 2>&1 | bliman_setup_log
-        export BLIMAN_INSTALL_LOG_FILE="$bliman_log_folder/$logfilename"
+        #createlogfile $bliman_log_folder $logfilename 2>&1 | bliman_setup_log
+        #export BLIMAN_INSTALL_LOG_FILE="$bliman_log_folder/$logfilename"
 
 	export BLIMAN_PLATFORM="$(infer_platform)"
 	
@@ -353,31 +378,43 @@ EOF
 	echo ' B::::::::::::::::B  L::::::::::::::::::::::LI::::::::IM::::::M               M::::::M A:::::A                 A:::::A N::::::N        N::::::N '
         echo ""
 
-        if [ ! -d  $tmp_location/BLIman-${bliversion} ];then
+        if [ ! -d  $tmp_location/BLIman-${bliversion} ] && [ ! -d $tmp_location/BLIman ];then
            bliman_setup_echo "red" "Bliman not downloaded. Please retry."
 	   bliman_setup_echo "red" "Exiting ..."
 	   return 1
+	elif  [ -d $tmp_location/BLIman ];then
+           cp -r $tmp_location/BLIman/contrib/ "$BLIMAN_DIR"
+           cp -r $tmp_location/BLIman/src/main/bash/* "$bliman_src_folder"
+           cp -r $tmp_location/BLIman/candidates/* "$bliman_candidates_folder"
+           mkdir -p "$BLIMAN_DIR/bin/"
+           mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/"
+           BLIMAN_CANDIDATES_CSV=$(cat "$tmp_location/BLIman/candidates.txt")
 	else
-           [[ -d $BLIMAN_DIR ]] && rm -rf $BLIMAN_DIR/* 2>&1 | bliman_setup_log
-           cp -r $tmp_location/BLIman-${bliversion}/contrib/ "$BLIMAN_DIR" 2>&1 | bliman_setup_log
-           cp -r $tmp_location/BLIman-${bliversion}/src/main/bash "$bliman_src_folder" 2>&1 | bliman_setup_log
-           cp -r $tmp_location/BLIman-${bliversion}/candidates/* "$bliman_candidates_folder" 2>&1 | bliman_setup_log
-           mkdir -p "$BLIMAN_DIR/bin/" 2>&1 | bliman_setup_log
-           mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/" 2>&1 | bliman_setup_log
+           cp -r $tmp_location/BLIman-${bliversion}/contrib/ "$BLIMAN_DIR"
+           cp -r $tmp_location/BLIman-${bliversion}/src/main/bash/* "$bliman_src_folder"
+           cp -r $tmp_location/BLIman-${bliversion}/candidates/* "$bliman_candidates_folder"
+           mkdir -p "$BLIMAN_DIR/bin/"
+           mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/"
+	   BLIMAN_CANDIDATES_CSV=$(cat "$tmp_location/BLIman-${bliversion}/candidates.txt")
         fi
 
-	BLIMAN_CANDIDATES_CSV=$(cat "$tmp_location/BLIman-${bliversion}/candidates.txt")
-        echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
+	if [[ ! -z $BLIMAN_CANDIDATES_CSV ]];then
+	   echo "$BLIMAN_CANDIDATES_CSV" >"${BLIMAN_DIR}/var/candidates"
+	else
+           bliman_setup_echo "red" "Bliman not downloaded. Please retry."
+           bliman_setup_echo "red" "Exiting ..."
+	   return 1
+        fi
 
         echo "Prime the config file..."
-        touch "$bliman_config_file" 2>&1 | bliman_setup_log
+        touch "$bliman_config_file"
         echo "bliman_auto_answer=false" >>"$bliman_config_file"
         if [ -z "$ZSH_VERSION" -a -z "$BASH_VERSION" ]; then
                 echo "bliman_auto_complete=false" >>"$bliman_config_file"
         else
                 echo "bliman_auto_complete=false" >>"$bliman_config_file"
         fi
-        touch "$bliman_config_file" 2>&1 | bliman_setup_log
+        touch "$bliman_config_file"
         {
                 echo "bliman_auto_env=false"
                 echo "bliman_auto_update=true"
@@ -399,10 +436,12 @@ EOF
         fi
 
 	# clean up
-	rm -rf $tmp_location/bliman-${BLIMAN_VERSION}.zip 2>&1 | bliman_setup_log
-        rm -rf $tmp_location/BLIman-${bliversion} 2>&1 | bliman_setup_log
+	[[ -f $tmp_location/bliman-${BLIMAN_VERSION}.zip ]] && rm -rf $tmp_location/bliman-${BLIMAN_VERSION}.zip
+        [[ -d $tmp_location/BLIman-${bliversion} ]] && rm -rf $tmp_location/BLIman-${bliversion}
+	[[ -d $tmp_location/BLIman ]] && rm -rf $tmp_location/BLIman
 	echo ""
 	
+	[[ ! -f ${BLIMAN_DIR}/var/version ]] && touch ${BLIMAN_DIR}/var/version
 	echo "$bliversion" >"${BLIMAN_DIR}/var/version"
 
 	if [[ $darwin == true ]]; then
@@ -442,18 +481,17 @@ EOF
 function bliman_get_genesis_file ()
 {
   genesis_file_name="genesis.yaml"
-  genesis_path=$1
-  genesis_file_url="$genesis_path/$genesis_file_name"
   present_working_dir=`pwd`
 
+  version=$1
+
   if [ ! -f $present_working_dir/$genesis_file_name ];then	  
-    if [[ -z $genesis_path ]];then
            export BLIMAN_GENSIS_FILE_PATH="$present_working_dir/$genesis_file_name"
-	   curl -o $genesis_file_name https://raw.githubusercontent.com/Be-Secure/BeSLab/main/$genesis_file_name 2>&1 | bliman_setup_log
-    else
-	   export BLIMAN_GENSIS_FILE_PATH="$genesis_path"
-           cp $BLIMAN_GENSIS_FILE_PATH $present_working_dir 2>&1 | bliman_setup_log
-    fi
+	   if [[ ${version}  == "dev" ]];then
+             curl --silent -o $genesis_file_name https://raw.githubusercontent.com/Be-Secure/BeSLab/develop/$genesis_file_name
+           else
+	     curl --silent -o $genesis_file_name https://raw.githubusercontent.com/Be-Secure/BeSLab/main/$genesis_file_name
+	   fi
   else
      bliman_setup_echo "yellow" "Genesis file already present. Skipping ..."
   fi
@@ -522,12 +560,12 @@ case $command in
      install)
 
 
-       ([[ ${#opts[@]} -lt 1 ]] && bliman_setup_download && bliman_get_genesis_file && bliman_setup_install ) ||
+       #([[ ${#opts[@]} -lt 1 ]] && bliman_setup_download && bliman_get_genesis_file && bliman_setup_install ) ||
        #([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download && __bliman_get_genesis_file "${args[1]}" && __bliman_install) ||
-       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--version" ]] && bliman_setup_download "${args[1]}" && bliman_get_genesis_file && bliman_setup_install "${opts[0]}" "${args[1]}") ||
+       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--version" ]] && bliman_setup_download "${args[1]}" && bliman_get_genesis_file "${args[1]}" && bliman_setup_install "${opts[0]}" "${args[1]}")
        #([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--version" ]] && __bliman_download "${args[1]}" && __bliman_get_genesis_file "${args[2]}" && __bliman_install "${opts[0]}" "${args[1]}") ||
        #([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download "${args[2]}" && __bliman_get_genesis_file "${args[1]}" && __bliman_install "${opts[1]}" "${args[2]}") ||
-       ( echo ""; echo "Not a valid command."; bliman_setup_help)
+       #( echo ""; echo "Not a valid command."; bliman_setup_help)
        ;;
      remove)
        ([[ ${#opts[@]} -lt 1 ]] &&  bliman_setup_remove) ||

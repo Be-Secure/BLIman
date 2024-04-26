@@ -249,7 +249,7 @@ if [[ "$bliman_auto_complete" == 'true' ]]; then
 	elif [[ "$bash_shell" == 'true' ]]; then
 		source "${BLIMAN_DIR}/contrib/completion/bash/bli"
 		#__bliman_echo_debug "Bash completion script loaded..."
-	else
+	#else
 		#__bliman_echo_debug "No completion scripts found for $SHELL"
 	fi
 fi
