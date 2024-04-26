@@ -462,8 +462,9 @@ EOF
 	fi
 
 	if [ -f  $BLIMAN_DIR/bin/bliman-init.sh ];then
-	   source $BLIMAN_DIR/bin/bliman-init.sh   
-	   bliman_setup_echo "green" -e "BLIman version ${blimanversion} is installed at $BLIMAN_DIR successfully.\n"
+	   source $BLIMAN_DIR/bin/bliman-init.sh  
+	   source ~/.bashrc
+	   bliman_setup_echo "green" "BLIman version ${blimanversion} is installed at $BLIMAN_DIR successfully."
            bliman_setup_echo "green" "Execute following command to verify the installation:"
            bliman_setup_echo "green" "    bli help"
            bliman_setup_echo "green" ""
