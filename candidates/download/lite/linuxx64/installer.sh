@@ -42,8 +42,8 @@ if [[ ! -d $HOME/.besman ]]; then
 
            if [ ! -z ${BESMAN_VER} ];then
 	      __bliman_echo_yellow "Installing BeSMan version ${BESMAN_VER}"	   
-              curl --silent -o $tmp_location/besman-${BESMAN_VER}.zip --fail --location --progress-bar "https://github.com/Be-Secure/BeSMan/archive/refs/tags/${BESMAN_VER}.zip"
-              unzip -qd $tmp_location/  $tmp_location/besman-${BESMAN_VER}.zip
+        curl --silent -o $tmp_location/besman-${BESMAN_VER}.zip --fail --location --progress-bar "https://github.com/Be-Secure/BeSMan/archive/refs/tags/${BESMAN_VER}.zip"
+        unzip -qd $tmp_location/  $tmp_location/besman-${BESMAN_VER}.zip
 	      current_wd=`pwd`
 	      cd $tmp_location/BeSman-${BESMAN_VER} 
 	      chmod +x quick_install.sh
@@ -69,9 +69,10 @@ if [[ ! -d $HOME/.besman ]]; then
 	      __bliman_echo_yellow "Installing BeSMan version ${besver}"
               export BESMAN_VER=$besver
 	      curl --silent -o $tmp_location/besman-${besver}.zip --fail --location --progress-bar "https://github.com/Be-Secure/BeSMan/archive/refs/tags/${besver}.zip"
-              unzip -qd $tmp_location/  $tmp_location/besman-${besver}.zip
+              [[ -d $tmp_location/besman-${besver} ]] && rm -rf $tmp_location/besman-${besver}
+	      unzip -qd $tmp_location/  $tmp_location/besman-${besver}.zip
               current_wd=`pwd`
-              cd $tmp_location/BeSman-${besver}
+              cd $tmp_location/BeSman-${besver}/
               chmod +x quick_install.sh
               source quick_install.sh --force
               cd $current_wd
