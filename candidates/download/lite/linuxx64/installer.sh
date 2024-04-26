@@ -57,7 +57,7 @@ if [[ ! -d $HOME/.besman ]]; then
            export BESMAN_VER=$besver
            curl --silent -o $tmp_location/besman-${besver}.zip --fail --location --progress-bar "https://github.com/Be-Secure/BeSMan/archive/refs/tags/${besver}.zip"
            which unzip 2>&1 >/dev/null
-	   if [ xx"$?" == xx"0" ];then
+	   if [ xx"$?" != xx"0" ];then
               __bliman_echo_yellow "Installing unzip..."
 	      apt-get install unzip -y | __bliman_log
            fi
