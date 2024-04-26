@@ -46,7 +46,7 @@ if [[ ! -d $HOME/.besman ]]; then
               [[ -d $tmp_location/besman-${BESMAN_VER} ]] && rm -rf $tmp_location/besman-${BESMAN_VER}
 	      unzip -qd $tmp_location  $tmp_location/besman-${BESMAN_VER}.zip
 	      current_wd=`pwd`
-	      cd $tmp_location/BeSMan-${BESMAN_VER}/
+	      cd $tmp_location/BeSman-${BESMAN_VER}/
 	      chmod +x quick_install.sh
 	      source quick_install.sh
               cd $current_wd
@@ -73,7 +73,7 @@ if [[ ! -d $HOME/.besman ]]; then
               [[ -d $tmp_location/besman-${besver} ]] && rm -rf $tmp_location/besman-${besver}
 	      unzip -qd $tmp_location/  $tmp_location/besman-${besver}.zip
               current_wd=`pwd`
-              cd $tmp_location/BeSMan-${besver}/
+              cd $tmp_location/BeSman-${besver}/
               chmod +x quick_install.sh
               source quick_install.sh
               cd $current_wd
