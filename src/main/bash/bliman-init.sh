@@ -182,11 +182,13 @@ for f in "${scripts[@]}"; do
 	source "$f"
 done
 IFS="$OLD_IFS"
-unset OLD_IFS scripts f
+unset OLD_IFS scripts
+
+__bliman_createlogfile
 
 # Create upgrade delay file if it doesn't exist
 if [[ ! -f "${BLIMAN_DIR}/var/delay_upgrade" ]]; then
-	touch "${BLIMAN_DIR}/var/delay_upgrade"
+	touch "${BLIMAN_DIR}/var/delay_upgrade" 2>&1 | __bliman_log
 fi
 
 # set curl connect-timeout and max-time
@@ -207,7 +209,7 @@ BLIMAN_CANDIDATES_CACHE="${BLIMAN_DIR}/var/candidates"
 export BLIMAN_CANDIDATES_CACHE
 BLIMAN_CANDIDATES_CSV=$(<"$BLIMAN_CANDIDATES_CACHE")
 export BLIMAN_CANDIDATES_CSV
-__bliman_echo_debug "Setting candidates csv: $BLIMAN_CANDIDATES_CSV"
+#__bliman_echo_debug "Setting candidates csv: $BLIMAN_CANDIDATES_CSV"
 if [[ "$zsh_shell" == 'true' ]]; then
 	BLIMAN_CANDIDATES=(${(s:,:)BLIMAN_CANDIDATES_CSV})
 else
@@ -219,14 +221,14 @@ export BLIMAN_CANDIDATES_DIR="${BLIMAN_DIR}/candidates"
 for candidate_name in "${BLIMAN_CANDIDATES[@]}"; do
 	candidate_dir="${BLIMAN_CANDIDATES_DIR}/${candidate_name}/current"
 	if [[ -h "$candidate_dir" || -d "${candidate_dir}" ]]; then
-                export BLIMAN_LAB_MODE=${candidate_name}
+                export BLIMAN_LAB_MODE=${candidate_name} 
 		[[ -f "${BLIMAN_CANDIDATES_DIR}/${candidate_name}/current/version" ]] && export BLIMAN_LAB_VERSION=$(cat "${BLIMAN_CANDIDATES_DIR}/${candidate_name}/current/version")
 		__bliman_export_candidate_home "$candidate_name" "$candidate_dir"
 		__bliman_prepend_candidate_to_path "$candidate_dir"
 	fi
 done
 unset candidate_name candidate_dir
-export PATH
+export PATH=$PATH:${BLIMAN_DIR}/bin
 
 # source completion scripts
 if [[ "$bliman_auto_complete" == 'true' ]]; then
@@ -243,45 +245,45 @@ if [[ "$bliman_auto_complete" == 'true' ]]; then
 		autoload -U bashcompinit
 		bashcompinit
 		source "${BLIMAN_DIR}/contrib/completion/bash/bli"
-		__bliman_echo_debug "ZSH completion script loaded..."
+		#__bliman_echo_debug "ZSH completion script loaded..."
 	elif [[ "$bash_shell" == 'true' ]]; then
 		source "${BLIMAN_DIR}/contrib/completion/bash/bli"
-		__bliman_echo_debug "Bash completion script loaded..."
-	else
-		__bliman_echo_debug "No completion scripts found for $SHELL"
+		#__bliman_echo_debug "Bash completion script loaded..."
+	#else
+		#__bliman_echo_debug "No completion scripts found for $SHELL"
 	fi
 fi
 
-if [[ "$bliman_auto_env" == "true" ]]; then
-	if [[ "$zsh_shell" == "true" ]]; then
-		function bliman_auto_env() {
-			if [[ -n $BLIMAN_ENV ]] && [[ ! $PWD =~ ^$BLIMAN_ENV ]]; then
-				bli env clear
-			fi
-			if [[ -f .blimanrc ]]; then
-				bli env
-			fi
-		}
-
-		chpwd_functions+=(bliman_auto_env)
-	else
-		function bliman_auto_env() {
-			if [[ -n $BLIMAN_ENV ]] && [[ ! $PWD =~ ^$BLIMAN_ENV ]]; then
-				bli env clear
-			fi
-			if [[ "$BLIMAN_OLD_PWD" != "$PWD" ]] && [[ -f ".blimanrc" ]]; then
-				bli env
-			fi
-
-			export BLIMAN_OLD_PWD="$PWD"
-		}
-		
-		trimmed_prompt_command="${PROMPT_COMMAND%"${PROMPT_COMMAND##*[![:space:]]}"}"
-		[[ -z "$trimmed_prompt_command" ]] && PROMPT_COMMAND="bliman_auto_env" || PROMPT_COMMAND="${trimmed_prompt_command%\;};bliman_auto_env"
-	fi
-
-	bliman_auto_env
-fi
+#if [[ "$bliman_auto_env" == "true" ]]; then
+#	if [[ "$zsh_shell" == "true" ]]; then
+#		function bliman_auto_env() {
+#			if [[ -n $BLIMAN_ENV ]] && [[ ! $PWD =~ ^$BLIMAN_ENV ]]; then
+#				bli env clear
+#			fi
+#			if [[ -f .blimanrc ]]; then
+#				bli env
+#			fi
+#		}
+#
+#		chpwd_functions+=(bliman_auto_env)
+#	else
+#		function bliman_auto_env() {
+#			if [[ -n $BLIMAN_ENV ]] && [[ ! $PWD =~ ^$BLIMAN_ENV ]]; then
+#				bli env clear
+#			fi
+#			if [[ "$BLIMAN_OLD_PWD" != "$PWD" ]] && [[ -f ".blimanrc" ]]; then
+#				bli env
+#			fi
+#
+#			export BLIMAN_OLD_PWD="$PWD"
+#		}
+#		
+#		trimmed_prompt_command="${PROMPT_COMMAND%"${PROMPT_COMMAND##*[![:space:]]}"}"
+#		[[ -z "$trimmed_prompt_command" ]] && PROMPT_COMMAND="bliman_auto_env" || PROMPT_COMMAND="${trimmed_prompt_command%\;};bliman_auto_env"
+#	fi
+#
+#	bliman_auto_env
+#fi
 
 [[ -f "$BLIMAN_DIR/tmp/source.sh" ]] && source "$BLIMAN_DIR/tmp/source.sh"
 
@@ -297,19 +299,18 @@ if [ -f $gitlab_user_data_file_path ];then
 fi
 
 if [ -d "$HOME/.besman" ];then
-
-        beslighthousedatafile="$HOME/.besman/beslighthousedata"
+   beslighthousedatafile="$HOME/.besman/beslighthousedata"
 elif  [ -d "$HOME/.bliman" ];then
-         beslighthousedatafile="$HOME/.bliman/beslighthousedata"
+   beslighthousedatafile="$HOME/.bliman/beslighthousedata"
 fi
 
 if [ -f $beslighthousedatafile ];then
    beslighthousePath=`cat $beslighthousedatafile | grep "BESLIGHTHOUSE_DIR:" | awk '{print $2}'`
    beslighthouse_config_path=$beslighthousePath/src/apiDetailsConfig.json
-   sed -i '/"activeTool"/c\"activeTool": "gitlab"' $beslighthouse_config_path
-   sed -i "/\"namespace\"/c\"namespace\": \"$GITUSER\"," $beslighthouse_config_path
-   sed -i "/\"token\"/c\"token\": \"$GITUSERTOKEN\"" $beslighthouse_config_path
+   sed -i '/"activeTool"/c\"activeTool": "gitlab"' $beslighthouse_config_path 2>&1 | __bliman_log
+   sed -i "/\"namespace\"/c\"namespace\": \"$GITUSER\"," $beslighthouse_config_path 2>&1 | __bliman_log
+   sed -i "/\"token\"/c\"token\": \"$GITUSERTOKEN\"" $beslighthouse_config_path 2>&1 | __bliman_log
    myip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
-   sed -i "/\"apiUrl\"/c\"apiUrl\": \"http://$myip:5000\"," $beslighthouse_config_path
-   sed -i "/\"gitLabUrl\"/c\"gitLabUrl\": \"http://$myip\"," $beslighthouse_config_path
+   sed -i "/\"apiUrl\"/c\"apiUrl\": \"http://$myip:5000\"," $beslighthouse_config_path 2>&1 | __bliman_log
+   sed -i "/\"gitLabUrl\"/c\"gitLabUrl\": \"http://$myip\"," $beslighthouse_config_path 2>&1 | __bliman_log
 fi
