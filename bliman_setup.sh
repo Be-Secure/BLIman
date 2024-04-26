@@ -280,6 +280,7 @@ function bliman_setup_install() {
 	    bliversion=${BLIMAN_VERSION:1}
 	  elif [ ${BLIMAN_VERSION:0-3} == "dev" ];then
 	     bliversion=${BLIMAN_VERSION:0-4}
+	     export Is_Dev="true"
 	  else
             bliversion=${BLIMAN_VERSION}
           fi
@@ -327,6 +328,7 @@ EOF
         mkdir -p "$bliman_candidates_folder"
         mkdir -p "$bliman_log_folder"
         mkdir -p "$bliman_src_folder"
+        [[ ! -f ${BLIMAN_DIR}/var/version ]] && touch ${BLIMAN_DIR}/var/version
 
         #DATE=$(date +"%Y-%m-%d-%k-%M")
         #logfilename=bliman-install-log-$DATE.log
@@ -441,8 +443,10 @@ EOF
 	[[ -d $tmp_location/BLIman ]] && rm -rf $tmp_location/BLIman
 	echo ""
 	
-	[[ ! -f ${BLIMAN_DIR}/var/version ]] && touch ${BLIMAN_DIR}/var/version
 	echo "$bliversion" >"${BLIMAN_DIR}/var/version"
+        if [ ! -z $Is_Dev ] && [ "$Is_Dev" == "true" ];then
+           echo "Develop-Version" >> "${BLIMAN_DIR}/var/version"
+	fi
 
 	if [[ $darwin == true ]]; then
 		touch "$bliman_bash_profile" 2>&1 | bliman_setup_log
@@ -456,7 +460,7 @@ EOF
 		fi
 	fi
 
-	touch "$bliman_zshrc" 2>&1 | bliman_setup_log
+	touch "$bliman_zshrc"
 	if [[ -z $(grep 'bliman-init.sh' "$bliman_zshrc") ]]; then
 		echo -e "\n$bliman_init_snippet" >>"$bliman_zshrc"
 	fi
