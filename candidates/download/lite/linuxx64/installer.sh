@@ -27,7 +27,7 @@ echo ' ##     ## ##     ## ##     ## ##        '
 echo ' ##     ##  #######  ########  ########  '
 echo ''
 
-local tmp_location="/tmp"
+tmp_location="/tmp"
 
 if [[ ! -d $HOME/.besman ]]; then
         if [  ! -z ${BESMAN_DEV} ] && [ ${BESMAN_DEV} == "true" ];then
@@ -56,7 +56,12 @@ if [[ ! -d $HOME/.besman ]]; then
            __bliman_echo_yellow "Installing BeSMan version ${besver}"
            export BESMAN_VER=$besver
            curl --silent -o $tmp_location/besman-${besver}.zip --fail --location --progress-bar "https://github.com/Be-Secure/BeSMan/archive/refs/tags/${besver}.zip"
-           unzip -qd $tmp_location/  $tmp_location/besman-${besver}.zip
+           which unzip 2>&1 >/dev/null
+	   if [ xx"$?" == xx"0" ];then
+              __bliman_echo_yellow "Installing unzip..."
+	      apt-get install unzip -y | __bliman_log
+           fi
+	   unzip -qd $tmp_location/  $tmp_location/besman-${besver}.zip
            current_wd=`pwd`
            cd $tmp_location/BeSman-${besver}
            chmod +x quick_install.sh
