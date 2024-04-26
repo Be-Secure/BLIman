@@ -65,7 +65,7 @@ if [[ ! -d $HOME/.besman ]]; then
            current_wd=`pwd`
            cd $tmp_location/BeSman-${besver}
            chmod +x quick_install.sh
-           source quick_install.sh --force
+           source quick_install.sh --force | __bliman_log
            cd $current_wd
            [[ -f ${BESMAN_DIR}/var/version.txt ]] && echo "${besver}" > "${BESMAN_DIR}/var/version.txt"
            besman_user_config_file="${BESMAN_DIR}/etc/user-config.cfg"
