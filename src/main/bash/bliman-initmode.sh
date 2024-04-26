@@ -149,8 +149,8 @@ function __bliman_download() {
 	local platform_parameter="$BLIMAN_PLATFORM"
 	download_url="${BLIMAN_CANDIDATES_REPO}/candidates/download/${candidate}/${platform_parameter}/installer.sh"
 
-	isDev=$(cat "$HOME/.bliman/var/version" | grep -i develop)
-	if [ "${isDev}" == "Develop-Version" ];then
+	isDev=$(cat "$HOME/.bliman/var/version" | grep -i dev)
+	if [[ "${isDev}" == *"-dev"* ]];then
            download_url="https://raw.githubusercontent.com/$BLIMAN_NAMESPACE/BLIman/develop/candidates/download/${candidate}/${platform_parameter}/installer.sh"
 	fi
 
