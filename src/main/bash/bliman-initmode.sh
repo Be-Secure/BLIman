@@ -144,14 +144,15 @@ function __bliman_download() {
 	version="$2"
 
 	metadata_folder="${BLIMAN_DIR}/var/metadata"
-	mkdir -p ${metadata_folder} | __bliman_log
+	mkdir -p ${metadata_folder}
 		
 	local platform_parameter="$BLIMAN_PLATFORM"
-	local download_url="${BLIMAN_CANDIDATES_REPO}/candidates/download/${candidate}/${platform_parameter}/installer.sh"
+	download_url="${BLIMAN_CANDIDATES_REPO}/candidates/download/${candidate}/${platform_parameter}/installer.sh"
 
-	if [ $version == "dev" ];then
+	if [ "${BESMAN_VER}" == "dev" ];then
            download_url="https://raw.githubusercontent.com/$BLIMAN_NAMESPACE/BLIman/develop/candidates/download/${candidate}/${platform_parameter}/installer.sh"
 	fi
+
 	curl --silent -o installer.sh $download_url
         chmod +x installer.sh
 	source installer.sh
