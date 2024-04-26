@@ -70,9 +70,9 @@ function __bliman_set_env_repo() {
         tmp_location="/tmp"
         beslab_install_location="$BESLAB_INSTALL_DIR"
 
-        __bliman_echo_yellow "Installing JQ for JSON response readings."
-	which jq
+	which jq | __bliman_log
         if [ xx"$?" != xx"0" ];then
+           __bliman_echo_yellow "Installing JQ for JSON response readings."		
           apt-get install jq -y
         fi
 
@@ -166,7 +166,7 @@ function __bliman_set_env_repo() {
 
            [[ -d  $tmp_location/beslab ]] && rm -rf  $tmp_location/beslab
 	   mkdir $tmp_location/beslab
-	   git clone --quiet "https://github.com/$BLIMAN_NAMESPACE/BeSLab" $tmp_location/beslab    
+	   git clone --quiet -b develop "https://github.com/$BLIMAN_NAMESPACE/BeSLab" $tmp_location/beslab    
 	   
            beslab_ver="0.0.0"
 	   export BESLAB_VERSION="${beslab_ver}"
@@ -208,7 +208,7 @@ function __bliman_set_env_repo() {
 	else
            source "$HOME/.besman/bin/besman-init.sh"
         fi
-        bes list
+        bes list | __bliman_log
 }
 
 function __bliman_install_beslab_env() {
