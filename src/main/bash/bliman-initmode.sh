@@ -78,8 +78,8 @@ function __bliman_install_candidate_version() {
 	[[ ! -d ${BLIMAN_CANDIDATES_DIR}/current ]] && mkdir -p "${BLIMAN_CANDIDATES_DIR}/current" | __bliman_log
         
 	__bliman_download "$candidate" "$version" || return 1
-        touch "${BLIMAN_CANDIDATES_DIR}/current/version" 2>&1 | __bliman_log
-        touch "${BLIMAN_CANDIDATES_DIR}/current/mode" 2>&1 | __bliman_log
+        touch "${BLIMAN_CANDIDATES_DIR}/current/version" | __bliman_log
+        touch "${BLIMAN_CANDIDATES_DIR}/current/mode" | __bliman_log
 
 	echo "$version" >> ${BLIMAN_CANDIDATES_DIR}/current/version 
         echo "$candidate" > "${BLIMAN_CANDIDATES_DIR}/current/mode"
@@ -144,12 +144,15 @@ function __bliman_download() {
 	version="$2"
 
 	metadata_folder="${BLIMAN_DIR}/var/metadata"
-	mkdir -p ${metadata_folder} 2>&1 | __bliman_log
+	mkdir -p ${metadata_folder} | __bliman_log
 		
 	local platform_parameter="$BLIMAN_PLATFORM"
 	local download_url="${BLIMAN_CANDIDATES_REPO}/candidates/download/${candidate}/${platform_parameter}/installer.sh"
 
-	curl -o installer.sh $download_url
+	if [ $version == "dev" ];then
+           download_url="https://raw.githubusercontent.com/$BLIMAN_NAMESPACE/BLIman/develop/candidates/download/${candidate}/${platform_parameter}/installer.sh"
+	fi
+	curl --silent -o installer.sh $download_url
         chmod +x installer.sh
 	source installer.sh
 
