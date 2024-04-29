@@ -131,7 +131,7 @@ function bliman_setup_download ()
 
     if [ xx"$?" != xx"0" ];then
 	bliman_setup_echo "yellow" "Installing JQ for JSON response readings."    
-        sudo apt-get install jq -y
+        sudo apt-get install jq -y 2>&1>>$BLIMAN_INSTALL_LOG_FILE
     fi
 
     if [ -z $1 ];then

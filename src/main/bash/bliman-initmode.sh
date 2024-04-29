@@ -24,9 +24,9 @@ function __bli_initmode() {
 	folder="$3"
 
 	__bliman_echo_white ""
-        __bliman_echo_yellow "##############################################################################"
-        __bliman_echo_yellow "                       Setting lab mode as $candidate                         "
-        __bliman_echo_yellow "##############################################################################"
+        __bliman_echo_yellow "=============================================================================="
+        __bliman_echo_yellow "              Setting lab mode as $candidate. Please wait ...                 "
+        __bliman_echo_yellow "=============================================================================="
         __bliman_echo_white ""
 
 	__bliman_check_candidate_available "$candidate" || return 1
@@ -90,6 +90,9 @@ function __bliman_install_candidate_version() {
         #__bliman_echo_green "##############################################################################"
         #__bliman_echo_white ""
 	echo ""
+	__bliman_echo_green "Done !!"
+	__bliman_echo_green ""
+
 	__bliman_echo_cyan "Source besman init \"source $HOME/.besman/bin/besman-init.sh\"."
 	__bliman_echo_cyan "To install BeSLab in ${candidate} mode execute command \"bli launchlab\"."
 	echo ""
