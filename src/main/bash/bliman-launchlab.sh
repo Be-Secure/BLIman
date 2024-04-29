@@ -69,7 +69,8 @@ function __bli_launchlab()
     elif [[ "$BESLAB_LAB_MODE" == "lite" ]]; then
         __bliman_launch_lite_mode
     fi
-    
+
+
     __bliman_echo_green ""
     __bliman_echo_white "BLIMAN installed following lab components to the system."
     __bliman_echo_green "==================================================================================================="
@@ -82,19 +83,26 @@ function __bli_launchlab()
     __bliman_echo_green ""
 
     if [ $BESLAB_LAB_TYPE == "private" ] && ([ $BESLAB_LAB_MODE == "lite" ] || [ $BESLAB_LAB_MODE == "bare" ]);then
-       __bliman_echo_green "==================================================================================================="	    
-      __bliman_echo_green "                   CODE COLLABORATION TOOL = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL"
-      __bliman_echo_green "                   CODE COLLABORATION TOOL VERSION = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_VERSION"
-      __bliman_echo_green "                   DASHBOARD TOOL = $BESLAB_DASHBOARD_TOOL"
-      __bliman_echo_green "                   DASHBOARD TOOL VERSION = $BESLAB_DASHBOARD_RELEASE_VERSION"
-       __bliman_echo_green "==================================================================================================="
-      __bliman_echo_green ""
-
       pubip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
       __bliman_echo_green ""
 
-      gitlab_url="https://$pubip"
+      gitlab_url="http://$pubip"
       response_code_gitlab=$(curl -sL -w "%{http_code}\\n" "$gitlab_url" -o /dev/null)
+      besl_url="https://$pubip:3000"
+      response_code_besl=$(curl -sL -w "%{http_code}\\n" "$besl_url" -o /dev/null)
+
+      __bliman_echo_green "==================================================================================================="
+      if [ $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL == "gitlab-ce" ] && [ "$response_code_gitlab" == "200" ];then
+        __bliman_echo_green "                   CODE COLLABORATION TOOL = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL"
+        __bliman_echo_green "                   CODE COLLABORATION TOOL VERSION = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_VERSION"
+      fi
+      if [ $BESLAB_DASHBOARD_TOOL == "BeSLighthouse" ] && [ "$response_code_besl" == "200" ];then
+        __bliman_echo_green "                   DASHBOARD TOOL = $BESLAB_DASHBOARD_TOOL"
+        __bliman_echo_green "                   DASHBOARD TOOL VERSION = $BESLAB_DASHBOARD_RELEASE_VERSION"
+      fi
+      __bliman_echo_green "==================================================================================================="
+      __bliman_echo_green ""
+
 
       if [ $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL == "gitlab-ce" ] && [ "$response_code_gitlab" == "200" ];then
 	 __bliman_echo_white " "
@@ -104,9 +112,6 @@ function __bli_launchlab()
 	 __bliman_echo_white "==================================================================================================="
 	 __bliman_echo_white " "
       fi
-
-      besl_url="https://$pubip:3000"
-      response_code_besl=$(curl -sL -w "%{http_code}\\n" "$besl_url" -o /dev/null)
 
       if [ $BESLAB_DASHBOARD_TOOL == "BeSLighthouse" ] && [ "$response_code_besl" == "200" ];then
           __bliman_echo_white " "
