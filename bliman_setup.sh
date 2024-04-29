@@ -175,7 +175,7 @@ function bliman_setup_download ()
 	       unset $BLIMAN_VERSION
                export BLIMAN_VERSION="${bliversion}"
 	       [[ -d $tmp_location/BLIman ]] && rm -rf $tmp_location/BLIman
-               git clone -b develop https://github.com/Be-Secure/BLIman.git $tmp_location/BLIman 2>&1>>$BLIMAN_INSTALL_LOG_FILE
+               git clone --quiet -b develop https://github.com/Be-Secure/BLIman.git $tmp_location/BLIman 2>&1>>$BLIMAN_INSTALL_LOG_FILE
     else
               bliman_setup_echo "red" "No valid latest release for BLIman found."
               bliman_setup_echo "red" "Please specify the release version and try again."
@@ -201,7 +201,6 @@ function bliman_setup_check ()
 		exit 0
 	fi
 
-	echo "Looking for curl..."
 	if ! command -v curl >>$BLIMAN_INSTALL_LOG_FILE; then
 		echo "Not found."
 		echo ""
@@ -216,7 +215,6 @@ function bliman_setup_check ()
 
 
 	if [[ "$solaris" == true ]]; then
-		echo "Looking for gsed..."
 		if [ -z $(which gsed) ]; then
 			echo "Not found."
 			echo ""
@@ -231,7 +229,6 @@ function bliman_setup_check ()
 			exit 1
 		fi
 	else
-		echo "Looking for sed..."
 		if [ -z $(command -v sed) ]; then
 			echo "Not found."
 			echo ""
@@ -245,7 +242,6 @@ function bliman_setup_check ()
 		fi
 	fi
 
-        echo "Looking for git..."
         if [ -z $(command -v git) ]; then
                         echo "Not found."
                         echo ""
