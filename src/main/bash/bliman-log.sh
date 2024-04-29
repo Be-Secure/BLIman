@@ -28,6 +28,7 @@ __bliman_createlogfile () {
 }
 
 __bliman_log() {
+   __bliman_createlogfile
    datetime=$(date)
    while IFS= read -r line; do
      echo "$datetime : $line" >> $BLIMAN_LOG_FILE

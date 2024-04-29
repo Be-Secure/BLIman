@@ -127,14 +127,15 @@ function bliman_setup_download ()
       export BLIMAN_NAMESPACE="Be-Secure" 
     fi	    
 
-    which jq 2>&1 >/dev/null
+    which jq 2>&1>>$BLIMAN_INSTALL_LOG_FILE
+
     if [ xx"$?" != xx"0" ];then
 	bliman_setup_echo "yellow" "Installing JQ for JSON response readings."    
         sudo apt-get install jq -y
     fi
 
     if [ -z $1 ];then
-       response=$(curl -s "https://api.github.com/repos/$BLIMAN_NAMESPACE/BLIman/releases/latest")
+       response=$(curl --silent "https://api.github.com/repos/$BLIMAN_NAMESPACE/BLIman/releases/latest")
 
        if [[ $response == *"message"*"Not Found"* ]];then
              bliman_setup_echo "red" "BeSLab release version is not found."
@@ -145,7 +146,7 @@ function bliman_setup_download ()
              bliversion=$(echo "$response" | jq -r '.tag_name')
        fi
     elif [ "$1" == "dev" ];then
-             response=$(curl -s "https://api.github.com/repos/$BLIMAN_NAMESPACE/BLIman/releases/latest")
+             response=$(curl --silent "https://api.github.com/repos/$BLIMAN_NAMESPACE/BLIman/releases/latest")
 	     bliversion=$(echo "$response" | jq -r '.tag_name')
 	     bliversion=$bliversion"-dev" 
     else
@@ -155,15 +156,15 @@ function bliman_setup_download ()
     if [ ! -z ${bliversion} ] && [[ ${bliversion} != *"-dev"* ]];then
               unset $BLIMAN_VERSION
               export BLIMAN_VERSION="${bliversion}"
-              curl --silent -o $tmp_location/bliman-${bliversion}.zip --fail --location --progress-bar "${default_repo_url}/$BLIMAN_NAMESPACE/BLIman/archive/refs/tags/${bliversion}.zip"
+              curl --silent -o $tmp_location/bliman-${bliversion}.zip --fail --location --progress-bar "${default_repo_url}/$BLIMAN_NAMESPACE/BLIman/archive/refs/tags/${bliversion}.zip" 2>&1>>$BLIMAN_INSTALL_LOG_FILE
 
               if [ -f  $tmp_location/bliman-${bliversion}.zip ];then
-		 which unzip 2>&1 >/dev/null
+		 which unzip 2>&1>>$BLIMAN_INSTALL_LOG_FILE
                  if [ xx"$?" != xx"0" ];then
                       bliman_setup_echo "yellow" "Installing unzip."
-                      sudo apt-get install unzip -y
+                      sudo apt-get install unzip -y 2>&1>>$BLIMAN_INSTALL_LOG_FILE
                  fi     
-                 unzip -qo $tmp_location/bliman-${bliversion}.zip -d $tmp_location
+                 unzip -qo $tmp_location/bliman-${bliversion}.zip -d $tmp_location 2>&1>>$BLIMAN_INSTALL_LOG_FILE
               else
                 bliman_setup_echo "red" "BLIman release version $bliversion is not found."
                 bliman_setup_echo "red" "Please check the release version and try again."
@@ -174,7 +175,7 @@ function bliman_setup_download ()
 	       unset $BLIMAN_VERSION
                export BLIMAN_VERSION="${bliversion}"
 	       [[ -d $tmp_location/BLIman ]] && rm -rf $tmp_location/BLIman
-               git clone -b develop https://github.com/Be-Secure/BLIman.git $tmp_location/BLIman
+               git clone -b develop https://github.com/Be-Secure/BLIman.git $tmp_location/BLIman 2>&1>>$BLIMAN_INSTALL_LOG_FILE
     else
               bliman_setup_echo "red" "No valid latest release for BLIman found."
               bliman_setup_echo "red" "Please specify the release version and try again."
@@ -201,7 +202,7 @@ function bliman_setup_check ()
 	fi
 
 	echo "Looking for curl..."
-	if ! command -v curl > /dev/null; then
+	if ! command -v curl >>$BLIMAN_INSTALL_LOG_FILE; then
 		echo "Not found."
 		echo ""
 		echo "======================================================================================================"
@@ -449,12 +450,12 @@ EOF
 	fi
 
 	if [[ $darwin == true ]]; then
-		touch "$bliman_bash_profile" 2>&1 | bliman_setup_log
+		touch "$bliman_bash_profile"
 		if [[ -z $(grep 'bliman-init.sh' "$bliman_bash_profile") ]]; then
 			echo -e "\n$bliman_init_snippet" >>"$bliman_bash_profile"
 		fi
 	else
-		touch "${bliman_bashrc}" 2>&1 | bliman_setup_log
+		touch "${bliman_bashrc}"
 		if [[ -z $(grep 'bliman-init.sh' "$bliman_bashrc") ]]; then
 			echo -e "\n$bliman_init_snippet" >>"$bliman_bashrc"
 		fi
@@ -466,11 +467,12 @@ EOF
 	fi
 
 	if [ -f  $BLIMAN_DIR/bin/bliman-init.sh ];then
-	   source $BLIMAN_DIR/bin/bliman-init.sh  
-	   source ~/.bashrc
+	   source $BLIMAN_DIR/bin/bliman-init.sh  2>&1>>$BLIMAN_INSTALL_LOG_FILE
+	   source ~/.bashrc 2>&1>>$BLIMAN_INSTALL_LOG_FILE
 	   bliman_setup_echo "green" "BLIman version ${blimanversion} is installed at $BLIMAN_DIR successfully."
            bliman_setup_echo "green" "Execute following command to verify the installation:"
-           bliman_setup_echo "green" "    bli help"
+	   bliman_setup_echo "green" "   source $HOME/.bliman/bin/bliman-init.sh"
+           bliman_setup_echo "green" "   bli help"
            bliman_setup_echo "green" ""
            return 0
 	else

@@ -75,11 +75,11 @@ function __bliman_install_candidate_version() {
 	version="$2"
 	export BLIMAN_LAB_MODE="$candidate"
 
-	[[ ! -d ${BLIMAN_CANDIDATES_DIR}/current ]] && mkdir -p "${BLIMAN_CANDIDATES_DIR}/current" | __bliman_log
+	[[ ! -d ${BLIMAN_CANDIDATES_DIR}/current ]] && mkdir -p "${BLIMAN_CANDIDATES_DIR}/current"
         
 	__bliman_download "$candidate" "$version" || return 1
-        touch "${BLIMAN_CANDIDATES_DIR}/current/version" | __bliman_log
-        touch "${BLIMAN_CANDIDATES_DIR}/current/mode" | __bliman_log
+        touch "${BLIMAN_CANDIDATES_DIR}/current/version"
+        touch "${BLIMAN_CANDIDATES_DIR}/current/mode"
 
 	echo "$version" >> ${BLIMAN_CANDIDATES_DIR}/current/version 
         echo "$candidate" > "${BLIMAN_CANDIDATES_DIR}/current/mode"
@@ -127,7 +127,7 @@ function __bliman_install_local_version() {
 
 	if [[ -d "$folder" ]]; then
 		__bliman_echo_green "Linking ${candidate} ${version} to ${folder}"
-		ln -s "$folder" "${BLIMAN_CANDIDATES_DIR}/${candidate}/${version}" | __bliman_log
+		ln -s "$folder" "${BLIMAN_CANDIDATES_DIR}/${candidate}/${version}" 2>&1 | __bliman_log
 		__bliman_echo_green "Done installing!"
 	else
 		__bliman_echo_red "Invalid path! Refusing to link ${candidate} ${version} to ${folder}."
@@ -154,9 +154,9 @@ function __bliman_download() {
            download_url="https://raw.githubusercontent.com/$BLIMAN_NAMESPACE/BLIman/develop/candidates/download/${candidate}/${platform_parameter}/installer.sh"
 	fi
 
-	curl --silent -o installer.sh $download_url
-        chmod +x installer.sh
-	source installer.sh
+	curl --silent -o installer.sh $download_url 2>&1 | __bliman_log
+        chmod +x installer.sh 
+	source installer.sh 2>&1 | __bliman_log
 
 	# local base_name="${candidate}-${version}"
 	# local tmp_headers_file="${BLIMAN_DIR}/tmp/${base_name}.headers.tmp"
