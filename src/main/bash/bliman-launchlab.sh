@@ -55,11 +55,10 @@ function __bli_launchlab()
 
     if [ $BESLAB_LAB_TYPE == "private" ] && ([ $BESLAB_LAB_MODE == "lite" ] || [ $BESLAB_LAB_MODE == "bare" ]);then
       __bliman_echo_yellow "==================================================================================================="
-      __bliman_echo_yellow "    CODE COLLABORATION TOOL = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL"
-      __bliman_echo_yellow "    CODE COLLABORATION TOOL VERSION = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_VERSION"
-      __bliman_echo_yellow "    CODE COLLABORATION DATASTORES = $BESLAB_CODECOLLAB_DATASTORES"
-      __bliman_echo_yellow "    DASHBOARD TOOL = $BESLAB_DASHBOARD_TOOL"
-      __bliman_echo_yellow "    DASHBOARD TOOL VERSION = $BESLAB_DASHBOARD_RELEASE_VERSION"
+      __bliman_echo_yellow "                  CODE COLLABORATION TOOL = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL"
+      __bliman_echo_yellow "                  CODE COLLABORATION TOOL VERSION = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_VERSION"
+      __bliman_echo_yellow "                  DASHBOARD TOOL = $BESLAB_DASHBOARD_TOOL"
+      __bliman_echo_yellow "                  DASHBOARD TOOL VERSION = $BESLAB_DASHBOARD_RELEASE_VERSION"
       __bliman_echo_yellow "==================================================================================================="
     fi
 
