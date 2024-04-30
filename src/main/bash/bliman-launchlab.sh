@@ -88,7 +88,7 @@ function __bli_launchlab()
 
       gitlab_url="http://$pubip"
       response_code_gitlab=$(curl -sL -w "%{http_code}\\n" "$gitlab_url" -o /dev/null)
-      besl_url="https://$pubip:3000"
+      besl_url="http://$pubip:3000"
       response_code_besl=$(curl -sL -w "%{http_code}\\n" "$besl_url" -o /dev/null)
 
       __bliman_echo_green "==================================================================================================="
