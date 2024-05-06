@@ -9,14 +9,28 @@ Before getting started, you should know what [BeSLab](https://github.com/Be-Secu
 1. Open your git bash
 2. Run the below command to download the binaries
    
-   `curl -k https://be-secure.github.io/BLIman/get.bliman.io | bash -s --version 0.0.1`
+   `curl -o bliman_setup.sh https://raw.githubusercontent.com/Be-Secure/BLIman/main/bliman_setup.sh`
+   `chmod +x bliman_setup.sh`
+   `./bliman_setup.sh install --version <bliman release version>`
+   `source $HOME/.bliman/bin/bliman-init.sh`
+3. Edit the genesis.yaml file loaded to cureent working directory if required or use the default file.
+4. Load the genesis.yaml file
+   `bli load`
 
 **For linux users**
 
 1. Open your terminal
 2. Run the below command to download the binaries
 
-   `curl -s https://be-secure.github.io/BLIman/get.bliman.io | bash  -s --version 0.0.1`
+   `curl -o bliman_setup.sh https://raw.githubusercontent.com/Be-Secure/BLIman/main/bliman_setup.sh`
+   `chmod +x bliman_setup.sh`
+   `./bliman_setup.sh install --version <bliman release version>`
+   `source $HOME/.bliman/bin/bliman-init.sh`
+3. Edit the genesis.yaml file loaded to cureent working directory if required or use the default file.
+4. Load the genesis.yaml file
+   `bli load`
+
+bliman release version: get the latest bliman release version [here] (https://github.com/Be-Secure/BLIman/releases)
 
 ## The 3 modes of BeSLab
 
@@ -42,17 +56,11 @@ To use this mode, you will have to install the following tools.
 
 1. Open your git bash
 2. Make sure you have installed bliman by running, `bli help`
-3. Load the genesis file. Run
 
-   `bli load`
-
-4. Run the below command.
+3. Run the below command.
 
    `bli initmode host`
 
-5. Next step, you can launch the lab.
-
-   `bli launchlab`
 
 ### 2. Bare metal mode
 
@@ -66,17 +74,10 @@ You don't need to install a pre-requisites for this as it is done using BLIman i
 
 1. Open your terminal
 2. Make sure you have installed bliman by running, `bli help`
-3. Load the genesis file. Run
 
-   `bli load`
-
-4. Run the below command.
+3. Run the below command.
 
    `bli initmode bare`
-
-5. Next step, you can launch the lab.
-
-   `bli launchlab`
 
 ### 3. Lightweight mode
 
@@ -90,14 +91,13 @@ You wont have to worry about pre-requisites. It will be installed by BLIman.
 
 1. Open your terminal
 2. Make sure you have installed bliman by running, `bli help`
-3. Load the genesis file. Run
 
-   `bli load`
-
-4. Run the below command.
+3. Run the below command.
 
    `bli initmode lite`
 
-5. Next step, you can launch the lab.
+## Install the lab
 
+1. RUn the below command
+   `source $HOME/.besman/bin/besman-init.sh`
    `bli launchlab`
