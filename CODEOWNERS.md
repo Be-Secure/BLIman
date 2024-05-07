@@ -10,12 +10,10 @@
 # make GitHub consider this file invalid if not commented.
 
 # For any changes, Unless a later match takes precedence, these maintainer will be requested for review
-*       @anilsingla @harimohanr
+* @anilsingla @asa1997 @harimohanr
 
 # For docs and other md files
-*.md   @anilsingla @harimohanr @panickervinod
-
-docs/* @anilsingla @harimohanr @panickervinod
+*.md @anilsingla @asa1997 @harimohanr @panickervinod
 
 # For source code changes
-src/* @anilsingla @harimohanr
+src/* @anilsingla @asa1997 @harimohanr
