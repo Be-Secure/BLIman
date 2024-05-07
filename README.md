@@ -11,11 +11,13 @@ To set up, please look at the [getting started guide](./Getting_started.md).
 
 2.Download the setup script `curl -o bliman_setup.sh https://raw.githubusercontent.com/Be-Secure/BLIman/main/bliman_setup.sh`.
 
+\[Note:\] For release candidate version use `curl -o bliman_setup.sh https://raw.githubusercontent.com/Be-Secure/BLIman/develop/bliman_setup.sh`
+
 3.Chmod the file `chmod +x bliman_setup.sh` 
 
 4.Execute the setup file `./bliman_setup.sh install --version <bliman release version>`
-  bliman release version : A released version of bliman e.g v0.4.1 or 0.4.1. The released version can be find [here] (https://github.com/Be-Secure/BLIman/releases)
-
+  bliman release version : A released version of bliman e.g v0.4.1 or 0.4.1. The released version can be find [here] (https://github.com/Be-Secure/BLIman/releases). For release candidates use "dev" as release version.
+  
 5.Source the init.sh `source $HOME/.bliman/bin/bliman-init.sh`
 
 # Install BeSLab in different modes
