@@ -43,14 +43,14 @@ function __bli_launchlab()
        fi
     fi
     
-    __bliman_echo_white "BLIMAN is going to install following lab components as configured in genesis file."
+    __bliman_echo_white "BLIman is going to install following lab components as configured in genesis file."
      __bliman_echo_yellow "==================================================================================================="
     __bliman_echo_yellow "                                BESLAB TYPE = $BESLAB_LAB_TYPE"
     __bliman_echo_yellow "                                BESLAB MODE = $BESLAB_LAB_MODE"
     __bliman_echo_yellow "                                BESLAB NAME = $BESMAN_LAB_NAME"
     __bliman_echo_yellow "                                BESLAB VERSION = $BESLAB_VERSION"
     __bliman_echo_yellow "                                BESMAN VERSION = $BESMAN_VER"
-     __bliman_echo_white "==================================================================================================="
+    __bliman_echo_yellow "==================================================================================================="
     __bliman_echo_yellow ""
 
     if [ $BESLAB_LAB_TYPE == "private" ] && ([ $BESLAB_LAB_MODE == "lite" ] || [ $BESLAB_LAB_MODE == "bare" ]);then
@@ -72,7 +72,7 @@ function __bli_launchlab()
 
 
     __bliman_echo_green ""
-    __bliman_echo_white "BLIMAN installed following lab components to the system."
+    __bliman_echo_white "BLIman installed following lab components to the system."
     __bliman_echo_green "==================================================================================================="
     __bliman_echo_green "                                BESLAB TYPE = $BESLAB_LAB_TYPE"
     __bliman_echo_green "                                BESLAB MODE = $BESLAB_LAB_MODE"
