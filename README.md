@@ -1,55 +1,42 @@
 ![BLIman](./BLIman-logo-horizontal.png)
 
-BLIman is a command line interface tool for managing [BeSLab](https://github.com/Be-Secure/BeSLab). It can be used to bring up the lab in 3 different modes.
+BLIman is a command line interface for managing [BeSLab](https://github.com/Be-Secure/BeSLab) deployments. It can be used to bring up the lab in 3 different modes. 
 
-To set up, please look at the [getting started guide](./Getting_started.md).
+* Lite Mode 
+* <i>Host Mode (Work in progress)</i>
+* <i>Bare Mode (Work in progress)</i>
 
+In addition, there are 3 deployment types for each lab mode.
+* Private Lab - Owned by an organization for commercial usage.
+* <i>Public Lab (Work in progress) - Community lab hosted in any public code collaboration repository.</i>
+* <i>Personal Lab (Work in progress) - Owned by an individual for learning and research purpose.</i>
 
-# Install BLIman
+It is recommended to have an understanding of [BeSLab](https://github.com/Be-Secure/BeSLab) and its genesis.yaml file.
 
-1.Open your terminal.
+## Installing BLIman
+Bliman version details [here](https://github.com/Be-Secure/BLIman/releases).
 
-2.Download the setup script `curl -o bliman_setup.sh https://raw.githubusercontent.com/Be-Secure/BLIman/main/bliman_setup.sh`.
+1. Open your terminal
+2. Download the setup script
+   <br>`curl -o bliman_setup.sh https://raw.githubusercontent.com/Be-Secure/BLIman/main/bliman_setup.sh`
+   <br>`chmod +x bliman_setup.sh`
+   <br>`./bliman_setup.sh install --version <bliman release version>`
+   <br>`source $HOME/.bliman/bin/bliman-init.sh`
 
-3. Chmod the file `chmod +x bliman_setup.sh` 
+## BLIman Usage
 
-3.Execute the setup file `./bliman_setup.sh install`
+BLIman helps you to set up and manage the BeSLab deployments. It can bring up a BeSLab in 3 modes.
 
-# Modes of BeSLab
+**Lite mode**
 
-## Host mode
+Currently, BLIman supports only Lite mode Private deployment type only. The other two modes and type of deployments are work in progress.
 
-In the mode, we are hosting the lab in a VM which is brought up using vagrant and virtual box.
-
-`bli load`
-
-`bli initmode host`
-
-`bli launchlab`
-
-## Bare Metal mode
-
-In this mode, we are installing all the tools for lab in the user's machine itself. It is done using ansible and ansible roles.
-
-`bli load`
-
-`bli initmode bare`
-
-`bli launchlab`
-
-## Lite mode
-
-In this mode, we are installing the tools using pure shell scripts using [BeSman](https://github.com/Be-Secure/BeSman).
-
-`bli load`
-
-`bli initmode lite`
-
-`bli launchlab`
-
-
-# Other commands
-
-- `bli help`
-
-- `bli list`
+1. Open your terminal
+2. Make sure you have bliman installed and running.
+   <br>`bli help`
+3. Prepare the lab deployment.
+   <br>`bli load` - This command needs to be executed from the directory where genesis.yaml file for the BeSLab is present.
+   <br>`bli initmode lite`
+4. Launch the lab deployment.
+   <br>`source $HOME/.besman/bin/besman-init.sh`
+   <br>`bli launchlab`

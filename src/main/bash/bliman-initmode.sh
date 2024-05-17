@@ -24,9 +24,9 @@ function __bli_initmode() {
 	folder="$3"
 
 	__bliman_echo_white ""
-        __bliman_echo_yellow "##############################################################################"
-        __bliman_echo_yellow "                       Setting lab mode as $candidate                         "
-        __bliman_echo_yellow "##############################################################################"
+        __bliman_echo_yellow "=============================================================================="
+        __bliman_echo_yellow "              Setting lab mode as $candidate. Please wait ...                 "
+        __bliman_echo_yellow "=============================================================================="
         __bliman_echo_white ""
 
 	__bliman_check_candidate_available "$candidate" || return 1
@@ -75,21 +75,25 @@ function __bliman_install_candidate_version() {
 	version="$2"
 	export BLIMAN_LAB_MODE="$candidate"
 
-	[[ ! -d ${BLIMAN_CANDIDATES_DIR}/current ]] && mkdir -p "${BLIMAN_CANDIDATES_DIR}/current" | __bliman_log
+	[[ ! -d ${BLIMAN_CANDIDATES_DIR}/current ]] && mkdir -p "${BLIMAN_CANDIDATES_DIR}/current"
         
 	__bliman_download "$candidate" "$version" || return 1
-        touch "${BLIMAN_CANDIDATES_DIR}/current/version" | __bliman_log
-        touch "${BLIMAN_CANDIDATES_DIR}/current/mode" | __bliman_log
+        touch "${BLIMAN_CANDIDATES_DIR}/current/version"
+        touch "${BLIMAN_CANDIDATES_DIR}/current/mode"
 
 	echo "$version" >> ${BLIMAN_CANDIDATES_DIR}/current/version 
         echo "$candidate" > "${BLIMAN_CANDIDATES_DIR}/current/mode"
         
-        __bliman_echo_white ""
-        __bliman_echo_green "##############################################################################"
-        __bliman_echo_green "                       lab mode as $candidate is set                          "
-        __bliman_echo_green "##############################################################################"
-        __bliman_echo_white ""
+        #__bliman_echo_white ""
+        #__bliman_echo_green "##############################################################################"
+        #__bliman_echo_green "                       lab mode as $candidate is set                          "
+        #__bliman_echo_green "##############################################################################"
+        #__bliman_echo_white ""
 	echo ""
+	__bliman_echo_green "Done !!"
+	__bliman_echo_green ""
+
+	__bliman_echo_cyan "Source besman init \"source $HOME/.besman/bin/besman-init.sh\"."
 	__bliman_echo_cyan "To install BeSLab in ${candidate} mode execute command \"bli launchlab\"."
 	echo ""
 
@@ -127,7 +131,7 @@ function __bliman_install_local_version() {
 
 	if [[ -d "$folder" ]]; then
 		__bliman_echo_green "Linking ${candidate} ${version} to ${folder}"
-		ln -s "$folder" "${BLIMAN_CANDIDATES_DIR}/${candidate}/${version}" | __bliman_log
+		ln -s "$folder" "${BLIMAN_CANDIDATES_DIR}/${candidate}/${version}" 2>&1 | __bliman_log
 		__bliman_echo_green "Done installing!"
 	else
 		__bliman_echo_red "Invalid path! Refusing to link ${candidate} ${version} to ${folder}."
@@ -149,14 +153,14 @@ function __bliman_download() {
 	local platform_parameter="$BLIMAN_PLATFORM"
 	download_url="${BLIMAN_CANDIDATES_REPO}/candidates/download/${candidate}/${platform_parameter}/installer.sh"
 
-	isDev=$(cat "$HOME/.bliman/var/version" | grep -i develop)
-	if [ "${isDev}" == "Develop-Version" ];then
+	isDev=$(cat "$HOME/.bliman/var/version" | grep -i dev)
+	if [[ "${isDev}" == *"-dev"* ]];then
            download_url="https://raw.githubusercontent.com/$BLIMAN_NAMESPACE/BLIman/develop/candidates/download/${candidate}/${platform_parameter}/installer.sh"
 	fi
 
-	curl --silent -o installer.sh $download_url
-        chmod +x installer.sh
-	source installer.sh
+	curl --silent -o installer.sh $download_url 2>&1 | __bliman_log
+        chmod +x installer.sh 
+	source installer.sh 2>&1 | __bliman_log
 
 	# local base_name="${candidate}-${version}"
 	# local tmp_headers_file="${BLIMAN_DIR}/tmp/${base_name}.headers.tmp"

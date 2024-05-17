@@ -43,20 +43,23 @@ function __bli_launchlab()
        fi
     fi
     
-    __bliman_echo_white "BLIMAN is going to install following lab components as configured in genesis file."
-    __bliman_echo_cyan "    BESLAB TYPE = $BESLAB_LAB_TYPE"
-    __bliman_echo_cyan "    BESLAB MODE = $BESLAB_LAB_MODE"
-    __bliman_echo_cyan "    BESLAB NAME = $BESMAN_LAB_NAME"
-    __bliman_echo_cyan "    BESLAB VERSION = $BESLAB_VERSION"
-    __bliman_echo_cyan "    BESMAN VERSION = $BESMAN_VER"
-    __bliman_echo_cyan ""
+    __bliman_echo_white "BLIman is going to install following lab components as configured in genesis file."
+     __bliman_echo_yellow "==================================================================================================="
+    __bliman_echo_yellow "                                BESLAB TYPE = $BESLAB_LAB_TYPE"
+    __bliman_echo_yellow "                                BESLAB MODE = $BESLAB_LAB_MODE"
+    __bliman_echo_yellow "                                BESLAB NAME = $BESMAN_LAB_NAME"
+    __bliman_echo_yellow "                                BESLAB VERSION = $BESLAB_VERSION"
+    __bliman_echo_yellow "                                BESMAN VERSION = $BESMAN_VER"
+    __bliman_echo_yellow "==================================================================================================="
+    __bliman_echo_yellow ""
 
     if [ $BESLAB_LAB_TYPE == "private" ] && ([ $BESLAB_LAB_MODE == "lite" ] || [ $BESLAB_LAB_MODE == "bare" ]);then
-      __bliman_echo_yellow "    CODE COLLABORATION TOOL = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL"
-      __bliman_echo_yellow "    CODE COLLABORATION TOOL VERSION = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_VERSION"
-      __bliman_echo_yellow "    CODE COLLABORATION DATASTORES = $BESLAB_CODECOLLAB_DATASTORES"
-      __bliman_echo_yellow "    DASHBOARD TOOL = $BESLAB_DASHBOARD_TOOL"
-      __bliman_echo_yellow "    DASHBOARD TOOL VERSION = $BESLAB_DASHBOARD_RELEASE_VERSION"
+      __bliman_echo_yellow "==================================================================================================="
+      __bliman_echo_yellow "                  CODE COLLABORATION TOOL = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL"
+      __bliman_echo_yellow "                  CODE COLLABORATION TOOL VERSION = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_VERSION"
+      __bliman_echo_yellow "                  DASHBOARD TOOL = $BESLAB_DASHBOARD_TOOL"
+      __bliman_echo_yellow "                  DASHBOARD TOOL VERSION = $BESLAB_DASHBOARD_RELEASE_VERSION"
+      __bliman_echo_yellow "==================================================================================================="
     fi
 
     if [[ "$BESLAB_LAB_MODE" == "host" ]]; then
@@ -66,37 +69,55 @@ function __bli_launchlab()
     elif [[ "$BESLAB_LAB_MODE" == "lite" ]]; then
         __bliman_launch_lite_mode
     fi
-    
+
+
     __bliman_echo_green ""
-    __bliman_echo_white "BLIMAN installed following lab components to the system."
-    __bliman_echo_green "    BESLAB TYPE = $BESLAB_LAB_TYPE"
-    __bliman_echo_green "    BESLAB MODE = $BESLAB_LAB_MODE"
-    __bliman_echo_green "    BESLAB NAME = $BESMAN_LAB_NAME"
-    __bliman_echo_green "    BESLAB VERSION = $BESLAB_VERSION"
-    __bliman_echo_green "    BESMAN VERSION = $BESMAN_VER"
+    __bliman_echo_white "BLIman installed following lab components to the system."
+    __bliman_echo_green "==================================================================================================="
+    __bliman_echo_green "                                BESLAB TYPE = $BESLAB_LAB_TYPE"
+    __bliman_echo_green "                                BESLAB MODE = $BESLAB_LAB_MODE"
+    __bliman_echo_green "                                BESLAB NAME = $BESMAN_LAB_NAME"
+    __bliman_echo_green "                                BESLAB VERSION = $BESLAB_VERSION"
+    __bliman_echo_green "                                BESMAN VERSION = $BESMAN_VER"
+     __bliman_echo_green "==================================================================================================="
     __bliman_echo_green ""
 
     if [ $BESLAB_LAB_TYPE == "private" ] && ([ $BESLAB_LAB_MODE == "lite" ] || [ $BESLAB_LAB_MODE == "bare" ]);then
-      __bliman_echo_green "    CODE COLLABORATION TOOL = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL"
-      __bliman_echo_green "    CODE COLLABORATION TOOL VERSION = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_VERSION"
-      __bliman_echo_green "    CODE COLLABORATION DATASTORES = $BESLAB_CODECOLLAB_DATASTORES"
-      __bliman_echo_green "    DASHBOARD TOOL = $BESLAB_DASHBOARD_TOOL"
-      __bliman_echo_green "    DASHBOARD TOOL VERSION = $BESLAB_DASHBOARD_RELEASE_VERSION"
-      __bliman_echo_green ""
-
       pubip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
       __bliman_echo_green ""
 
-      if [ $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL == "gitlab-ce" ];then
+      gitlab_url="http://$pubip"
+      response_code_gitlab=$(curl -sL -w "%{http_code}\\n" "$gitlab_url" -o /dev/null)
+      besl_url="http://$pubip:3000"
+      response_code_besl=$(curl -sL -w "%{http_code}\\n" "$besl_url" -o /dev/null)
+
+      __bliman_echo_green "==================================================================================================="
+      if [ $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL == "gitlab-ce" ] && [ "$response_code_gitlab" == "200" ];then
+        __bliman_echo_green "                   CODE COLLABORATION TOOL = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL"
+        __bliman_echo_green "                   CODE COLLABORATION TOOL VERSION = $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_VERSION"
+      fi
+      if [ $BESLAB_DASHBOARD_TOOL == "BeSLighthouse" ] && [ "$response_code_besl" == "200" ];then
+        __bliman_echo_green "                   DASHBOARD TOOL = $BESLAB_DASHBOARD_TOOL"
+        __bliman_echo_green "                   DASHBOARD TOOL VERSION = $BESLAB_DASHBOARD_RELEASE_VERSION"
+      fi
+      __bliman_echo_green "==================================================================================================="
+      __bliman_echo_green ""
+
+
+      if [ $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL == "gitlab-ce" ] && [ "$response_code_gitlab" == "200" ];then
 	 __bliman_echo_white " "
-         __bliman_echo_white "Gitlab is accessible at $pubip "
-	 __bliman_echo_white "    Login to the gitlab using username as $BESMAN_LAB_NAME. Use default password."
+	 __bliman_echo_white "==================================================================================================="
+         __bliman_echo_white "   Gitlab is accessible at $pubip "
+	 __bliman_echo_white "        Login to the gitlab using username as $BESMAN_LAB_NAME and default password."
+	 __bliman_echo_white "==================================================================================================="
 	 __bliman_echo_white " "
       fi
 
-      if [ $BESLAB_DASHBOARD_TOOL == "BeSLighthouse" ];then
+      if [ $BESLAB_DASHBOARD_TOOL == "BeSLighthouse" ] && [ "$response_code_besl" == "200" ];then
           __bliman_echo_white " "
-          __bliman_echo_white "BeSLighthouse is accessible at $pubip:3000 "
+	   __bliman_echo_white "==================================================================================================="
+          __bliman_echo_white "                            BeSLighthouse UI is accessible at $pubip:3000 "
+	   __bliman_echo_white "==================================================================================================="
           __bliman_echo_white " "
       fi
       __bliman_echo_white " "
