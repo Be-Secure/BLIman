@@ -20,7 +20,7 @@ Bliman version details [here](https://github.com/Be-Secure/BLIman/releases).
 2. Download the setup script
    <br>`curl -o bliman_setup.sh https://raw.githubusercontent.com/Be-Secure/BLIman/main/bliman_setup.sh`
    <br>`chmod +x bliman_setup.sh`
-   <br>`./bliman_setup.sh install --version <bliman release version>`
+   <br>`source bliman_setup.sh install --version <bliman release version>`
    <br>`source $HOME/.bliman/bin/bliman-init.sh`
 
 ## BLIman Usage
