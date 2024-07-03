@@ -31,6 +31,9 @@ function bli() {
         __bliman_createlogfile
 
 	case "$COMMAND" in
+	create)
+		COMMAND="create"
+		;;
 	load)
 		COMMAND="load-genesis"
 		;;
