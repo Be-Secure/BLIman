@@ -95,6 +95,9 @@ function bli() {
                                         launchlab)
                                                 __bli_help_launchlab
                                         ;;
+				        create)
+                                                __bli_help_create
+					;;
                                         help)
                                                 __bli_help
                                         ;;
