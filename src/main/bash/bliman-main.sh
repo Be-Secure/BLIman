@@ -27,7 +27,10 @@ function ___bliman_help() {
 function bli() {
 
 	COMMAND="$1"
-	QUALIFIER="$2"
+	if [ $COMMAND == "initmode" ];then
+	  QUALIFIER="$2"
+	fi
+
         __bliman_createlogfile
 
 	case "$COMMAND" in
