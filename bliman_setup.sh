@@ -198,7 +198,7 @@ function bliman_setup_check ()
 		echo ""
 		echo "======================================================================================================"
 		echo ""
-		exit 0
+		return 0
 	fi
 
 	if ! command -v curl >>$BLIMAN_INSTALL_LOG_FILE; then
@@ -210,7 +210,7 @@ function bliman_setup_check ()
 		echo " Restart after installing curl."
 		echo "======================================================================================================"
 		echo ""
-		exit 1
+		return 1
 	fi
 
 
@@ -226,7 +226,7 @@ function bliman_setup_check ()
 			echo " Restart after installing gsed."
 			echo "======================================================================================================"
 			echo ""
-			exit 1
+			return 1
 		fi
 	else
 		if [ -z $(command -v sed) ]; then
@@ -238,7 +238,7 @@ function bliman_setup_check ()
 			echo " Restart after installing sed."
 			echo "======================================================================================================"
 			echo ""
-			exit 1
+			return 1
 		fi
 	fi
 
@@ -251,7 +251,7 @@ function bliman_setup_check ()
                         echo " Restart after installing git."
                         echo "======================================================================================================"
                         echo ""
-                        exit 1
+                        return 1
         fi
 
 }
