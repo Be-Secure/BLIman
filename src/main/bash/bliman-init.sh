@@ -307,10 +307,14 @@ fi
 if [ -f $beslighthousedatafile ];then
    beslighthousePath=`cat $beslighthousedatafile | grep "BESLIGHTHOUSE_DIR:" | awk '{print $2}'`
    beslighthouse_config_path=$beslighthousePath/src/apiDetailsConfig.json
-   sed -i '/"activeTool"/c\"activeTool": "gitlab"' $beslighthouse_config_path 2>&1 | __bliman_log
+   sed -i '/"activeTool"/c\"activeTool": "gitlab",' $beslighthouse_config_path 2>&1 | __bliman_log
    sed -i "/\"namespace\"/c\"namespace\": \"$GITUSER\"," $beslighthouse_config_path 2>&1 | __bliman_log
    sed -i "/\"token\"/c\"token\": \"$GITUSERTOKEN\"" $beslighthouse_config_path 2>&1 | __bliman_log
    myip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
    sed -i "/\"apiUrl\"/c\"apiUrl\": \"http://$myip:5000\"," $beslighthouse_config_path 2>&1 | __bliman_log
-   sed -i "/\"gitLabUrl\"/c\"gitLabUrl\": \"http://$myip\"," $beslighthouse_config_path 2>&1 | __bliman_log
+   if [ ! -z $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_PORT ]; then 
+     sed -i "/\"gitLabUrl\"/c\"gitLabUrl\": \"http://$myip:${BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_PORT}\"," $beslighthouse_config_path 2>&1 | __bliman_log
+   else
+     sed -i "/\"gitLabUrl\"/c\"gitLabUrl\": \"http://$myip:8081\"," $beslighthouse_config_path 2>&1 | __bliman_log
+   fi
 fi
