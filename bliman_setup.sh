@@ -147,7 +147,6 @@ function bliman_setup_download ()
        fi
     elif [ "$1" == "dev" ];then
              response=$(curl --silent "https://api.github.com/repos/$BLIMAN_NAMESPACE/BLIman/releases/latest")
-	     bliversion=$(echo "$response" | jq -r '.tag_name')
 	     bliversion=$bliversion"-dev" 
     else
 	    bliversion="$1"
@@ -198,7 +197,7 @@ function bliman_setup_check ()
 		echo ""
 		echo "======================================================================================================"
 		echo ""
-		exit 0
+		return 0
 	fi
 
 	if ! command -v curl >>$BLIMAN_INSTALL_LOG_FILE; then
@@ -210,7 +209,7 @@ function bliman_setup_check ()
 		echo " Restart after installing curl."
 		echo "======================================================================================================"
 		echo ""
-		exit 1
+		return 1
 	fi
 
 
@@ -226,7 +225,7 @@ function bliman_setup_check ()
 			echo " Restart after installing gsed."
 			echo "======================================================================================================"
 			echo ""
-			exit 1
+			return 1
 		fi
 	else
 		if [ -z $(command -v sed) ]; then
@@ -238,7 +237,7 @@ function bliman_setup_check ()
 			echo " Restart after installing sed."
 			echo "======================================================================================================"
 			echo ""
-			exit 1
+			return 1
 		fi
 	fi
 
@@ -251,36 +250,26 @@ function bliman_setup_check ()
                         echo " Restart after installing git."
                         echo "======================================================================================================"
                         echo ""
-                        exit 1
+                        return 1
         fi
 
 }
 function bliman_setup_install() {
 
-	local genesis_path force_flag
         local tmp_location="/tmp"
 
 	trap track_last_command DEBUG
 	trap echo_failed_command EXIT
 
-	if [ ! -z $2 ] && [ "$2" != "dev" ];then
+	if [ ! -z $1 ] && [ "$1" != "dev" ];then
           
-	    if [ ${2:0:1} == "v" ];then
-	      bliversion=${2:1}
+	    if [ ${1:0:1} == "v" ];then
+	      bliversion=${1:1}
             else
-              bliversion=${2}
+              bliversion=${1}
 	    fi
-
-        elif [ ! -z ${BLIMAN_VERSION} ];then
+            export Is_Dev="true"
 	
-	  if [ ${BLIMAN_VERSION:0:1} == "v" ];then
-	    bliversion=${BLIMAN_VERSION:1}
-	  elif [ ${BLIMAN_VERSION:0-3} == "dev" ];then
-	     bliversion=${BLIMAN_VERSION:0-4}
-	     export Is_Dev="true"
-	  else
-            bliversion=${BLIMAN_VERSION}
-          fi
 	else
 		echo "Please provide BLIman version to install."
 		echo "exiting .."
@@ -359,23 +348,23 @@ EOF
         bliman_setup_check
 
 	bliman_setup_echo "yellow" "Installing BLIman."
-	#echo ""
-	#echo ' BBBBBBBBBBBBBBBBB   LLLLLLLLLLL             IIIIIIIIIIMMMMMMMM               MMMMMMMM               AAA               NNNNNNNN        NNNNNNNN '
-	#echo ' B::::::::::::::::B  L:::::::::L             I::::::::IM:::::::M             M:::::::M              A:::A              N:::::::N       N::::::N '
-	#echo ' B::::::BBBBBB:::::B L:::::::::L             I::::::::IM::::::::M           M::::::::M             A:::::A             N::::::::N      N::::::N '
-	#echo ' BB:::::B     B:::::BLL:::::::LL             II::::::IIM:::::::::M         M:::::::::M            A:::::::A            N:::::::::N     N::::::N '
-	#echo '   B::::B     B:::::B  L:::::L                 I::::I  M::::::::::M       M::::::::::M           A:::::::::A           N::::::::::N    N::::::N '
-	#echo '   B::::B     B:::::B  L:::::L                 I::::I  M:::::::::::M     M:::::::::::M          A:::::A:::::A          N:::::::::::N   N::::::N '
-	#echo '   B::::BBBBBB:::::B   L:::::L                 I::::I  M:::::::M::::M   M::::M:::::::M         A:::::A A:::::A         N:::::::N::::N  N::::::N '
-	#echo '   B:::::::::::::BB    L:::::L                 I::::I  M::::::M M::::M M::::M M::::::M        A:::::A   A:::::A        N::::::N N::::N N::::::N '
-	#echo '   B::::BBBBBB:::::B   L:::::L                 I::::I  M::::::M  M::::M::::M  M::::::M       A:::::A     A:::::A       N::::::N  N::::N:::::::N '
-	#echo '   B::::B     B:::::B  L:::::L                 I::::I  M::::::M   M:::::::M   M::::::M      A:::::AAAAAAAAA:::::A      N::::::N   N:::::::::::N '
-	#echo '   B::::B     B:::::B  L:::::L                 I::::I  M::::::M    M:::::M    M::::::M     A:::::::::::::::::::::A     N::::::N    N::::::::::N '
-	#echo '   B::::B     B:::::B  L:::::L         LLLLLL  I::::I  M::::::M     MMMMM     M::::::M    A:::::AAAAAAAAAAAAA:::::A    N::::::N     N:::::::::N '
-	#echo ' BB:::::BBBBBB::::::BLL:::::::LLLLLLLLL:::::LII::::::IIM::::::M               M::::::M   A:::::A             A:::::A   N::::::N      N::::::::N '
-	#echo ' B:::::::::::::::::B L::::::::::::::::::::::LI::::::::IM::::::M               M::::::M  A:::::A               A:::::A  N::::::N       N:::::::N '
-	#echo ' B::::::::::::::::B  L::::::::::::::::::::::LI::::::::IM::::::M               M::::::M A:::::A                 A:::::A N::::::N        N::::::N '
-        #echo ""
+	echo ""
+	echo ' BBBBBBBBBBBBBBBBB   LLLLLLLLLLL             IIIIIIIIIIMMMMMMMM               MMMMMMMM               AAA               NNNNNNNN        NNNNNNNN '
+	echo ' B::::::::::::::::B  L:::::::::L             I::::::::IM:::::::M             M:::::::M              A:::A              N:::::::N       N::::::N '
+	echo ' B::::::BBBBBB:::::B L:::::::::L             I::::::::IM::::::::M           M::::::::M             A:::::A             N::::::::N      N::::::N '
+	echo ' BB:::::B     B:::::BLL:::::::LL             II::::::IIM:::::::::M         M:::::::::M            A:::::::A            N:::::::::N     N::::::N '
+	echo '   B::::B     B:::::B  L:::::L                 I::::I  M::::::::::M       M::::::::::M           A:::::::::A           N::::::::::N    N::::::N '
+	echo '   B::::B     B:::::B  L:::::L                 I::::I  M:::::::::::M     M:::::::::::M          A:::::A:::::A          N:::::::::::N   N::::::N '
+	echo '   B::::BBBBBB:::::B   L:::::L                 I::::I  M:::::::M::::M   M::::M:::::::M         A:::::A A:::::A         N:::::::N::::N  N::::::N '
+	echo '   B:::::::::::::BB    L:::::L                 I::::I  M::::::M M::::M M::::M M::::::M        A:::::A   A:::::A        N::::::N N::::N N::::::N '
+	echo '   B::::BBBBBB:::::B   L:::::L                 I::::I  M::::::M  M::::M::::M  M::::::M       A:::::A     A:::::A       N::::::N  N::::N:::::::N '
+	echo '   B::::B     B:::::B  L:::::L                 I::::I  M::::::M   M:::::::M   M::::::M      A:::::AAAAAAAAA:::::A      N::::::N   N:::::::::::N '
+	echo '   B::::B     B:::::B  L:::::L                 I::::I  M::::::M    M:::::M    M::::::M     A:::::::::::::::::::::A     N::::::N    N::::::::::N '
+	echo '   B::::B     B:::::B  L:::::L         LLLLLL  I::::I  M::::::M     MMMMM     M::::::M    A:::::AAAAAAAAAAAAA:::::A    N::::::N     N:::::::::N '
+	echo ' BB:::::BBBBBB::::::BLL:::::::LLLLLLLLL:::::LII::::::IIM::::::M               M::::::M   A:::::A             A:::::A   N::::::N      N::::::::N '
+	echo ' B:::::::::::::::::B L::::::::::::::::::::::LI::::::::IM::::::M               M::::::M  A:::::A               A:::::A  N::::::N       N:::::::N '
+	echo ' B::::::::::::::::B  L::::::::::::::::::::::LI::::::::IM::::::M               M::::::M A:::::A                 A:::::A N::::::N        N::::::N '
+        echo ""
 
         if [ ! -d  $tmp_location/BLIman-${bliversion} ] && [ ! -d $tmp_location/BLIman ];then
            bliman_setup_echo "red" "Bliman not downloaded. Please retry."
@@ -388,6 +377,9 @@ EOF
            mkdir -p "$BLIMAN_DIR/bin/"
            mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/"
            BLIMAN_CANDIDATES_CSV=$(cat "$tmp_location/BLIman/candidates.txt")
+	   touch $bliman_var_folder/version
+	   echo "${bliversion}" >> $bliman_var_folder/version
+
 	else
            cp -r $tmp_location/BLIman-${bliversion}/contrib/ "$BLIMAN_DIR"
            cp -r $tmp_location/BLIman-${bliversion}/src/main/bash/* "$bliman_src_folder"
@@ -395,6 +387,8 @@ EOF
            mkdir -p "$BLIMAN_DIR/bin/"
            mv "$bliman_src_folder"/bliman-init.sh "$BLIMAN_DIR/bin/"
 	   BLIMAN_CANDIDATES_CSV=$(cat "$tmp_location/BLIman-${bliversion}/candidates.txt")
+	   touch $bliman_var_folder/version
+           echo "${bliversion}" >> $bliman_var_folder/version
         fi
 
 	if [[ ! -z $BLIMAN_CANDIDATES_CSV ]];then
@@ -439,11 +433,6 @@ EOF
 	[[ -d $tmp_location/BLIman ]] && rm -rf $tmp_location/BLIman
 	echo ""
 	
-	echo "$bliversion" >"${BLIMAN_DIR}/var/version"
-        if [ ! -z $Is_Dev ] && [ "$Is_Dev" == "true" ];then
-           echo "Develop-Version" >> "${BLIMAN_DIR}/var/version"
-	fi
-
 	if [[ $darwin == true ]]; then
 		touch "$bliman_bash_profile"
 		if [[ -z $(grep 'bliman-init.sh' "$bliman_bash_profile") ]]; then
@@ -546,13 +535,12 @@ args=()
 
 while [[ -n "$1" ]]; do
   case "$1" in
-        #--genesisPath | --force | --version)
-	--force | --version)
+	--version)
            opts=("${opts[@]}" "$1")
-	   ;; ## genesis file path on local system
+	   ;; ## Command options
         *)          
            args=("${args[@]}" "$1")
-	   ;; ## command | genesis_path
+	   ;; ## command or option parameters
   esac
   shift
 done
@@ -562,12 +550,7 @@ case $command in
      install)
 
 
-       #([[ ${#opts[@]} -lt 1 ]] && bliman_setup_download && bliman_get_genesis_file && bliman_setup_install ) ||
-       #([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download && __bliman_get_genesis_file "${args[1]}" && __bliman_install) ||
-       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--version" ]] && bliman_setup_download "${args[1]}" && bliman_get_genesis_file "${args[1]}" && bliman_setup_install "${opts[0]}" "${args[1]}")
-       #([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--version" ]] && __bliman_download "${args[1]}" && __bliman_get_genesis_file "${args[2]}" && __bliman_install "${opts[0]}" "${args[1]}") ||
-       #([[ ${#opts[@]} -eq 2 ]] && [[ "${opts[0]}" == "--genesisPath" ]] && __bliman_download "${args[2]}" && __bliman_get_genesis_file "${args[1]}" && __bliman_install "${opts[1]}" "${args[2]}") ||
-       #( echo ""; echo "Not a valid command."; bliman_setup_help)
+       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--version" ]] && bliman_setup_download "${args[1]}" && bliman_get_genesis_file && bliman_setup_install "${opts[0]}" "${args[1]}")
        ;;
      remove)
        ([[ ${#opts[@]} -lt 1 ]] &&  bliman_setup_remove) ||

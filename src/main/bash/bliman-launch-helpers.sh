@@ -90,10 +90,17 @@ function __bliman_set_env_repo() {
 	   fi
 
 	   if [ ! -z ${beslab_ver} ];then
-              __bliman_echo_yellow "Installing BeSLab version ${beslab_ver}"		   
+              __bliman_echo_yellow "Installing BeSLab version ${beslab_ver}"
+	      ver_first_char=${beslab_ver:0:1}
+              if [ xx"${ver_first_char}" == xx"v" ];then
+                 download_ver=${beslab_ver}
+		 beslab_ver=${beslab_ver:1}
+	      else
+                 download_ver=${beslab_ver}
+              fi
 	      unset $BESLAB_VERSION	   
 	      export BESLAB_VERSION="${beslab_ver}" 
-              curl --silent -o $tmp_location/beslab-${beslab_ver}.zip --fail --location --progress-bar "${GITHUB_BROWSER_URL}/${GITHUB_NAMESPACE}/BeSLab/archive/refs/tags/${beslab_ver}.zip"
+              curl --silent -o $tmp_location/beslab-${beslab_ver}.zip --fail --location --progress-bar "${GITHUB_BROWSER_URL}/${GITHUB_NAMESPACE}/BeSLab/archive/refs/tags/${download_ver}.zip"
 
 	      if [ -f  $tmp_location/beslab-${beslab_ver}.zip ];then
 	         [[ -d $beslab_install_location ]] && rm -rf $beslab_install_location/*

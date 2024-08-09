@@ -27,10 +27,16 @@ function ___bliman_help() {
 function bli() {
 
 	COMMAND="$1"
-	QUALIFIER="$2"
+	if [ $COMMAND == "initmode" ];then
+	  QUALIFIER="$2"
+	fi
+
         __bliman_createlogfile
 
 	case "$COMMAND" in
+	create)
+		COMMAND="create"
+		;;
 	load)
 		COMMAND="load-genesis"
 		;;
@@ -92,6 +98,9 @@ function bli() {
                                         launchlab)
                                                 __bli_help_launchlab
                                         ;;
+				        create)
+                                                __bli_help_create
+					;;
                                         help)
                                                 __bli_help
                                         ;;

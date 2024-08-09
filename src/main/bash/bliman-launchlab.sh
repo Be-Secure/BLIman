@@ -86,9 +86,18 @@ function __bli_launchlab()
       pubip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
       __bliman_echo_green ""
 
-      gitlab_url="http://$pubip"
+      if [ ! -z ${BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_PORT} ];then
+        gitlab_url="http://$pubip:${BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_PORT}"
+      else
+        gitlab_url="http://$pubip:8081"
+      fi
       response_code_gitlab=$(curl -sL -w "%{http_code}\\n" "$gitlab_url" -o /dev/null)
-      besl_url="http://$pubip:3000"
+
+      if [ ! -z ${BESLAB_DASHBOARD_PORT} ];then
+        besl_url="http://$pubip:${BESLAB_DASHBOARD_PORT}"
+      else
+         besl_url="http://$pubip"
+      fi
       response_code_besl=$(curl -sL -w "%{http_code}\\n" "$besl_url" -o /dev/null)
 
       __bliman_echo_green "==================================================================================================="
