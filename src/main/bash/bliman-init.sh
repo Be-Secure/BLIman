@@ -328,4 +328,9 @@ if [ -f $beslighthousedatafile ];then
    else
       sed -i "/\"labName\"/c\"labName\": \"Be-Secure\"" $beslighthouse_config_path 2>&1 | __bliman_log
    fi
+   if [ ! -z $BESMAN_LAB_NAME ];then
+      sed -i "/\"labName\"/c\"labName\": \"$BESMAN_LAB_NAME\"" $beslighthouse_config_path 2>&1 | __bliman_log
+   else
+      sed -i "/\"labName\"/c\"labName\": \"Be-Secure\"" $beslighthouse_config_path 2>&1 | __bliman_log
+   fi
 fi
