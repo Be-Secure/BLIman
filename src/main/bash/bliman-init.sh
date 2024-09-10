@@ -310,15 +310,21 @@ if [ -f $beslighthousedatafile ];then
    sed -i '/"activeTool"/c\"activeTool": "gitlab",' $beslighthouse_config_path 2>&1 | __bliman_log
    sed -i "/\"namespace\"/c\"namespace\": \"$GITUSER\"," $beslighthouse_config_path 2>&1 | __bliman_log
    sed -i "/\"token\"/c\"token\": \"$GITUSERTOKEN\"" $beslighthouse_config_path 2>&1 | __bliman_log
-   myip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
-   sed -i "/\"apiUrl\"/c\"apiUrl\": \"http://$myip:5000\"," $beslighthouse_config_path 2>&1 | __bliman_log
-   if [ ! -z $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_PORT ]; then 
-     sed -i "/\"gitLabUrl\"/c\"gitLabUrl\": \"http://$myip:${BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_PORT}\"," $beslighthouse_config_path 2>&1 | __bliman_log
+   labName=$( grep "\"labName\"" $beslighthouse_config_path | cut -d ":" -f2- | { read x; echo "${x//\"}"; })
+   if [ ! -z $BESLAB_DOMAIN_NAME ];then
+     domainURL="http://$BESLAB_DOMAIN_NAME"
    else
-     sed -i "/\"gitLabUrl\"/c\"gitLabUrl\": \"http://$myip:8081\"," $beslighthouse_config_path 2>&1 | __bliman_log
+      myip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+     domainURL="http://$myip"
+   fi
+   sed -i "/\"apiUrl\"/c\"apiUrl\": \"$domainURL:5000\"," $beslighthouse_config_path 2>&1 | __bliman_log
+   if [ ! -z $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_PORT ]; then 
+     sed -i "/\"gitLabUrl\"/c\"gitLabUrl\": \"$domainURL:${BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_PORT}\"," $beslighthouse_config_path 2>&1 | __bliman_log
+   else
+     sed -i "/\"gitLabUrl\"/c\"gitLabUrl\": \"$domainURL:8081\"," $beslighthouse_config_path 2>&1 | __bliman_log
    fi
    if [ ! -z $BESMAN_LAB_NAME ];then
-      sed -i "/\"labName\"/c\"labName\": \"$BESMAN_LAB_NAME\"" $beslighthouse_config_path 2>&1 | __bliman_log
+      sed -i "/\"labName\"/c\"labName\": \"${BESMAN_LAB_NAME}\"" $beslighthouse_config_path 2>&1 | __bliman_log
    else
       sed -i "/\"labName\"/c\"labName\": \"Be-Secure\"" $beslighthouse_config_path 2>&1 | __bliman_log
    fi

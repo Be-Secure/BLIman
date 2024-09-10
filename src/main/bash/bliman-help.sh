@@ -204,7 +204,120 @@ function __bli_help_version {
     __bliman_echo_no_colour '   version - Displays the version of BLIman utility.                                               '
     __bliman_echo_no_colour '  '
     __bliman_echo_white 'SYNOPSIS  '
-    __bliman_echo_yellow '    $ bes --version                                                                                   '  
+    __bliman_echo_yellow '    $ bli --version                                                                                   '  
+    __bliman_echo_no_colour '  '
+}
+
+function __bli_help_attest_OSAR {
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   attest - Attest OSAR reports.                                                                   '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  '
+    __bliman_echo_yellow '    $ bli attest [local | remote] [OPTIONS]                                                            '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'DESCRIPTION'
+    __bliman_echo_no_colour '   Used to attest the OSAR reports generted for POI and MOI.                                        '
+    __bliman_echo_no_colour '   Subcommands:'
+    __bliman_echo_no_colour '       local: To attest the OSAR report copied to local system.                                     '
+    __bliman_echo_no_colour '         Options for local:'
+    __bliman_echo_no_colour '            --path: (Mandatory) Path to the directory of OSAR file to be attested.                  '
+    __bliman_echo_no_colour '            --file: (Mandatory) Name of the OSAR file to be attested.                               '
+    __bliman_echo_no_colour '            --key-based: (Mandatory) True or False. True is key based attestation is used else false'
+    __bliman_echo_no_colour '                         As of now only Key based attestation is enabled.                         '
+    __bliman_echo_no_colour '            --key-path : (Mandatory only if Key-based is true) path for the attestation key.        '
+    __bliman_echo_no_colour '            --key-name : (Mandatory only if Key-based is true) name of the key filefor the attestation'
+    __bliman_echo_no_colour '       remote: To attest the OSAR report from a github ot gitlab repo.                              '
+    __bliman_echo_no_colour '         Options for remote:'
+    __bliman_echo_no_colour '            --remote-url: (Mandatory) URL for the github / gitlab.                                  '
+    __bliman_echo_no_colour '            --repo-name : (Mandatory) Name of the POI or MOI OSAR file to be attested.              '
+    __bliman_echo_no_colour '            --filepath  : (Mandatory) Path of the folder under POI or MOI root containing OSAR report'
+    __bliman_echo_no_colour '            --filename  : (Mandatory) Name of the OSAR file to be attested.        '
+    __bliman_echo_no_colour '            --key-based : (Mandatory) True or False. If true key based attestation is used. As of now'
+    __bliman_echo_no_colour '                           only key based attestation is enabled.                                    '
+    __bliman_echo_no_colour '            --key-path : (Mandatory if key-based is true) Path for the attestation key.              '
+    __bliman_echo_no_colour '            --key-name : (Mandatory if key-based is true) Name of the file for attestation key.      '
+    __bliman_echo_white 'EXAMPLE'
+    __bliman_echo_no_colour '  $ bli attest local --path <OSAR file path> --file <OSAR name> --key-based <True | False> --key-path <path of key> --key-name <name of key>'
+    __bliman_echo_no_colour '  $ bli attest remote --remote-url <github/gitlab url> --repo-name <name of POI/MOI> --filepath <path od OSAR file in MOI/POI> --filename <name of OSAR file> --key-based <True | False> --key-path <path for key> --key-name <name of key>'
+    __bliman_echo_no_colour '  '
+}
+
+function __bli_help_verify_OSAR {
+
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   verify - Verify OSAR reports.                                                                   '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  '
+    __bliman_echo_yellow '    $ bli verify [local | remote] [OPTIONS]                                                            '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'DESCRIPTION'
+    __bliman_echo_no_colour '   Used to verify attestation of the OSAR reports generted for POI and MOI.                         '
+    __bliman_echo_no_colour '   Subcommands:'
+    __bliman_echo_no_colour '       local: To verify the OSAR report copied to local system.                                     '
+    __bliman_echo_no_colour '         Options for local:'
+    __bliman_echo_no_colour '            --osar-path: (Mandatory) Path to OSAR file to be attested.                              '
+    __bliman_echo_no_colour '            --auth-type: (Mandatory) key-based | keyless-bundle | keyless-non-bundle.               '
+    __bliman_echo_no_colour '                         key-based: To verify the OSAR which is signed by key.                      '
+    __bliman_echo_no_colour '                         keyless-bundle: To verify the OSAR which is signed by keyless bundle type.'
+    __bliman_echo_no_colour '                         keyless-non-bundle: To verify the OSAR which is signed by keyless non-bundle.'
+    __bliman_echo_no_colour '                         [ ** As of now only key-based attestation are enabled ** ]                 '
+    __bliman_echo_no_colour '            --key-path : (Mandatory only if Key-based) Path for the key.                            '
+    __bliman_echo_no_colour '            --sig-path : (Mandatory only if Key-based) Path of the signature file for the attestation.'
+    __bliman_echo_no_colour '            --bundle-path : (Mandatory only if Keyless-bundle) Path of the bundle file for the attestation.'
+    __bliman_echo_no_colour '            --pem-path : (Mandatory only if Keyless-non-bundle) Path of the certificate file for the attestation.'
+    __bliman_echo_no_colour '       remote: To verify the OSAR report from a github ot gitlab repo.                              '
+    __bliman_echo_no_colour '         Options for remote:'
+    __bliman_echo_no_colour '            --OSAR-url  : (Mandatory) URL for the github / gitlab for OSAR file to download.        '
+    __bliman_echo_no_colour '            --auth-type: (Mandatory) key-based | keyless-bundle | keyless-non-bundle.               '
+    __bliman_echo_no_colour '                         key-based: To verify the OSAR which is signed by key.                      '
+    __bliman_echo_no_colour '                         keyless-bundle: To verify the OSAR which is signed by keyless bundle type.'
+    __bliman_echo_no_colour '                         keyless-non-bundle: To verify the OSAR which is signed by keyless non-bundle.'
+    __bliman_echo_no_colour '                         [ ** As of now only key-based attestation are enabled ** ]                 '
+    __bliman_echo_no_colour '            --sig-url  : (Mandatory if auth is key-based or keyless-non-bundle) URL of the signature file to download.    '
+    __bliman_echo_no_colour '            --key-url  : (Mandatory if auth is key-based) URL of key file to download'
+    __bliman_echo_no_colour '            --bundle-url  : (Mandatory if auth is keyless-bundle) URL for the bundle file to download.'
+    __bliman_echo_no_colour '            --pem-url : (Mandatory if auth is keyless-non-bundl) URL for pem file to download.        '
+    __bliman_echo_white 'EXAMPLE'
+    __bliman_echo_no_colour '  $ bli verify local --osar-path <OSAR file path> --auth-type <key-based | keyless-bundle | keyless-non-bundle> --key-path <path of key> --sig-path <path of sig file>'
+    __bliman_echo_no_colour '  $ bli verify remote --OSAR-url <github/gitlab url> --auth-type <key-based | keyless-bundle | keyless-non-bundle> --sig-url <URL for signature file> --key-file <URL for the key file>'
+    __bliman_echo_no_colour '  '
+
+
+     --OSAR-url)
+                       [[ ! -z $2 ]] && OSAR_REMOTE_URL=$2
+                       shift
+                       ;;
+               --auth-type)
+                       [[ ! -z $2 ]] && AUTH_TYPE=$2
+                       shift
+                       ;;
+               --sig-url)
+                       [[ ! -z $2 ]] && SIGNATURE_URL=$2
+                       shift
+                       ;;
+               --bundle-url)
+                       [[ ! -z $2 ]] && BUNDLE_URL=$2
+                       shift
+                       ;;
+               --key-url)
+                       [[ ! -z $2 ]] && KEY_URL=$2
+                       shift
+                       ;;
+               --pem-url)
+                       [[ ! -z $2 ]] && PEM_URL=$2
+                       shift
+                       ;;
+              *)
+                      __bliman_echo_red "Not a valid parameter."
+                       ;;
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   version - Displays the version of BLIman utility.                                               '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  '
+    __bliman_echo_yellow '    $ bes --version                                                                                   '
     __bliman_echo_no_colour '  '
 }
 

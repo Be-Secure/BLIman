@@ -34,6 +34,12 @@ function bli() {
         __bliman_createlogfile
 
 	case "$COMMAND" in
+	attest-OSAR)
+		COMMAND="attest"
+		;;
+	verify-OSAR)
+		COMMAND="verify"
+		;;
 	create)
 		COMMAND="create"
 		;;
@@ -100,6 +106,12 @@ function bli() {
                                         ;;
 				        create)
                                                 __bli_help_create
+					;;
+				        attest-OSAR)
+					        __bli_help_attest_OSAR
+					;;
+					verify-OSAR)
+						__bli_help_verify_OSAR
 					;;
                                         help)
                                                 __bli_help
