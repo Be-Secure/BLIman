@@ -17,6 +17,7 @@
 
 function __bli_launchlab()
 {
+
     if [ -z $BESMAN_LAB_TYPE ] || [ -z $BESMAN_LAB_NAME ];then
        if [ ! -z $BLIMAN_DIR ];then
          beslabConfig="$BLIMAN_DIR/etc/genesis_data.sh"
@@ -44,7 +45,7 @@ function __bli_launchlab()
     fi
     
     __bliman_echo_white "BLIman is going to install following lab components as configured in genesis file."
-     __bliman_echo_yellow "==================================================================================================="
+    __bliman_echo_yellow "==================================================================================================="
     __bliman_echo_yellow "                                BESLAB TYPE = $BESLAB_LAB_TYPE"
     __bliman_echo_yellow "                                BESLAB MODE = $BESLAB_LAB_MODE"
     __bliman_echo_yellow "                                BESLAB NAME = $BESMAN_LAB_NAME"
@@ -69,18 +70,29 @@ function __bli_launchlab()
     elif [[ "$BESLAB_LAB_MODE" == "lite" ]]; then
         __bliman_launch_lite_mode
     fi
+    if [ ! -z $1 ];then
+       if [ $1 == "OASP" ];then
+          serviceprovider="OASP"
+       elif [ $1 == "OSPO" ];then
+          serviceprovider="OSPO"
+       elif [ $1 == "AIC" ];then
+          serviceprovider="AIC"
+       else
+          serviceprovider="default"
+       fi
 
+    fi
 
-    __bliman_echo_green ""
-    __bliman_echo_white "BLIman installed following lab components to the system."
-    __bliman_echo_green "==================================================================================================="
-    __bliman_echo_green "                                BESLAB TYPE = $BESLAB_LAB_TYPE"
-    __bliman_echo_green "                                BESLAB MODE = $BESLAB_LAB_MODE"
-    __bliman_echo_green "                                BESLAB NAME = $BESMAN_LAB_NAME"
-    __bliman_echo_green "                                BESLAB VERSION = $BESLAB_VERSION"
-    __bliman_echo_green "                                BESMAN VERSION = $BESMAN_VER"
-     __bliman_echo_green "==================================================================================================="
-    __bliman_echo_green ""
+    #__bliman_echo_green ""
+    #__bliman_echo_white "BLIman installed following lab components to the system."
+    #__bliman_echo_green "==================================================================================================="
+    #__bliman_echo_green "                                BESLAB TYPE = $BESLAB_LAB_TYPE"
+    #__bliman_echo_green "                                BESLAB MODE = $BESLAB_LAB_MODE"
+    #__bliman_echo_green "                                BESLAB NAME = $BESMAN_LAB_NAME"
+    #__bliman_echo_green "                                BESLAB VERSION = $BESLAB_VERSION"
+    #__bliman_echo_green "                                BESMAN VERSION = $BESMAN_VER"
+    #__bliman_echo_green "==================================================================================================="
+    #__bliman_echo_green ""
 
     if [ $BESLAB_LAB_TYPE == "private" ] && ([ $BESLAB_LAB_MODE == "lite" ] || [ $BESLAB_LAB_MODE == "bare" ]);then
       pubip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
