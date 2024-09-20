@@ -43,7 +43,7 @@ Bliman version details [here](https://github.com/Be-Secure/BLIman/releases).
 2. Download the setup script
    <br>`curl -o bliman_setup.sh https://raw.githubusercontent.com/Be-Secure/BLIman/main/bliman_setup.sh`
    <br>`chmod +x bliman_setup.sh`
-   <br>`source bliman_setup.sh install --version <bliman release version> --gensis_path <path or URL to genesis file>`
+   <br>`source bliman_setup.sh install --version <bliman release version> --genpath <path or URL to genesis file>`
    <br>   - If no version is provided the latest released version will be taken.
    <br>   - If no genesis path is provided the default genesis file defined [here](https://github.com/Be-Secure/BeSLab/genesis.yaml) is used.
    <br>`source $HOME/.bliman/bin/bliman-init.sh`
@@ -71,7 +71,7 @@ Currently, BLIman supports only Lite mode Private deployment type only. The othe
    <br> OR
     * AIC Lab
    <br>`curl -o genesis.yaml https://raw.githubusercontent.com/Be-Secure/BLIman/main/genesis/genesis-AIC.yaml`
-4. /(Optional Step/) Edit the genesis file if need. Default genesis files install the BeSLab with default configurations.
+4. \(Optional Step\) Edit the genesis file if need. Default genesis files install the BeSLab with default configurations.
 5. Prepare the lab deployment.
    <br>`bli load --genesis_path <path to genesis file>`
    <br>`bli initmode lite`
@@ -95,7 +95,7 @@ Following are the commands supported by BLIman
 
 * bli help \<command name\> - Display help for individual bli command.
 * bli load --genesis\_path \<genesis file path\> - To load the genesis file.
-* bli initmode \<mode name i.e lite / bare / \> - It initializes the BeSlab installation for the mode provided.
+* bli initmode \<mode name i.e lite / bare / host\> - It initializes the BeSlab installation for the mode provided.
 * bli launchlab \< OASP / OSPO / AIC \> - It installs the BeSLab as per the genesis configuration file and provided lab model in parameter. If no paramter passed default basic lab is installed.
 * bli attest-OSAR - To attest the OSAR reports. use `bli help attest-OSAR` for more info.
 * bli verify-OSAR - To verify the OSAR report attestation. Use `bli help verify-OSAR` for more info.
