@@ -98,17 +98,24 @@ function __bli_launchlab()
       pubip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
       __bliman_echo_green ""
 
-      if [ ! -z ${BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_PORT} ];then
-        gitlab_url="http://$pubip:${BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_PORT}"
+      if [ ! -z $BESLAB_DOMAIN_NAME ];then
+         domainURL="http://$BESLAB_DOMAIN_NAME"
       else
-        gitlab_url="http://$pubip:8081"
+         myip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+         domainURL="http://$myip"
+      fi
+
+      if [ ! -z ${BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_PORT} ];then
+        gitlab_url="$domainURL:${BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL_PORT}"
+      else
+        gitlab_url="$domainURL:8081"
       fi
       response_code_gitlab=$(curl -sL -w "%{http_code}\\n" "$gitlab_url" -o /dev/null)
 
       if [ ! -z ${BESLAB_DASHBOARD_PORT} ];then
-        besl_url="http://$pubip:${BESLAB_DASHBOARD_PORT}"
+        besl_url="$domainURL:${BESLAB_DASHBOARD_PORT}"
       else
-         besl_url="http://$pubip"
+        besl_url="$domainURL"
       fi
       response_code_besl=$(curl -sL -w "%{http_code}\\n" "$besl_url" -o /dev/null)
 
@@ -128,7 +135,7 @@ function __bli_launchlab()
       if [ $BESLAB_PRIVATE_LAB_CODECOLLAB_TOOL == "gitlab-ce" ] && [ "$response_code_gitlab" == "200" ];then
 	 __bliman_echo_white " "
 	 __bliman_echo_white "==================================================================================================="
-         __bliman_echo_white "   Gitlab is accessible at $pubip "
+         __bliman_echo_white "   Gitlab is accessible at $gitlab_url "
 	 __bliman_echo_white "        Login to the gitlab using username as $BESMAN_LAB_NAME and default password."
 	 __bliman_echo_white "==================================================================================================="
 	 __bliman_echo_white " "
@@ -137,7 +144,7 @@ function __bli_launchlab()
       if [ $BESLAB_DASHBOARD_TOOL == "BeSLighthouse" ] && [ "$response_code_besl" == "200" ];then
           __bliman_echo_white " "
 	   __bliman_echo_white "==================================================================================================="
-          __bliman_echo_white "                            BeSLighthouse UI is accessible at $pubip:3000 "
+          __bliman_echo_white "                            BeSLighthouse UI is accessible at $besl_url"
 	   __bliman_echo_white "==================================================================================================="
           __bliman_echo_white " "
       fi

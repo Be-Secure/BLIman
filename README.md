@@ -88,3 +88,15 @@ Currently, BLIman supports only Lite mode Private deployment type only. The othe
    <br> OR
     * AIC Lab
    <br>`bli launchlab AIC`
+
+## BLIman Commands
+
+Following are the commands supported by BLIman
+
+* bli help \<command name\> - Display help for individual bli command.
+* bli load --genesis\_path \<genesis file path\> - To load the genesis file.
+* bli initmode \<mode name i.e lite / bare / \> - It initializes the BeSlab installation for the mode provided.
+* bli launchlab \< OASP / OSPO / AIC \> - It installs the BeSLab as per the genesis configuration file and provided lab model in parameter. If no paramter passed default basic lab is installed.
+* bli attest-OSAR - To attest the OSAR reports. use `bli help attest-OSAR` for more info.
+* bli verify-OSAR - To verify the OSAR report attestation. Use `bli help verify-OSAR` for more info.
+* bli create - To create the project or users in code collaboration platform. Use `bli help create` for more info.
