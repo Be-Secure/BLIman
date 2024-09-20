@@ -45,72 +45,7 @@ function bliman_setup_echo() {
 			;;
 	esac
         echo -e "\033[1;$color$2\033[0m"
-}
-
-function infer_platform() {
-	local kernel
-	local machine
-
-	kernel="$(uname -s)"
-	machine="$(uname -m)"
-
-	case $kernel in
-	Linux)
-		case $machine in
-		i686)
-			echo "linuxx32"
-			;;
-		x86_64)
-			echo "linuxx64"
-			;;
-		armv6l)
-			echo "linuxarm32hf"
-			;;
-		armv7l)
-			echo "linuxarm32hf"
-			;;
-		armv8l)
-			echo "linuxarm32hf"
-			;;
-		aarch64)
-			echo "linuxarm64"
-			;;
-		*)
-			echo "exotic"
-			;;
-		esac
-		;;
-	Darwin)
-		case $machine in
-		x86_64)
-			echo "darwinx64"
-			;;
-		arm64)
-			if [[ "$bliman_rosetta2_compatible" == 'true' ]]; then
-				echo "darwinx64"
-			else
-				echo "darwinarm64"
-			fi
-			;;
-		*)
-			echo "darwinx64"
-			;;
-		esac
-		;;
-	MSYS* | MINGW*)
-		case $machine in
-		x86_64)
-			echo "windowsx64"
-			;;
-		*)
-			echo "exotic"
-			;;
-		esac
-		;;
-	*)
-		echo "exotic"
-		;;
-	esac
+        echo $2 > bliman_setup_log 
 }
 
 function bliman_setup_download ()
@@ -118,10 +53,11 @@ function bliman_setup_download ()
     default_repo_url='https://github.com/'
     default_repo_namespace='Be-Secure'
     default_repo_name='BLIman'
-    tmp_location="/tmp"
     bliman_install_location="$HOME/.bliman"
-
     bliversion="$1"
+    PWD=$(pwd)
+    mkdir tmp
+    tmp_location=$PWD/tmp
 
     if [ -z $BLIMAN_NAMESPACE ];then
       export BLIMAN_NAMESPACE="Be-Secure" 
@@ -135,6 +71,7 @@ function bliman_setup_download ()
     fi
 
     if [ -z $1 ];then
+       bliman_setup_echo "yellow" "Get the BLIman latest release info from Be-Secure."
        response=$(curl --silent "https://api.github.com/repos/$BLIMAN_NAMESPACE/BLIman/releases/latest")
 
        if [[ $response == *"message"*"Not Found"* ]];then
@@ -146,8 +83,17 @@ function bliman_setup_download ()
              bliversion=$(echo "$response" | jq -r '.tag_name')
        fi
     elif [ "$1" == "dev" ];then
+	     bliman_setup_echo "yellow" "Get the BLIman latest release info from Be-Secure for development."
              response=$(curl --silent "https://api.github.com/repos/$BLIMAN_NAMESPACE/BLIman/releases/latest")
-	     bliversion=$bliversion"-dev" 
+	     if [[ $response == *"message"*"Not Found"* ]];then
+               bliman_setup_echo "red" "BeSLab release version is not found."
+               bliman_setup_echo "red" "Please check the namespace and try again."
+               bliman_setup_echo "red" "Exiting..."
+               return 1
+             else
+               bliversion=$(echo "$response" | jq -r '.tag_name')
+	       bliversion=$bliversion"-dev"
+             fi
     else
 	    bliversion="$1"
     fi
@@ -155,6 +101,7 @@ function bliman_setup_download ()
     if [ ! -z ${bliversion} ] && [[ ${bliversion} != *"-dev"* ]];then
               unset $BLIMAN_VERSION
               export BLIMAN_VERSION="${bliversion}"
+	      bliman_setup_echo "yellow" "Downloading bliman release from Be-Secure."
               curl --silent -o $tmp_location/bliman-${bliversion}.zip --fail --location --progress-bar "${default_repo_url}/$BLIMAN_NAMESPACE/BLIman/archive/refs/tags/${bliversion}.zip" 2>&1>>$BLIMAN_INSTALL_LOG_FILE
 
               if [ -f  $tmp_location/bliman-${bliversion}.zip ];then
@@ -170,10 +117,16 @@ function bliman_setup_download ()
                 bliman_setup_echo "red" "Exiting..."
                 return 1
               fi
+	   
     elif [ ! -z ${bliversion} ] && [[ ${bliversion} == *"-dev"* ]];then
 	       unset $BLIMAN_VERSION
                export BLIMAN_VERSION="${bliversion}"
 	       [[ -d $tmp_location/BLIman ]] && rm -rf $tmp_location/BLIman
+	       if [ -z $(command -v git) ]; then
+                  bliman_setup_echo "yellow" "git not found. Installing."
+                  sudo apt-get install git -y 2>&1>>$BLIMAN_INSTALL_LOG_FILE  
+	       fi
+	       bliman_setup_echo "yellow" "Cloning bliman develop branch from Be-Secure."
                git clone --quiet -b develop https://github.com/Be-Secure/BLIman.git $tmp_location/BLIman 2>&1>>$BLIMAN_INSTALL_LOG_FILE
     else
               bliman_setup_echo "red" "No valid latest release for BLIman found."
@@ -200,83 +153,17 @@ function bliman_setup_check ()
 		return 0
 	fi
 
-	if ! command -v curl >>$BLIMAN_INSTALL_LOG_FILE; then
-		echo "Not found."
-		echo ""
-		echo "======================================================================================================"
-		echo " Please install curl on your system using your favourite package manager."
-		echo ""
-		echo " Restart after installing curl."
-		echo "======================================================================================================"
-		echo ""
-		return 1
-	fi
-
-
-	if [[ "$solaris" == true ]]; then
-		if [ -z $(which gsed) ]; then
-			echo "Not found."
-			echo ""
-			echo "======================================================================================================"
-			echo " Please install gsed on your solaris system."
-			echo ""
-			echo " BLIMAN uses gsed extensively."
-			echo ""
-			echo " Restart after installing gsed."
-			echo "======================================================================================================"
-			echo ""
-			return 1
-		fi
-	else
-		if [ -z $(command -v sed) ]; then
-			echo "Not found."
-			echo ""
-			echo "======================================================================================================"
-			echo " Please install sed on your system using your favourite package manager."
-			echo ""
-			echo " Restart after installing sed."
-			echo "======================================================================================================"
-			echo ""
-			return 1
-		fi
-	fi
-
-        if [ -z $(command -v git) ]; then
-                        echo "Not found."
-                        echo ""
-                        echo "======================================================================================================"
-                        echo " Please install git on your system using your favourite package manager."
-                        echo ""
-                        echo " Restart after installing git."
-                        echo "======================================================================================================"
-                        echo ""
-                        return 1
-        fi
-
 }
 function bliman_setup_install() {
 
-        local tmp_location="/tmp"
+	PWD=$(pwd)
+
+	local tmp_location="$PWD/tmp"
 
 	trap track_last_command DEBUG
 	trap echo_failed_command EXIT
-
-	if [ ! -z $1 ] && [ "$1" != "dev" ];then
-          
-	    if [ ${1:0:1} == "v" ];then
-	      bliversion=${1:1}
-            else
-              bliversion=${1}
-	    fi
-            export Is_Dev="true"
-	
-	else
-		echo "Please provide BLIman version to install."
-		echo "exiting .."
-		return 1
-	fi
-
-        if [ -z "$BLIMAN_DIR" ]; then
+        
+	if [ -z "$BLIMAN_DIR" ]; then
                 export BLIMAN_DIR="$HOME/.bliman"
                 export BLIMAN_DIR_RAW="$HOME/.bliman"
         else
@@ -303,8 +190,6 @@ export BLIMAN_DIR="$BLIMAN_DIR_RAW"
 [[ -s "${BLIMAN_DIR_RAW}/bin/bliman-init.sh" ]] && source "${BLIMAN_DIR_RAW}/bin/bliman-init.sh"
 EOF
         )
-        
-	#[[ -d $BLIMAN_DIR ]] && rm -rf $BLIMAN_DIR/*
 
 	# Create directory structure
         mkdir -p "$bliman_tmp_folder"
@@ -315,36 +200,8 @@ EOF
         mkdir -p "$bliman_log_folder"
         mkdir -p "$bliman_src_folder"
         [[ ! -f ${BLIMAN_DIR}/var/version ]] && touch ${BLIMAN_DIR}/var/version
-
-        #DATE=$(date +"%Y-%m-%d-%k-%M")
-        #logfilename=bliman-install-log-$DATE.log
-
-        #createlogfile $bliman_log_folder $logfilename 2>&1 | bliman_setup_log
-        #export BLIMAN_INSTALL_LOG_FILE="$bliman_log_folder/$logfilename"
-
-	export BLIMAN_PLATFORM="$(infer_platform)"
-	
-	# OS specific support (must be 'true' or 'false').
-	cygwin=false
-	darwin=false
-	solaris=false
-	freebsd=false
-	case "$(uname)" in
-	CYGWIN*)
-		cygwin=true
-		;;
-	Darwin*)
-		darwin=true
-		;;
-	SunOS*)
-		solaris=true
-		;;
-	FreeBSD*)
-		freebsd=true
-		;;
-	esac
-
-        # Sanity checks
+        
+	# Sanity checks
         bliman_setup_check
 
 	bliman_setup_echo "yellow" "Installing BLIman."
@@ -367,8 +224,7 @@ EOF
         echo ""
 
         if [ ! -d  $tmp_location/BLIman-${bliversion} ] && [ ! -d $tmp_location/BLIman ];then
-           bliman_setup_echo "red" "Bliman not downloaded. Please retry."
-	   bliman_setup_echo "red" "Exiting ..."
+           bliman_setup_echo "red" "Bliman not downloaded properly. Please try again."
 	   return 1
 	elif  [ -d $tmp_location/BLIman ];then
            cp -r $tmp_location/BLIman/contrib/ "$BLIMAN_DIR"
@@ -420,34 +276,18 @@ EOF
                 echo "bliman_rosetta2_compatible=false"
                 echo "bliman_selfupdate_feature=true"
         } >>"$bliman_config_file"
-
-        if [[ $BLIMAN_PLATFORM == "windowsx64" ]]; then
-                echo "bliman_insecure_ssl=true" >> "$bliman_config_file"
-        else
-                echo "bliman_insecure_ssl=false" >> "$bliman_config_file"
-        fi
+        echo "bliman_insecure_ssl=false" >> "$bliman_config_file"
 
 	# clean up
 	[[ -f $tmp_location/bliman-${BLIMAN_VERSION}.zip ]] && rm -rf $tmp_location/bliman-${BLIMAN_VERSION}.zip
         [[ -d $tmp_location/BLIman-${bliversion} ]] && rm -rf $tmp_location/BLIman-${bliversion}
 	[[ -d $tmp_location/BLIman ]] && rm -rf $tmp_location/BLIman
+	rm -rf $tmp_location
 	echo ""
 	
-	if [[ $darwin == true ]]; then
-		touch "$bliman_bash_profile"
-		if [[ -z $(grep 'bliman-init.sh' "$bliman_bash_profile") ]]; then
-			echo -e "\n$bliman_init_snippet" >>"$bliman_bash_profile"
-		fi
-	else
-		touch "${bliman_bashrc}"
-		if [[ -z $(grep 'bliman-init.sh' "$bliman_bashrc") ]]; then
-			echo -e "\n$bliman_init_snippet" >>"$bliman_bashrc"
-		fi
-	fi
-
-	touch "$bliman_zshrc"
-	if [[ -z $(grep 'bliman-init.sh' "$bliman_zshrc") ]]; then
-		echo -e "\n$bliman_init_snippet" >>"$bliman_zshrc"
+	touch "${bliman_bashrc}"
+	if [[ -z $(grep 'bliman-init.sh' "$bliman_bashrc") ]]; then
+	   echo -e "\n$bliman_init_snippet" >>"$bliman_bashrc"
 	fi
 
 	if [ -f  $BLIMAN_DIR/bin/bliman-init.sh ];then
@@ -471,21 +311,71 @@ EOF
 
 function bliman_get_genesis_file ()
 {
-  genesis_file_name="genesis.yaml"
+  [[ -z $1 ]] &&  bliman_setup_echo "yellow" "Genesis file path not provided. Using default genesis file."
+
   present_working_dir=`pwd`
+  if [ ! -z $1 ];then
+    filename=$(echo $1 | awk -F / '{print $NF}')
+    filenamefirst=$(echo $1 | awk -F / '{print $1}')
 
-  version=$1
+    echo $filename | grep "genesis-*.*.yaml"
+    [[ xx"$?" != xx"0" ]] && bliman_setup_echo "red" "Nod a valid genesis filename." && return 1
+    filetype=$(echo $filename | cut -d'-' -f2 )
+    [[ $filetype != "OSPO.yaml"]] && [[ $filetype != "OASP.yaml"]] && [[ $filetype != "AIC.yaml"]] && bliman_setup_echo "red" "Nod a valid genesis filename." && return 1
 
-  if [ ! -f $present_working_dir/$genesis_file_name ];then	  
-           export BLIMAN_GENSIS_FILE_PATH="$present_working_dir/$genesis_file_name"
-	   if [[ ${version}  == "dev" ]];then
-             curl --silent -o $genesis_file_name https://raw.githubusercontent.com/Be-Secure/BeSLab/develop/$genesis_file_name
-           else
-	     curl --silent -o $genesis_file_name https://raw.githubusercontent.com/Be-Secure/BeSLab/main/$genesis_file_name
-	   fi
+    if [ $filenamefirst == "http" ] || [ $filenamefirst == "https" ];then
+            fileisurl="true"
+    fi
+
+    if [ -z $fileisurl ];then
+       [[ ! -f $1 ]] && bliman_setup_echo "red" "Genesis file not found at $1." && return 1
+    fi
+    genesis_file_name="genesis.yaml"
+    if [ ! -f "$present_working_dir/genesis.yaml" ];then
+       if [ -z $fileisurl ];then
+	 cp  $1 "genesis.yaml"
+       else
+	  bliman_setup_echo "yellow" "Trying download the gensis file from URL $1"     
+	  genpath=$1
+	  response=$(curl --silent -o $genesis_file_name $genpath)
+          if [[ $response == *"message"*"Not Found"* ]];then
+             bliman_setup_echo "red" "Gensis file is not found at given gensis path $genpath."
+             return 1
+          fi
+      fi
+    else
+      bliman_setup_echo "yellow" "Genesis file is already present at current directory. Backing up current genesis file and copying new one"
+      if [ ! -f $present_working_dir/"genesis_backup.yaml" ];then
+         mv $present_working_dir/"genesis.yaml" $present_working_dir/"genesis_backup.yaml"
+      else
+	 rm $present_working_dir/"genesis_backup.yaml"
+	 mv $present_working_dir/"genesis.yaml" $present_working_dir/"genesis_backup.yaml"
+      fi
+      if [ -z $fileisurl ];then
+         cp  $1 "genesis.yaml"
+       else
+          bliman_setup_echo "yellow" "Trying download the genesis file from URL $1"
+          genpath=$1
+          response=$(curl --silent -o $genesis_file_name $genpath)
+          if [[ $response == *"message"*"Not Found"* ]];then
+             bliman_setup_echo "red" "Gensis file is not found at given gensis path $genpath."
+             return 1
+          fi
+      fi
+    fi
   else
-     bliman_setup_echo "yellow" "Genesis file already present. Skipping ..."
+    genesis_file_name="genesis.yaml"
   fi
+
+  if [ -z $1 ] && [ ! -f $present_working_dir/$genesis_file_name ];then	  
+     bliman_setup_echo "yellow" "Downloading default genesis file from Be-Secure."
+     if [[ ${version}  == "dev" ]];then
+         curl --silent -o $genesis_file_name https://raw.githubusercontent.com/Be-Secure/BeSLab/develop/$genesis_file_name
+     else
+         curl --silent -o $genesis_file_name https://raw.githubusercontent.com/Be-Secure/BeSLab/main/$genesis_file_name
+     fi
+  fi
+  export BLIMAN_GENSIS_FILE_PATH="$present_working_dir/$genesis_file_name"
 }
 
 bliman_setup_update ()
@@ -509,15 +399,24 @@ bliman_setup_help ()
     bliman_setup_echo "white" "================================================================="
     bliman_setup_echo "white" ""
     bliman_setup_echo "white" "bliman_setup is utility to install/ update / remove the BLIman   "
-    bliman_setup_echo "white" "and download the default beslab genesis file to the current      "
+    bliman_setup_echo "white" "and download the required beslab genesis file to the current     "
     bliman_setup_echo "white" "working directory.                                               "
     bliman_setup_echo "white" ""
     bliman_setup_echo "white" "================================================================="
     bliman_setup_echo "white" "comands and usage"
     bliman_setup_echo "white" "================================================================="
     bliman_setup_echo "white" ""
-    bliman_setup_echo "white" "./bliman_setup.sh install --version v0.4.0"
-    bliman_setup_echo "white" "   [Install the BLIman and genesis file from Be-Secure community]    "
+    bliman_setup_echo "white" "./bliman_setup.sh install"
+    bliman_setup_echo "white" "   [Install the BLIman and genesis file from Be-Secure community]                           "
+    bliman_setup_echo "white" ""
+    bliman_setup_echo "white" "./bliman_setup.sh install --version v0.0.1 --genpath /opt/genesis-OASP.yaml                 "
+    bliman_setup_echo "white" "   [Install the BLIman version 0.0.1 and genesis file present at /opt/genesis-OASP.yaml]    "
+    bliman_setup_echo "white" ""
+    bliman_setup_echo "white" "./bliman_setup.sh install --version v0.0.1 --genpath https://raw.githubusercontent.com/Be-Secure/BLIman/develop/genesis-OSPO.yaml"
+    bliman_setup_echo "white" "   [Install the BLIman version 0.0.1 and genesis file present at https://raw.githubusercontent.com/Be-Secure/BLIman/develop/genesis-OSPO.yaml]"
+    bliman_setup_echo "white" ""
+    bliman_setup_echo "white" "./bliman_setup.sh install --version v0.0.1 "
+    bliman_setup_echo "white" "   [Install the BLIman version 0.0.1 and default genesis file from Be-Secure]"
     bliman_setup_echo "white" ""
     bliman_setup_echo "white" "./bliman_setup.sh remove"
     bliman_setup_echo "white" "   [Remove the BLIman installed] "
@@ -525,41 +424,48 @@ bliman_setup_help ()
     bliman_setup_echo "white" "./bliman_setup.sh update"
     bliman_setup_echo "white" "   [updates the BLIman to higher version if available.] "
     bliman_setup_echo "white" ""
-    bliman_setup_echo "white" "./bliman_setup.sh update --force"
-    bliman_setup_echo "white" "   [Updates the BLIman forcefully.]"
 
 }
 #### MAIN STARTS HERE
 opts=()
 args=()
 
+[[ "$1" != "install" ]] && [[ "$1" != "remove" ]] && [[ "$1" != "update" ]] && echo ""; echo "Not a valid command."; bliman_setup_help
+command="$1"
+shift
+
 while [[ -n "$1" ]]; do
   case "$1" in
-	--version)
-           opts=("${opts[@]}" "$1")
-	   ;; ## Command options
-        *)          
-           args=("${args[@]}" "$1")
-	   ;; ## command or option parameters
+        --version)
+	   shift
+	   bliver="$1"
+           ;;
+	--genpath)
+           shift
+	   genesis_path="$1"
+	   ;;
+        *) 
+	   echo ""; echo "Not a valid command."; bliman_setup_help
+	   ;;
   esac
   shift
 done
 
-[[ -z $command ]] && command="${args[0]}"
 case $command in
      install)
+       [[ -z $bliver ]] && echo "No specific BLiman version is defined. Installing latest from repository." && bliman_setup_download
+       [[ ! -z $bliver ]] && echo "Downloading BLIman version $bliver" && bliman_setup_download $bliver
 
+       [[ -z $genesis_path ]] && echo "No Genesis path is provided doanloading the default genesis file from Be-Secure." && bliman_get_genesis_file
+       [[ ! -z $genesis_path ]] && echo "Downloading Genesis file at $genesis_path" && bliman_get_genesis_file $genesis_path
 
-       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--version" ]] && bliman_setup_download "${args[1]}" && bliman_get_genesis_file && bliman_setup_install "${opts[0]}" "${args[1]}")
+       bliman_setup_install
        ;;
      remove)
-       ([[ ${#opts[@]} -lt 1 ]] &&  bliman_setup_remove) ||
-       ( echo ""; echo "Not a valid command."; bliman_setup_help)
+       bliman_setup_remove && echo ""; echo "Working on it. Not available yet"; bliman_setup_help)
        ;;
      update)
-       ([[ ${#opts[@]} -lt 1 ]] &&  bliman_setup_update) ||
-       ([[ ${#opts[@]} -eq 1 ]] && [[ "${opts[0]}" == "--force" ]] && bliman_setup_update "${opts[0]}") ||
-       ( echo ""; echo "Not a valid command."; bliman_setup_help) 
+       bliman_setup_update "${opts[0]}") && echo ""; echo "Coming Soon."; bliman_setup_help
        ;;
      *)
         echo -e "Not a valid bliman setup command\n"

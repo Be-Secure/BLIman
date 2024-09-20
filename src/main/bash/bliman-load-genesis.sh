@@ -111,68 +111,56 @@ function __bli_load_genesis() {
 
 	local Genesis_File_location="";
 
-        if [ -z $BLIMAN_GENSIS_FILE_PATH ];then
-              echo ""
-              __bliman_echo_yellow  " Finding gnesis file at default locations i.e current directory or $HOME/.bliman directory"
-	      echo ""
-	else
-	       __bliman_echo_yellow  "Using Genesis file path at $BLIMAN_GENSIS_FILE_PATH"	
-              Genesis_File_location=$BLIMAN_GENSIS_FILE_PATH
-
+	PWD=`pwd`
+        default_genesis_file_name=genesis.yaml
+	if [ ! -z $1 ] && [ ! -z $2 ];then
+	   if [ xx"$1" == "--genesis_path" ];then
+             Genesis_File_location=$2
+           else
+              __bliman_echo_red  "Invalid genesis load command"
+	      return 1
+	   fi
+        else
+           [[ -f "$PWD/$default_genesis_file_name" ]] && Genesis_File_location="$PWD/$default_genesis_file_name"
+	   [[ -f "$HOME/.bliman/$default_genesis_file_name" ]] && Genesis_File_location="$HOME/.bliman/$default_genesis_file_name"
 	fi
 
-	if [ -z $Genesis_File_location ];then
-           PWD=`pwd`
-	   default_genesis_file_name=genesis.yaml
+        filename=$(echo $Genesis_File_location | awk -F / '{print $NF}')
+        filenamefirst=$(echo $Genesis_File_location | awk -F / '{print $1}')
 
-           if [ -f $PWD/$default_genesis_file_name ];then
-	      __bliman_echo_yellow  ""
-              __bliman_echo_yellow  "======================================================================================================"
-              __bliman_echo_yellow  " Using genesis file found at \"$PWD\".                                                                "
-              __bliman_echo_yellow  "======================================================================================================"
-              __bliman_echo_yellow  "" 	   
-              Genesis_File_location=$PWD/$default_genesis_file_name
-	   else
-	      if [ -z $BLIMAN_DIR ];then
-		 if [ -f $HOME/.bliman/$default_genesis_file_name ];then
-	            __bliman_echo_yellow  ""
-                    __bliman_echo_yellow  "======================================================================================================"
-                    __bliman_echo_yellow  " Using genesis file present at \"$HOME/.bliman/$default_genesis_file_name\".                          "
-                    __bliman_echo_yellow  "======================================================================================================"
-                    __bliman_echo_yellow  ""	 
-                    Genesis_File_location=$HOME/.bliman/$default_genesis_file_name
-		 else
-	             __bliman_echo_red  "======================================================================================================"
-                     __bliman_echo_red  " Genesis file not found at default locations.                                                         "
-                     __bliman_echo_red  ""
-                     __bliman_echo_red  " Provide the Genesis file to current location or at \"$HOME/.bliman\" and try again.                  "
-                     __bliman_echo_red  "======================================================================================================"
-		     return 1
-	         fi
-	      else
-		  if [ -f $BLIMAN_DIR/$default_genesis_file_name ];then    
-		    __bliman_echo_yellow  ""
-                    __bliman_echo_yellow  "======================================================================================================"
-                    __bliman_echo_yellow  " Using genesis file located at \"$BLIMAN_DIR/$default_genesis_file_name\".                            "
-                    __bliman_echo_yellow  "======================================================================================================"
-                    __bliman_echo_yellow  ""
+        echo $filename | grep "genesis*.*.yaml"
+        [[ xx"$?" != xx"0" ]] && __bliman_echo_red "Not a valid genesis filename." && return 1
 
-                     Genesis_File_location=$BLIMAN_DIR/$default_genesis_file_name 
-	          else
-		     __bliman_echo_red  "======================================================================================================"
-                     __bliman_echo_red  " Genesis file not found at \"$BLIMAN_DIR\".                                                           "
-                     __bliman_echo_red  ""
-                     __bliman_echo_red  " Provide the Genesis file at \"$PWD\" or \"$BLIMAN_DIR\" and try again.                               "
-                     __bliman_echo_red  "======================================================================================================"
-                     return 1
-                  fi
-              fi
-
-           fi
+	echo $filename | grep "genesis-*.*.yaml"
+        if [ xx"$?" == xx"0" ];then
+          filetype=$(echo $filename | cut -d'-' -f2 )
+          [[ $filetype != "OSPO.yaml"]] && [[ $filetype != "OASP.yaml"]] && [[ $filetype != "AIC.yaml"]] && __bliman_echo_red "Nod a valid genesis filename." && return 1
 	fi
-        __bliman_load_export_vars "$Genesis_File_location"
+
+        if [ $filenamefirst == "http" ] || [ $filenamefirst == "https" ];then
+            fileisurl="true"
+        fi
+
+        if [ -z $fileisurl ];then
+	    [[ ! -f $Genesis_File_location ]] && __bliman_echo_red "Genesis file not found at $Genesis_File_location." && return 1
+            cp  $Genesis_File_location "genesis.yaml"
+        else
+            __bliman_echo_yellow "Trying download the gensis file from URL $1"
+            
+            response=$(curl --silent -o $default_genesis_file_name $Genesis_File_location)
+            if [[ $response == *"message"*"Not Found"* ]];then
+               __bliman_echo_red "Genesis file is not found at given gensis path $Genesis_File_location."
+               return 1
+            fi
+        fi
+
+	if [ -f $default_genesis_file_name ];then
+          __bliman_load_export_vars "$default_genesis_file_name"
+        else
+	  __bliman_echo_red "Not able to download the genesis file."
+	  return 1
+	fi
 	
-
 	__bliman_echo_green "Genesis file is loaded successfully!!"
 	echo ""
         __bliman_echo_white "======================================================================================================"

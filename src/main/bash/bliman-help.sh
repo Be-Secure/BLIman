@@ -84,7 +84,7 @@ function __bli_help_create {
     __bliman_echo_no_colour '       <gitlab|github>:<project name>:<project description>:<project visibility> '
     __bliman_echo_no_colour '       replace with the values and remove < and > from each field.'
     __bliman_echo_no_colour '  '
-    __bliman_echo_white 'EXAMPLE'
+    __bliman_echo_white 'EXAMPLES'
     __bliman_echo_no_colour '  $ bli create user --file <path of the users file>                                                '
     __bliman_echo_no_colour '  $ bli create project --token <user token> --file <path of the users file>                        '
     __bliman_echo_no_colour '  $ bli create labuser --lab <github|gitlab> --firstname <user first name> --lastname <user last name> --username <username> --useremail <xyz@abc,.com> --isadmin <true|false>'
@@ -98,16 +98,21 @@ function __bli_help_load {
     __bliman_echo_no_colour '   load - To load the environment variables defined in Genesis file for BeSLab.                    '
     __bliman_echo_no_colour '  '
     __bliman_echo_white 'SYNOPSIS  '
-    __bliman_echo_yellow '   $ bli load                                                                                         '
+    __bliman_echo_yellow '   $ bli load --gensis_path <path to genesis file>                                                                                        '
     __bliman_echo_no_colour '  '
     __bliman_echo_white 'DESCRIPTION'
     __bliman_echo_no_colour '   The bli load command fascilitate the BeSLab admin to prepare environment for the BeSlab to be   '
     __bliman_echo_no_colour '   installed in a mode specified. Every lab mode does need certain tools and configuration to be   '
     __bliman_echo_no_colour '   set to get the BeSLab components installed. initmode command helps to get the required          '
     __bliman_echo_no_colour '   dependencies for BeSLab in a particular mode gets installed on the machine.                     '
+    __bliman_echo_no_colour '   '
+    __bliman_echo_no_colour '   option --gensis_path is optional. If not provided BLIman will use the default genesis.yaml from '
+    __bliman_echo_no_colour '   BeSLab. Genesis path can be a local system path or a URL.                                       '
     __bliman_echo_no_colour '  '
-    __bliman_echo_white 'EXAMPLE'
+    __bliman_echo_white 'EXAMPLES'
     __bliman_echo_no_colour '  $ bli load                                                                                       '
+    __bliman_echo_no_colour '  $ bli load --gensis_path /opt/genesis-OASP.yaml                                                  '
+    __bliman_echo_no_colour '  $ bli load --gensis_path https://raw.githubusercontent.com/Be-Secure/BLiman/main/genesis/genesis-OSPO.yaml'
     __bliman_echo_no_colour '  '
 }
 
@@ -128,7 +133,7 @@ function __bli_help_initmode {
     __bliman_echo_cyan      '      host - This mode installs lab on a virtual machine.                                           '
     __bliman_echo_cyan      '      bare - In this mode lab is installed on local or remote machine using ansible roles.          '
     __bliman_echo_cyan      '      lite - Lite mode is the lightweight mode and installs the lab using only shell scripts.       '
-    __bliman_echo_white 'EXAMPLE'
+    __bliman_echo_white 'EXAMPLES'
     __bliman_echo_no_colour '  $ bli initmode lite                                                                               '
     __bliman_echo_no_colour '  $ bli initmode bare                                                                               '
     __bliman_echo_no_colour '  $ bli initmode host                                                                               '
@@ -141,13 +146,22 @@ function __bli_help_launchlab {
     __bliman_echo_no_colour '   launchlab - To install the lab in the mode specified by initmode command.                        '
     __bliman_echo_no_colour '  '
     __bliman_echo_white 'SYNOPSIS  '
-    __bliman_echo_yellow '  $ bes launchlab                                                                                      '
+    __bliman_echo_yellow '  $ bes launchlab <lab model>                                                                                      '
     __bliman_echo_no_colour '  '
     __bliman_echo_white 'DESCRIPTION'
     __bliman_echo_no_colour '   Install all the lab components and configure them as specified in Genesis file.                  '
     __bliman_echo_no_colour '  '
-    __bliman_echo_white 'EXAMPLE'
+    __bliman_echo_white 'LAB MODEL'
+    __bliman_echo_no_colour 'OSPO - Deploys BeSLab for the OSPO. Genesis file needed is genesis-OSPO.yaml                         '
+    __bliman_echo_no_colour 'OASP - Deploys BeSLab for the OASP. Genesis file needed is genesis-OASP.yaml                         '
+    __bliman_echo_no_colour 'AIC  - Deploys BeSLab for the AIC. Genesis file needed is genesis-AIC.yaml                           '
+    __bliman_echo_no_colour '     - When no option is given the default BeSLab is deplyed using default genesis.yaml at BeSLab.   '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'EXAMPLES'
     __bliman_echo_no_colour '  $ bli launchlab                                                                                   '
+    __bliman_echo_no_colour '  $ bli launchlab OSPO                                                                              '
+    __bliman_echo_no_colour '  $ bli launchlab OASP                                                                              '
+    __bliman_echo_no_colour '  $ bli launchlab AIC                                                                               '
     __bliman_echo_no_colour '  '
 }
 
@@ -283,41 +297,5 @@ function __bli_help_verify_OSAR {
     __bliman_echo_no_colour '  $ bli verify local --osar-path <OSAR file path> --auth-type <key-based | keyless-bundle | keyless-non-bundle> --key-path <path of key> --sig-path <path of sig file>'
     __bliman_echo_no_colour '  $ bli verify remote --OSAR-url <github/gitlab url> --auth-type <key-based | keyless-bundle | keyless-non-bundle> --sig-url <URL for signature file> --key-file <URL for the key file>'
     __bliman_echo_no_colour '  '
-
-
-     --OSAR-url)
-                       [[ ! -z $2 ]] && OSAR_REMOTE_URL=$2
-                       shift
-                       ;;
-               --auth-type)
-                       [[ ! -z $2 ]] && AUTH_TYPE=$2
-                       shift
-                       ;;
-               --sig-url)
-                       [[ ! -z $2 ]] && SIGNATURE_URL=$2
-                       shift
-                       ;;
-               --bundle-url)
-                       [[ ! -z $2 ]] && BUNDLE_URL=$2
-                       shift
-                       ;;
-               --key-url)
-                       [[ ! -z $2 ]] && KEY_URL=$2
-                       shift
-                       ;;
-               --pem-url)
-                       [[ ! -z $2 ]] && PEM_URL=$2
-                       shift
-                       ;;
-              *)
-                      __bliman_echo_red "Not a valid parameter."
-                       ;;
-    __bliman_echo_no_colour '  '
-    __bliman_echo_white 'NAME'
-    __bliman_echo_no_colour '   version - Displays the version of BLIman utility.                                               '
-    __bliman_echo_no_colour '  '
-    __bliman_echo_white 'SYNOPSIS  '
-    __bliman_echo_yellow '    $ bes --version                                                                                   '
     __bliman_echo_no_colour '  '
 }
-
