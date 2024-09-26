@@ -258,3 +258,126 @@ BESLAB_DASHBOARD_ATEESTATION_STORE_NAME: ossattestation-datastore
 ## List of tools to be used for containerization. If commented no containerization tool will be installed.
 #BESLAB_CONTAINERIZATION_TOOLS:
 #  - docker
+
+##########################################################################################################################
+########   SCORECARD   
+##########################################################################################################################
+
+## Description:
+# Scorecard is a tool used to assess the Github projects an various check based on gihub. This tool is hosted on
+# Gihub and do not need an installation on local servers. However, since its a critical components for assessing and
+# Github project we need to inlcude it as part of BeSlab. For accessing any Gihub project it is expected that the project
+# hosted at Github.
+
+## Enable this if scorecard is to install.
+## Possible values: enable, disable
+# INSTALL_SCORECARD="disable"
+
+## Type of scorecard installation
+## Possible values : docker, cli or action
+## docker - to install scorecard as a docker container
+## cli - install scorecard as a cli
+## action - install scofrecard as a github action
+# SCORECARD_INSTALLATION_TYPE="docker"
+
+## Version of scorecard to install
+# SCORECARD_VERSION=""
+
+## Port of scorecard to install in docker
+# SCORECARD_PORT="9000"
+
+## Github token for accessing the Github
+# GIHUB_TOKEN="github_token"
+
+##########################################################################################################################
+########   CRITICALITY SCORE
+##########################################################################################################################
+
+## Description:
+# Tells how critical a OSS hosted on Github is on scale of 0 to 1.
+# 
+
+## Enable this if criticality score is to install.
+## Possible values: enable, disable
+# INSTALL_CRITICALITY_SCORE="disable"
+
+## Path to the config file for critiaclity score. use this config file if want to adjust the score paramters and their 
+## weightage.
+## CRITICALITY_SCORE_CONFIG="/etc/cs/criticality-config"
+
+## Version of criticality score to install
+# CRITICALITY_SCORE_VERSION="github_token"
+
+## Github token for accessing the Github
+# GIHUB_TOKEN="github_token"
+
+## Result Format
+## Possible values: text, json, csv
+# CRITICALITY_SCORE_FORMAT="text"
+
+##########################################################################################################################
+########   FOSSOLOGY
+##########################################################################################################################
+
+## Description:
+# Used to scan licensing of an Open-Source Software.
+# 
+
+## Enable this if fossology is to install.
+## Possible values: enable, disable
+# INSTALL_FOSSOLOGY="disable"
+
+## Port on which fossology to be available
+## FOSSOLOGY_PORT="8085"
+
+## Version of fossology to install
+# FOSSOLOGY_VERSION="latest"
+
+
+##########################################################################################################################
+########   SPDX-SBOM
+##########################################################################################################################
+
+## Description:
+# Generated Software Bill Of Material (SBOM).
+# 
+
+## Enable this if SPDX SBOM is to install.
+## Possible values: enable, disable
+# INSTALL_SPDX_SBOM="disable"
+
+## Version of SPDX SBOM
+## SPDX_SBOM_VERSION="v0.0.15"
+
+##########################################################################################################################
+########   SONAR QUBE
+##########################################################################################################################
+
+## Description:
+# Static Code analyser.
+# 
+
+## Enable this if Sonar Qube is to install.
+## Possible values: enable, disable
+# INSTALL_SONAR="disable"
+
+## Version of watchtower
+## SNOR_VERSION="v0.0.15"
+
+## Port on which sonar qube to listen
+## SNOR_PORT="8089"
+
+##########################################################################################################################
+########   COUNTERFIT
+##########################################################################################################################
+
+## Description:
+# To detect AI model adverserial attacks.
+# 
+
+## Enable this if Counterfit is to install.
+## Possible values: enable, disable
+# INSTALL_COUNTERFIT="enable"
+
+## Version of counterfit
+## COUNTERFIT_VERSION=""

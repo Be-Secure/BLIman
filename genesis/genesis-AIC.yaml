@@ -258,3 +258,18 @@ BESLAB_DASHBOARD_ATEESTATION_STORE_NAME: ossattestation-datastore
 ## List of tools to be used for containerization. If commented no containerization tool will be installed.
 #BESLAB_CONTAINERIZATION_TOOLS:
 #  - docker
+
+##########################################################################################################################
+########   COUNTERFIT
+##########################################################################################################################
+
+## Description:
+# To detect AI model adverserial attacks.
+# 
+
+## Enable this if Counterfit is to install.
+## Possible values: enable, disable
+# INSTALL_COUNTERFIT="enable"
+
+## Version of counterfit
+## COUNTERFIT_VERSION=""
