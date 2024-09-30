@@ -8,7 +8,7 @@ Since being an open source community we are grouped together from different skil
 
 # Table of content
 
-[ TOC ]
+[[__TOC__]]
 
 # Understand BLIman (B-L-I-man) - Why, Where and How to use
 
@@ -18,7 +18,35 @@ It is recommended to go through the [BeSLab] (https://github.com/Be-Secure/BeSLa
 
 Mode details regarding BLIman can be found [here] (https://github.com/Be-Secure/BLIman/blob/master/README.md).
 
-## Installation
+# Contributing to enhance BeSLab deployments for targeted usage.
+
+Although BeSLab projects designed to install the core lab components by default, In BLIman we are enhancing the deployments of BeSLab for various targeted deployments. These deployments are to enahnce the BeSLab default installation for various use cases and helps the OSS Security providers quick, easy and targeted installed of tools required for a specific use with the BeSLab.
+
+For any OSS security assessment and making the reports available on marketplaces such as OSSVerse, there are multiple tools and utilities are needed for a security analysts to use.
+
+Although these tools can be installed on security analysts local machine itself usinf the BeS Playbooks itself, but its good idea to get them installed on a centrally hosted system with the BeSLab. By installing these tools centrally hosted rather than individual machines of security analysts, it enahnces resource utilization, saves time for installation and optimal usage of resources.
+
+For this to achieve BLIman is defining the 3 type of deployments targeted for specific usages.
+
+* OSPO - (Open-Source Program Office) An entity or organisation providing Open-Source assessment and security services alognwith TAVOSS version of software. 
+* AIC - (AI Council) is an organisation or entity providing security services for AI models and  its deployments. This is aimed for setting up BeSLab for specific to AI requirements.
+* OASP - (Open-Source Assurance Service Provider) provides assurance to various OSS and AI models and are able to offer assurance services on marketplace such as OSSVerse.
+
+To make this possible BLIman contains a folder called \"gensis\". under which a specilized genesis file is created which contains the configurations for tools and process for a specific targeted type of deployment e.g OSPO, OASP or AIC.
+
+Genesis file is the configuration file for  [BeSLab](https://github.com/Be-Secure/BeSLab) deployments. It defines all the required configurations to deploy the BeSLab for various modes, types and models.
+
+* genesis-OASP.yaml - A genesis file defining all the BeSLab tools and components required for the deployment of BeSLab in OASP model. Default genesis-OASP.yaml is defined [here](https://github.com/Be-Secure/BLIman/genesis/genesis-OASP.yaml)
+
+* genesis-OSPO.yaml - A genesis file defining all the BeSLab tools and components required for the deployment of BeSLab in OSPO model. Default genesis-OSPO.yaml is defined
+[here](https://github.com/Be-Secure/BLIman/genesis/genesis-OSPO.yaml)
+
+* genesis-AIC.yaml - A genesis file defining all the BeSLab tools and components required for the deployment of BeSLab in AIC model. Default genesis-AIC.yaml is defined
+[here](https://github.com/Be-Secure/BLIman/genesis/genesis-AIC.yaml)
+
+Click [here](https://github.com/Be-Secure/BLIman/genesis/contributing.md) for detailed instructions for adding a new tool. 
+
+## Installation of BLIman and BeSLab
 1. Download the bliman_setup.sh
 
 ```shell
@@ -34,15 +62,18 @@ chmod +x bliman_setup.sh
 3. Execute and install BLIman
 
 ```shell
-./bliman_setup.sh install --version dev
+./bliman_setup.sh install --version dev --genPath <Path/URL for the genesis file to be used>
 ```
 
-Dev is used for development branch. For particular version to chechout use the released version on [BLIMan Releases](https://github.com/Be-Secure/BLIman/releases)
+Dev is used for development branch. For particular version to chechout use the released version on [BLIMan Releases](https://github.com/Be-Secure/BLIman/releases) and provide the specific version in --version option above.
+
 This will install the BLIman in HOME/.bliman folder.
 
 Since BLIman is a command line utility for BeSLab so just installing BLIman is not enough the lab admin needs to execute following commands to install the security lab completely on the local machine.
 
-4. On execution of step 3 above. A file named genesis.yaml is created automatically in the current working directory. This file contains the configurations for the lab to be installed. Please go through the file and change if anything needs to change for example changing the Lab Owner name, Lab Type etc. If not changed by default private lab with lite mode and default tools will be installed.
+4. On execution of step 3 above. A file named genesis.yaml is created automatically in the current working directory. This file contains the default configurations for the lab to be installed as provided in the genesis file passed with --genPath option. If no --genPath option is given the default genesis.yaml file store at BeSLab will be used. 
+
+Please go through the file and change if anything needs to change for example changing the Lab Owner name, Lab Type etc. If not changed by default private lab with lite mode and default tools will be installed.
 
 5. Make the bliman command visible. To bring the bliman command available eigther do close the terminal and open a new terminal or use following command.
 
