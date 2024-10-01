@@ -49,7 +49,7 @@ function install_toolname() {
 function __bliman_launch_CUSTOMLABNAME() {
      
     # Call the functions written for each tool to be installed.
-    install_toolnbame
+    install_toolname
     
     echo ""
     return 0
