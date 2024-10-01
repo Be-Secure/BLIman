@@ -27,7 +27,7 @@ The 3 type of deployments defined are:
 
 We are seeking your valuable contributions to enhance the BeSlab deployments and environments.
 
-###  How to contribute to specialized BeSLab deployments click [here](https://https://github.com/Be-Secure/BLIman/blob/main/README.md)
+###  How to contribute to specialized BeSLab deployments click [here](https://github.com/Be-Secure/BLIman/blob/main/CONTRIBUTING.md)
 
 ## Genesis file
 Genesis file is the configuration file for  [BeSLab](https://github.com/Be-Secure/BeSLab) deployments. It defines all the required configurations to deploy the BeSLab for various modes, types and models.
