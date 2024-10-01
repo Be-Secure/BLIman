@@ -18,7 +18,7 @@ It is recommended to go through the [BeSLab] (https://github.com/Be-Secure/BeSLa
 
 Mode details regarding BLIman can be found [here] (https://github.com/Be-Secure/BLIman/blob/master/README.md).
 
-# Contributing to enhance BeSLab deployments for targeted usage.
+# Contributing to enhance BeSLab deployments.
 
 Although BeSLab projects designed to install the core lab components by default, In BLIman we are enhancing the deployments of BeSLab for various targeted deployments. These deployments are to enahnce the BeSLab default installation for various use cases and helps the OSS Security providers quick, easy and targeted installed of tools required for a specific use with the BeSLab.
 
@@ -62,7 +62,7 @@ chmod +x bliman_setup.sh
 3. Execute and install BLIman
 
 ```shell
-./bliman_setup.sh install --version dev --genPath <Path/URL for the genesis file to be used>
+source bliman_setup.sh install --version dev --genPath <Path/URL for the genesis file to be used>
 ```
 
 Dev is used for development branch. For particular version to chechout use the released version on [BLIMan Releases](https://github.com/Be-Secure/BLIman/releases) and provide the specific version in --version option above.
@@ -84,7 +84,7 @@ source $HOME/.bliman/bin/bliman-init.sh
 5. Load the genesis.yaml file to memory using.
 
 ```shell
-bli load
+bli load --genesis_path <path to genesis file to load>
 ```
 
 6. Initialize the lab mode. A lab mode needs to be set before lab installation. This make the required scripts available on local system based on mode provied in command.
@@ -104,7 +104,7 @@ source $HOME/.besman/bin/besman-init.sh
 8. Once the besman is available, execute following command to install the lab.
 
 ```shell
-bli launchlab
+bli launchlab <type of lab i.e OSPO, OASP, AIC>
 ```
 
 This will take several minutes deoending upon the code collaboration tool, dashboard tool and other tools configured so wait for the execution of scripts completely.
@@ -122,17 +122,19 @@ This will take several minutes deoending upon the code collaboration tool, dashb
 git clone https://github.com/<younamespace>/BLIman.git
 ```
 
-3. Develop, update and test the code locally.
+3. To add a new genesis file, follow instructions in [genesis-add-update](https://github.com/Be-Secure/BLIman/blob/main/genesis/ADD-UPDATE-GENESIS.md)
 
-4. Push the tested and passed code changes to your forked branch.
+4. update the BeSLab code as instructed in [BeSLab-contribution](https://github.com/Be-Secure/BeSLab/blob/master/CONTRIBUTING.md)
 
-5. Raise a PR from your forked repository to BLIman repository in Be-Seucure namespace. 
+5. Push the tested and passed code changes to your forked branch.
+
+6. Raise a PR from your forked repository to BLIman repository in Be-Seucure namespace. 
 
 Note: DO NOT raise PR request on main branch but use develop branch to raise PR for Be-Secure namespace.
 
-6. Notify the maintainers for review. If required do the discussions for feature and modifications if any over email or discussions section.
+7. Notify the maintainers for review. If required do the discussions for feature and modifications if any over email or discussions section.
 
-7. On approval of PR merge the code to develop branch with all conflicts resolved.
+8. On approval of PR merge the code to develop branch with all conflicts resolved.
 
 # Where to get help
 
