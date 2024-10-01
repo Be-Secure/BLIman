@@ -1,6 +1,6 @@
 # BLIman Contribution Guidelines
 
-Welcome to BLIman a Be-Secure community initiative for setting up [BeSLab] (https://github.com/Be-Secure/BeSLab)used by security analysts to assess open source Projects, AI Models, Model Datasets etc.
+Welcome to BLIman a Be-Secure community initiative for setting up [BeSLab](https://github.com/Be-Secure/BeSLab) used by security analysts to assess open source Projects, AI Models, Model Datasets etc.
 
 You are here which means you intented to contributing to this project. So, thanks for considering contributing to this project. Hope this guide will help you to start your good first contribution to the project. 
 
@@ -8,15 +8,15 @@ Since being an open source community we are grouped together from different skil
 
 # Table of content
 
-[[__TOC__]]
+[__TOC__]
 
 # Understand BLIman (B-L-I-man) - Why, Where and How to use
 
-Primary focus of BLIman is to provide a command line utility for [BeSLab] (https://github.com/Be-Secure/BeSLab). It helps a Lab Admin to set up a security lab using the command line commands. BLIman helps in setting mode, installing lab tools and loading [genesis file] (https://github.com/Be-Secure/BeSLab/blob/master/genesis.yaml)  
+Primary focus of BLIman is to provide a command line utility for [BeSLab](https://github.com/Be-Secure/BeSLab). It helps a Lab Admin to set up a security lab using the command line commands. BLIman helps in setting mode, installing lab tools and loading [genesis file](https://github.com/Be-Secure/BeSLab/blob/master/genesis.yaml)
 
-It is recommended to go through the [BeSLab] (https://github.com/Be-Secure/BeSLab) and [BeSman] (https://github.com/Be-Secure/BeSman) to understand the role of BLIman better.
+It is recommended to go through the [BeSLab](https://github.com/Be-Secure/BeSLab) and [BeSman](https://github.com/Be-Secure/BeSman) to understand the role of BLIman better.
 
-Mode details regarding BLIman can be found [here] (https://github.com/Be-Secure/BLIman/blob/master/README.md).
+Mode details regarding BLIman can be found [here](https://github.com/Be-Secure/BLIman/blob/master/README.md).
 
 # Contributing to enhance BeSLab deployments.
 
@@ -93,7 +93,7 @@ bli load --genesis_path <path to genesis file to load>
 bli inimode <modename>
 ```
 
-Modename can be any one of among host, bare and lite. For more information on modes refer to [BeSLab Contributors Guide] (https://github.com/Be-Secure/BeSlab/blob/master/CONTRBUTING.md)
+Modename can be any one of among host, bare and lite. For more information on modes refer to [BeSLab Contributors Guide](https://github.com/Be-Secure/BeSlab/blob/master/CONTRBUTING.md)
 
 7. The above command installs BeSMan and BeSLab to local system as home directory. To make the bes commands accesible either close the terminal and open it again or use the below command on same terminal.
 
