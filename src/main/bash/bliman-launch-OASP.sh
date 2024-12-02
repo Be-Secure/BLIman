@@ -16,5 +16,6 @@
 #
 
 function __bliman_launch_OASP() {
-	
+     echo ""
+     return 0     
 }
