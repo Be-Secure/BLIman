@@ -210,7 +210,7 @@ EOF
         
 	# Sanity checks
         #bliman_setup_check
-        [[ xx"$?" != xx"0" ]] && return 1   
+        #[[ xx"$?" != xx"0" ]] && return 1   
      
 
 	bliman_setup_echo "yellow" "Installing BLIman."
@@ -219,7 +219,7 @@ EOF
            bliman_setup_echo "red" "Bliman not downloaded properly. Please try again."
 	   return 1
 	elif  [ -d $tmp_location/BLIman ];then
-           cp -r $tmp_location/BLIman/contrib/ "$BLIMAN_DIR"
+           #cp -r $tmp_location/BLIman/contrib/ "$BLIMAN_DIR"
            cp -r $tmp_location/BLIman/src/main/bash/* "$bliman_src_folder"
            cp -r $tmp_location/BLIman/candidates/* "$bliman_candidates_folder"
            mkdir -p "$BLIMAN_DIR/bin/"
@@ -464,6 +464,9 @@ done
 case $command in
      install)
        bliman_setup_check 
+       if [ xx"$?" != xx"0" ];then
+          return 1
+       fi
        [[ -z $bliver ]] && bliman_setup_echo "yellow" "No specific BLiman version is defined. Installing latest from repository." && ! bliman_setup_download && return 1
        [[ ! -z $bliver ]] && bliman_setup_echo "yellow" "Downloading BLIman version $bliver" && ! bliman_setup_download $bliver && return 1
        [[ -z $genesis_path ]] && bliman_setup_echo "yellow" "No Genesis path is provided doanloading the default genesis file from Be-Secure." && ! bliman_get_genesis_file && return 1

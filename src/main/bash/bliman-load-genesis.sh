@@ -134,7 +134,7 @@ function __bli_load_genesis() {
 	echo $filename | grep "genesis-*.*.yaml"
         if [ xx"$?" == xx"0" ];then
           filetype=$(echo $filename | cut -d'-' -f2 )
-          [[ $filetype != "OSPO.yaml"]] && [[ $filetype != "OASP.yaml"]] && [[ $filetype != "AIC.yaml"]] && __bliman_echo_red "Nod a valid genesis filename." && return 1
+          [[ $filetype != "OSPO.yaml" ]] && [[ $filetype != "OASP.yaml" ]] && [[ $filetype != "AIC.yaml" ]] && __bliman_echo_red "Nod a valid genesis filename." && return 1
 	fi
 
         if [ $filenamefirst == "http" ] || [ $filenamefirst == "https" ];then
