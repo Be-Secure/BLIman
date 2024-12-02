@@ -160,7 +160,7 @@ function __bliman_download() {
 
 	curl --silent -o installer.sh $download_url 2>&1 | __bliman_log
         chmod +x installer.sh 
-	source installer.sh 2>&1 | __bliman_log
+	source installer.sh
 
 	# local base_name="${candidate}-${version}"
 	# local tmp_headers_file="${BLIMAN_DIR}/tmp/${base_name}.headers.tmp"
