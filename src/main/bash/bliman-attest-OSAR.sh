@@ -310,9 +310,9 @@ function  attest_local () {
 
    done
 
-   [[ -Z $OSAR_PATH ]] &&  __bliman_echo_red "OSAR file path is mandatory parameter." && return 1
-   [[ -Z $OSAR_FILE ]] &&  __bliman_echo_red "OSAR file name is mandatory parameter." && return 1
-   [[ -Z $KEY_BASED ]] &&  __bliman_echo_red "KEY based or keyless is required parameter." && return 1
+   [[ -z $OSAR_PATH ]] &&  __bliman_echo_red "OSAR file path is mandatory parameter." && return 1
+   [[ -z $OSAR_FILE ]] &&  __bliman_echo_red "OSAR file name is mandatory parameter." && return 1
+   [[ -z $KEY_BASED ]] &&  __bliman_echo_red "KEY based or keyless is required parameter." && return 1
    
    attest_file_local $OSAR_PATH $OSAR_FILE $KEY_BASED $KEY_PATH $KEY_NAME
 
