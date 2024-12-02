@@ -112,7 +112,7 @@ function __bli_load_genesis() {
 	local Genesis_File_location="";
 
 	PWD=`pwd`
-        default_genesis_file_name=genesis.yaml
+        default_genesis_file_name="genesis.yaml"
 	if [ ! -z $1 ] && [ ! -z $2 ];then
 	   if [ xx"$1" == "--genesis_path" ];then
              Genesis_File_location=$2
