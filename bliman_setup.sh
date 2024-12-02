@@ -229,7 +229,7 @@ EOF
 	   echo "${bliversion}" >> $bliman_var_folder/version
 
 	else
-           cp -r $tmp_location/BLIman-${bliversion:1}/contrib/ "$BLIMAN_DIR"
+           #cp -r $tmp_location/BLIman-${bliversion:1}/contrib/ "$BLIMAN_DIR"
            cp -r $tmp_location/BLIman-${bliversion:1}/src/main/bash/* "$bliman_src_folder"
            cp -r $tmp_location/BLIman-${bliversion:1}/candidates/* "$bliman_candidates_folder"
            mkdir -p "$BLIMAN_DIR/bin/"
