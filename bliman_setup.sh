@@ -169,15 +169,8 @@ function bliman_setup_install() {
 
 	trap track_last_command DEBUG
 	trap echo_failed_command EXIT
-        
-	if [ -z "$BLIMAN_DIR" ]; then
-                export BLIMAN_DIR="$HOME/.bliman"
-                export BLIMAN_DIR_RAW="$HOME/.bliman"
-        else
-                export BLIMAN_DIR_RAW="$BLIMAN_DIR"
-        fi
-
-	# Local variables
+	
+        # Local variables
         bliman_src_folder="${BLIMAN_DIR}/src"
         bliman_tmp_folder="${BLIMAN_DIR}/tmp"
         bliman_ext_folder="${BLIMAN_DIR}/ext"
@@ -438,6 +431,13 @@ bliman_setup_help ()
 #### MAIN STARTS HERE
 opts=()
 args=()
+
+if [ -z "$BLIMAN_DIR" ]; then
+   export BLIMAN_DIR="$HOME/.bliman"
+   export BLIMAN_DIR_RAW="$HOME/.bliman"
+else
+   export BLIMAN_DIR_RAW="$BLIMAN_DIR"
+fi
 
 [[ "$1" != "install" ]] && [[ "$1" != "remove" ]] && [[ "$1" != "update" ]] && echo "Not a valid command." && bliman_setup_help
 command="$1"
