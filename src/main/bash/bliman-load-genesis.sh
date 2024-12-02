@@ -128,14 +128,21 @@ function __bli_load_genesis() {
         filename=$(echo $Genesis_File_location | awk -F / '{print $NF}')
         filenamefirst=$(echo $Genesis_File_location | awk -F / '{print $1}')
 
-        echo $filename | grep "genesis*.*.yaml"
-        [[ xx"$?" != xx"0" ]] && __bliman_echo_red "Not a valid genesis filename." && return 1
+        echo $filename | grep "genesis*.yaml"
+        if [ xx"$?" != xx"0" ];then 
+          __bliman_echo_red "Not a valid genesis filename." 
+          return 1
+        else
+          usingdefault="y"
+        fi
 
-	echo $filename | grep "genesis-*.*.yaml"
-        if [ xx"$?" == xx"0" ];then
-          filetype=$(echo $filename | cut -d'-' -f2 )
-          [[ $filetype != "OSPO.yaml" ]] && [[ $filetype != "OASP.yaml" ]] && [[ $filetype != "AIC.yaml" ]] && __bliman_echo_red "Nod a valid genesis filename." && return 1
-	fi
+        if [ -z $usingdefault ];then
+          echo $filename | grep "genesis-*.*.yaml"
+          if [ xx"$?" == xx"0" ];then
+            filetype=$(echo $filename | cut -d'-' -f2 )
+            [[ $filetype != "OSPO.yaml" ]] && [[ $filetype != "OASP.yaml" ]] && [[ $filetype != "AIC.yaml" ]] && __bliman_echo_red "Nod a valid genesis filename." && return 1
+          fi
+        fi
 
         if [ $filenamefirst == "http" ] || [ $filenamefirst == "https" ];then
             fileisurl="true"
