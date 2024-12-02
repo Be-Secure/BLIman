@@ -16,5 +16,6 @@
 #
 
 function __bliman_launch_AIC() {
-	
+   echo ""
+   return 0   
 }

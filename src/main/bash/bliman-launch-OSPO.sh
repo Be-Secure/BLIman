@@ -16,5 +16,6 @@
 #
 
 function __bliman_launch_OSPO() {
-	
+   echo ""
+   return 0   
 }
