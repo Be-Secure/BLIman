@@ -169,15 +169,8 @@ function bliman_setup_install() {
 
 	trap track_last_command DEBUG
 	trap echo_failed_command EXIT
-        
-	if [ -z "$BLIMAN_DIR" ]; then
-                export BLIMAN_DIR="$HOME/.bliman"
-                export BLIMAN_DIR_RAW="$HOME/.bliman"
-        else
-                export BLIMAN_DIR_RAW="$BLIMAN_DIR"
-        fi
-
-	# Local variables
+	
+        # Local variables
         bliman_src_folder="${BLIMAN_DIR}/src"
         bliman_tmp_folder="${BLIMAN_DIR}/tmp"
         bliman_ext_folder="${BLIMAN_DIR}/ext"
@@ -210,7 +203,7 @@ EOF
         
 	# Sanity checks
         #bliman_setup_check
-        [[ xx"$?" != xx"0" ]] && return 1   
+        #[[ xx"$?" != xx"0" ]] && return 1   
      
 
 	bliman_setup_echo "yellow" "Installing BLIman."
@@ -219,7 +212,7 @@ EOF
            bliman_setup_echo "red" "Bliman not downloaded properly. Please try again."
 	   return 1
 	elif  [ -d $tmp_location/BLIman ];then
-           cp -r $tmp_location/BLIman/contrib/ "$BLIMAN_DIR"
+           #cp -r $tmp_location/BLIman/contrib/ "$BLIMAN_DIR"
            cp -r $tmp_location/BLIman/src/main/bash/* "$bliman_src_folder"
            cp -r $tmp_location/BLIman/candidates/* "$bliman_candidates_folder"
            mkdir -p "$BLIMAN_DIR/bin/"
@@ -229,7 +222,7 @@ EOF
 	   echo "${bliversion}" >> $bliman_var_folder/version
 
 	else
-           cp -r $tmp_location/BLIman-${bliversion:1}/contrib/ "$BLIMAN_DIR"
+           #cp -r $tmp_location/BLIman-${bliversion:1}/contrib/ "$BLIMAN_DIR"
            cp -r $tmp_location/BLIman-${bliversion:1}/src/main/bash/* "$bliman_src_folder"
            cp -r $tmp_location/BLIman-${bliversion:1}/candidates/* "$bliman_candidates_folder"
            mkdir -p "$BLIMAN_DIR/bin/"
@@ -439,6 +432,13 @@ bliman_setup_help ()
 opts=()
 args=()
 
+if [ -z "$BLIMAN_DIR" ]; then
+   export BLIMAN_DIR="$HOME/.bliman"
+   export BLIMAN_DIR_RAW="$HOME/.bliman"
+else
+   export BLIMAN_DIR_RAW="$BLIMAN_DIR"
+fi
+
 [[ "$1" != "install" ]] && [[ "$1" != "remove" ]] && [[ "$1" != "update" ]] && echo "Not a valid command." && bliman_setup_help
 command="$1"
 shift
@@ -464,6 +464,9 @@ done
 case $command in
      install)
        bliman_setup_check 
+       if [ xx"$?" != xx"0" ];then
+          return 1
+       fi
        [[ -z $bliver ]] && bliman_setup_echo "yellow" "No specific BLiman version is defined. Installing latest from repository." && ! bliman_setup_download && return 1
        [[ ! -z $bliver ]] && bliman_setup_echo "yellow" "Downloading BLIman version $bliver" && ! bliman_setup_download $bliver && return 1
        [[ -z $genesis_path ]] && bliman_setup_echo "yellow" "No Genesis path is provided doanloading the default genesis file from Be-Secure." && ! bliman_get_genesis_file && return 1

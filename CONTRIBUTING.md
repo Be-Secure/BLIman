@@ -1,6 +1,6 @@
 # BLIman Contribution Guidelines
 
-Welcome to BLIman a Be-Secure community initiative for setting up [BeSLab] (https://github.com/Be-Secure/BeSLab)used by security analysts to assess open source Projects, AI Models, Model Datasets etc.
+Welcome to BLIman a Be-Secure community initiative for setting up [BeSLab](https://github.com/Be-Secure/BeSLab) used by security analysts to assess open source Projects, AI Models, Model Datasets etc.
 
 You are here which means you intented to contributing to this project. So, thanks for considering contributing to this project. Hope this guide will help you to start your good first contribution to the project. 
 
@@ -8,17 +8,45 @@ Since being an open source community we are grouped together from different skil
 
 # Table of content
 
-[ TOC ]
+[__TOC__]
 
 # Understand BLIman (B-L-I-man) - Why, Where and How to use
 
-Primary focus of BLIman is to provide a command line utility for [BeSLab] (https://github.com/Be-Secure/BeSLab). It helps a Lab Admin to set up a security lab using the command line commands. BLIman helps in setting mode, installing lab tools and loading [genesis file] (https://github.com/Be-Secure/BeSLab/blob/master/genesis.yaml)  
+Primary focus of BLIman is to provide a command line utility for [BeSLab](https://github.com/Be-Secure/BeSLab). It helps a Lab Admin to set up a security lab using the command line commands. BLIman helps in setting mode, installing lab tools and loading [genesis file](https://github.com/Be-Secure/BeSLab/blob/master/genesis.yaml)
 
-It is recommended to go through the [BeSLab] (https://github.com/Be-Secure/BeSLab) and [BeSman] (https://github.com/Be-Secure/BeSman) to understand the role of BLIman better.
+It is recommended to go through the [BeSLab](https://github.com/Be-Secure/BeSLab) and [BeSman](https://github.com/Be-Secure/BeSman) to understand the role of BLIman better.
 
-Mode details regarding BLIman can be found [here] (https://github.com/Be-Secure/BLIman/blob/master/README.md).
+Mode details regarding BLIman can be found [here](https://github.com/Be-Secure/BLIman/blob/master/README.md).
 
-## Installation
+# Contributing to enhance BeSLab deployments.
+
+Although BeSLab projects designed to install the core lab components by default, In BLIman we are enhancing the deployments of BeSLab for various targeted deployments. These deployments are to enahnce the BeSLab default installation for various use cases and helps the OSS Security providers quick, easy and targeted installed of tools required for a specific use with the BeSLab.
+
+For any OSS security assessment and making the reports available on marketplaces such as OSSVerse, there are multiple tools and utilities are needed for a security analysts to use.
+
+Although these tools can be installed on security analysts local machine itself usinf the BeS Playbooks itself, but its good idea to get them installed on a centrally hosted system with the BeSLab. By installing these tools centrally hosted rather than individual machines of security analysts, it enahnces resource utilization, saves time for installation and optimal usage of resources.
+
+For this to achieve BLIman is defining the 3 type of deployments targeted for specific usages.
+
+* OSPO - (Open-Source Program Office) An entity or organisation providing Open-Source assessment and security services alognwith TAVOSS version of software. 
+* AIC - (AI Council) is an organisation or entity providing security services for AI models and  its deployments. This is aimed for setting up BeSLab for specific to AI requirements.
+* OASP - (Open-Source Assurance Service Provider) provides assurance to various OSS and AI models and are able to offer assurance services on marketplace such as OSSVerse.
+
+To make this possible BLIman contains a folder called \"gensis\". under which a specilized genesis file is created which contains the configurations for tools and process for a specific targeted type of deployment e.g OSPO, OASP or AIC.
+
+Genesis file is the configuration file for  [BeSLab](https://github.com/Be-Secure/BeSLab) deployments. It defines all the required configurations to deploy the BeSLab for various modes, types and models.
+
+* genesis-OASP.yaml - A genesis file defining all the BeSLab tools and components required for the deployment of BeSLab in OASP model. Default genesis-OASP.yaml is defined [here](https://github.com/Be-Secure/BLIman/genesis/genesis-OASP.yaml)
+
+* genesis-OSPO.yaml - A genesis file defining all the BeSLab tools and components required for the deployment of BeSLab in OSPO model. Default genesis-OSPO.yaml is defined
+[here](https://github.com/Be-Secure/BLIman/genesis/genesis-OSPO.yaml)
+
+* genesis-AIC.yaml - A genesis file defining all the BeSLab tools and components required for the deployment of BeSLab in AIC model. Default genesis-AIC.yaml is defined
+[here](https://github.com/Be-Secure/BLIman/genesis/genesis-AIC.yaml)
+
+Click [here](https://github.com/Be-Secure/BLIman/genesis/contributing.md) for detailed instructions for adding a new tool. 
+
+## Installation of BLIman and BeSLab
 1. Download the bliman_setup.sh
 
 ```shell
@@ -34,15 +62,18 @@ chmod +x bliman_setup.sh
 3. Execute and install BLIman
 
 ```shell
-./bliman_setup.sh install --version dev
+source bliman_setup.sh install --version dev --genPath <Path/URL for the genesis file to be used>
 ```
 
-Dev is used for development branch. For particular version to chechout use the released version on [BLIMan Releases](https://github.com/Be-Secure/BLIman/releases)
+Dev is used for development branch. For particular version to chechout use the released version on [BLIMan Releases](https://github.com/Be-Secure/BLIman/releases) and provide the specific version in --version option above.
+
 This will install the BLIman in HOME/.bliman folder.
 
 Since BLIman is a command line utility for BeSLab so just installing BLIman is not enough the lab admin needs to execute following commands to install the security lab completely on the local machine.
 
-4. On execution of step 3 above. A file named genesis.yaml is created automatically in the current working directory. This file contains the configurations for the lab to be installed. Please go through the file and change if anything needs to change for example changing the Lab Owner name, Lab Type etc. If not changed by default private lab with lite mode and default tools will be installed.
+4. On execution of step 3 above. A file named genesis.yaml is created automatically in the current working directory. This file contains the default configurations for the lab to be installed as provided in the genesis file passed with --genPath option. If no --genPath option is given the default genesis.yaml file store at BeSLab will be used. 
+
+Please go through the file and change if anything needs to change for example changing the Lab Owner name, Lab Type etc. If not changed by default private lab with lite mode and default tools will be installed.
 
 5. Make the bliman command visible. To bring the bliman command available eigther do close the terminal and open a new terminal or use following command.
 
@@ -53,7 +84,7 @@ source $HOME/.bliman/bin/bliman-init.sh
 5. Load the genesis.yaml file to memory using.
 
 ```shell
-bli load
+bli load --genesis_path <path to genesis file to load>
 ```
 
 6. Initialize the lab mode. A lab mode needs to be set before lab installation. This make the required scripts available on local system based on mode provied in command.
@@ -62,7 +93,7 @@ bli load
 bli inimode <modename>
 ```
 
-Modename can be any one of among host, bare and lite. For more information on modes refer to [BeSLab Contributors Guide] (https://github.com/Be-Secure/BeSlab/blob/master/CONTRBUTING.md)
+Modename can be any one of among host, bare and lite. For more information on modes refer to [BeSLab Contributors Guide](https://github.com/Be-Secure/BeSlab/blob/master/CONTRBUTING.md)
 
 7. The above command installs BeSMan and BeSLab to local system as home directory. To make the bes commands accesible either close the terminal and open it again or use the below command on same terminal.
 
@@ -73,7 +104,7 @@ source $HOME/.besman/bin/besman-init.sh
 8. Once the besman is available, execute following command to install the lab.
 
 ```shell
-bli launchlab
+bli launchlab <type of lab i.e OSPO, OASP, AIC>
 ```
 
 This will take several minutes deoending upon the code collaboration tool, dashboard tool and other tools configured so wait for the execution of scripts completely.
@@ -91,17 +122,19 @@ This will take several minutes deoending upon the code collaboration tool, dashb
 git clone https://github.com/<younamespace>/BLIman.git
 ```
 
-3. Develop, update and test the code locally.
+3. To add a new genesis file, follow instructions in [genesis-add-update](https://github.com/Be-Secure/BLIman/blob/main/genesis/ADD-UPDATE-GENESIS.md)
 
-4. Push the tested and passed code changes to your forked branch.
+4. update the BeSLab code as instructed in [BeSLab-contribution](https://github.com/Be-Secure/BeSLab/blob/master/CONTRIBUTING.md)
 
-5. Raise a PR from your forked repository to BLIman repository in Be-Seucure namespace. 
+5. Push the tested and passed code changes to your forked branch.
+
+6. Raise a PR from your forked repository to BLIman repository in Be-Seucure namespace. 
 
 Note: DO NOT raise PR request on main branch but use develop branch to raise PR for Be-Secure namespace.
 
-6. Notify the maintainers for review. If required do the discussions for feature and modifications if any over email or discussions section.
+7. Notify the maintainers for review. If required do the discussions for feature and modifications if any over email or discussions section.
 
-7. On approval of PR merge the code to develop branch with all conflicts resolved.
+8. On approval of PR merge the code to develop branch with all conflicts resolved.
 
 # Where to get help
 

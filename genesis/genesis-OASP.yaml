@@ -258,3 +258,54 @@ BESLAB_DASHBOARD_ATEESTATION_STORE_NAME: ossattestation-datastore
 ## List of tools to be used for containerization. If commented no containerization tool will be installed.
 #BESLAB_CONTAINERIZATION_TOOLS:
 #  - docker
+
+##########################################################################################################################
+########   FOSSOLOGY
+##########################################################################################################################
+
+## Description:
+# Used to scan licensing of an Open-Source Software.
+# 
+
+## Enable this if fossology is to install.
+## Possible values: enable, disable
+# INSTALL_FOSSOLOGY="disable"
+
+## Port on which fossology to be available
+## FOSSOLOGY_PORT="8085"
+
+## Version of fossology to install
+# FOSSOLOGY_VERSION="latest"
+
+##########################################################################################################################
+########   SONAR QUBE
+##########################################################################################################################
+
+## Description:
+# Static Code analyser.
+# 
+
+## Enable this if Sonar Qube is to install.
+## Possible values: enable, disable
+# INSTALL_SONAR="disable"
+
+## Version of watchtower
+## SNOR_VERSION="v0.0.15"
+
+## Port on which sonar qube to listen
+## SNOR_PORT="8089"
+
+##########################################################################################################################
+########   COUNTERFIT
+##########################################################################################################################
+
+## Description:
+# To detect AI model adverserial attacks.
+# 
+
+## Enable this if Counterfit is to install.
+## Possible values: enable, disable
+# INSTALL_COUNTERFIT="enable"
+
+## Version of counterfit
+## COUNTERFIT_VERSION=""

@@ -173,8 +173,8 @@ function  verify_local () {
 
    done
 
-   [[ -Z $OSAR_PATH ]] &&  __bliman_echo_red "OSAR file path is mandatory parameter." && return 1
-   [[ -Z $AUTH_TYPE ]] &&  __bliman_echo_red "Auth type is required parameter." && return 1
+   [[ -z $OSAR_PATH ]] &&  __bliman_echo_red "OSAR file path is mandatory parameter." && return 1
+   [[ -z $AUTH_TYPE ]] &&  __bliman_echo_red "Auth type is required parameter." && return 1
    
 
    if [ xx"$AUTH_TYPE" == xx"key-based" ];then
@@ -235,7 +235,7 @@ function  verify_remote () {
 
    done
 
-   [[ -Z $OSAR_REMOTE_URL ]] &&  __bliman_echo_red "OSAR remote url is required." && return 1
+   [[ -z $OSAR_REMOTE_URL ]] &&  __bliman_echo_red "OSAR remote url is required." && return 1
    [[ -z $AUTH_TYPE ]] && __bliman_echo_red "Auth type is required parameter." && return 1
    
    if [ xx"$AUTH_TYPE" == xx"key-based" ];then

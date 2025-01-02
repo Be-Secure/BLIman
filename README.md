@@ -3,23 +3,31 @@
 BLIman is a command line interface for managing [BeSLab](https://github.com/Be-Secure/BeSLab) deployments. It can be used to bring up the lab in 3 different modes. 
 
 * Lite Mode 
+<br> All shell script mode. where all installation are done using shell scripts and ideal for very low resource settings. Required Linux ubuntu host machine for this mode.
 * <i>Host Mode (Work in progress)</i>
+Installs BeSLab in a virtual machine on top of a hosted machine. It installs a Oah-bes VM on the host machine and Lab is installed on the VM installed by Oah-bes VM. Suitable for windows host systems.
 * <i>Bare Mode (Work in progress)</i>
-
+Install the Lab on a sytem other than the host system itself using Ansible scripts. if the system where BLIman is installed is not able to install the BeSLab locally than this mode can install the Lab on a remote machine using ansible scripts.
 In addition, there are 3 deployment types for each lab mode.
 * Private Lab - Owned by an organization for commercial usage.
 * <i>Public Lab (Work in progress) - Community lab hosted in any public code collaboration repository.</i>
 * <i>Personal Lab (Work in progress) - Owned by an individual for learning and research purpose.</i>
 
-The default deployment of BeSlab is comprising of basic tools and configurations which are needed for any type of Open-Source service provider. An Open-Source Service Provider is an entity who performs various activity on any Open-source Software or AI models such as security assessment for OSS and AI models, Attestation and Assurance services, TAVOSS versio of OSS or AI models, AI models security and guardrails etc.
+The default deployment of BeSlab is comprising of basic tools and configurations which are needed for any all deployment models. An Open-Source Service Provider is an entity who performs various activity on any Open-Source Software or AI Models such as security assessment for OSS and AI Models, Attestation and Assurance services, TAVOSS certification, AI models security and guardrails etc.
 
-BLIman extends the default BeSLab deployment for various service type of service providers for quick and easy setup of BeSLab as per service provider requirements.
-BLImand defines 3 type of service providers and extends the installation of BeSLab support for these type of service providers with a single BLIman command and specific genesis file designed for each type of service provider. 
+BLIman extends the default BeSLab deployment of BeSLab to bundle the tools for specific need.
 
-The 3 type of service providers models defined are:
-* OSPO - An entity or organisation providing Open-Source assessment and security services alognwith TAVOSS version of software.
-* AIC - Called as AI Council, is an organisation or entity providing security services for AI models and Securing AI model deployments.
-* OASP - Open-source Assurance Service Provider, provides assurance to various OSS and AI models and are able to offer assurance services on marketplace such as OSSVerse.
+It defines 3 type of BeSLab usage and extends the installation of BeSLab to support for these type of service providers with a single BLIman command and specific genesis file designed for each type installation. 
+
+The 3 type of deployments defined are:
+
+* OSPO - (Open-Source Program Office) An entity or organisation providing Open-Source assessment and security services alognwith TAVOSS version of software. 
+* AIC - (AI Council) is an organisation or entity providing security services for AI models and  its deployments. This is aimed for setting up BeSLab for specific to AI requirements.
+* OASP - (Open-Source Assurance Service Provider) provides assurance to various OSS and AI models and are able to offer assurance services on marketplace such as OSSVerse.
+
+We are seeking your valuable contributions to enhance the BeSlab deployments and environments.
+
+###  How to contribute to specialized BeSLab deployments click [here](https://github.com/Be-Secure/BLIman/blob/main/CONTRIBUTING.md)
 
 ## Genesis file
 Genesis file is the configuration file for  [BeSLab](https://github.com/Be-Secure/BeSLab) deployments. It defines all the required configurations to deploy the BeSLab for various modes, types and models.

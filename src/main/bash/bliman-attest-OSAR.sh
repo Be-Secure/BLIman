@@ -310,9 +310,9 @@ function  attest_local () {
 
    done
 
-   [[ -Z $OSAR_PATH ]] &&  __bliman_echo_red "OSAR file path is mandatory parameter." && return 1
-   [[ -Z $OSAR_FILE ]] &&  __bliman_echo_red "OSAR file name is mandatory parameter." && return 1
-   [[ -Z $KEY_BASED ]] &&  __bliman_echo_red "KEY based or keyless is required parameter." && return 1
+   [[ -z $OSAR_PATH ]] &&  __bliman_echo_red "OSAR file path is mandatory parameter." && return 1
+   [[ -z $OSAR_FILE ]] &&  __bliman_echo_red "OSAR file name is mandatory parameter." && return 1
+   [[ -z $KEY_BASED ]] &&  __bliman_echo_red "KEY based or keyless is required parameter." && return 1
    
    attest_file_local $OSAR_PATH $OSAR_FILE $KEY_BASED $KEY_PATH $KEY_NAME
 
@@ -362,11 +362,11 @@ function  attest_remote () {
 
    done
 
-   [[ -Z $OSAR_REMOTE_URL ]] &&  __bliman_echo_red "OSAR remote code collab repository url is mandatory parameter." && return 1
+   [[ -z $OSAR_REMOTE_URL ]] &&  __bliman_echo_red "OSAR remote code collab repository url is mandatory parameter." && return 1
    [[ -z $OSAR_REMOTE_REPO_NAME ]] && __bliman_echo_red "OSAR remote repo name is required." && return 1
-   [[ -Z $OSAR_REMOTE_FILE_PATH ]] &&  __bliman_echo_red "OSAR file path is mandatory parameter." && return 1
-   [[ -Z $OSAR_REMOTE_FILE_NAME ]] &&  __bliman_echo_red "OSAR file path is mandatory parameter." && return 1
-   [[ -Z $KEY_BASED ]] &&  __bliman_echo_red "KEY based or keyless is required parameter." && return 1
+   [[ -z $OSAR_REMOTE_FILE_PATH ]] &&  __bliman_echo_red "OSAR file path is mandatory parameter." && return 1
+   [[ -z $OSAR_REMOTE_FILE_NAME ]] &&  __bliman_echo_red "OSAR file path is mandatory parameter." && return 1
+   [[ -z $KEY_BASED ]] &&  __bliman_echo_red "KEY based or keyless is required parameter." && return 1
 
    attest_file_remote $OSAR_REMOTE_URL $OSAR_REMOTE_REPO_NAME $OSAR_REMOTE_FILE_PATH $OSAR_REMOTE_FILE_NAME $KEY_BASED $KEY_PATH $KEY_NAME
 }
