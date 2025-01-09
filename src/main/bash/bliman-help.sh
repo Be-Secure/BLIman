@@ -179,6 +179,22 @@ function __bli_help_list {
     __bliman_echo_no_colour '  '
 }
 
+function __bli_help_info {
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   info - To list the information of plugin passed'
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  ' 
+    __bliman_echo_yellow '      $ bli info plugin <plugin name> <plugin version>' 
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'DESCRIPTION'
+    __bliman_echo_no_colour '   It gives the user the following details about the plugin.'
+    __bliman_echo_no_colour '     - what the plugin is'
+    __bliman_echo_no_colour '     - endpoint at which it will be available'
+    __bliman_echo_no_colour '     - its dependencies'
+    __bliman_echo_no_colour '  '
+}
+
 function __bli_help_status {
     __bliman_echo_no_colour '  '
     __bliman_echo_white 'NAME'

@@ -55,6 +55,9 @@ function bli() {
 	list)
 		COMMAND="list"
 		;;
+	info)
+		COMMAND="info"
+		;;
 	-V | --version)
 		COMMAND="version"
 		;;
@@ -100,6 +103,9 @@ function bli() {
                                         ;;
                                         status)
                                                 __bli_help_status
+                                        ;;
+										info)
+                                                __bli_help_info
                                         ;;
                                         launchlab)
                                                 __bli_help_launchlab
