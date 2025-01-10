@@ -76,7 +76,11 @@ function __bliman_list_installed_plugins() {
 	__bliman_echo_no_colour "----------------------------------------"
 	printf "%-20s %s\n" "Plugin Name" "Version"
     __bliman_echo_no_colour "----------------------------------------"
-	find "$BLIMAN_PLUGINS_DIR" -type f -name "*-plugin.sh" | while read -r plugin_file; do
+	if ! find "$BLIMAN_PLUGINS_DIR" -type f -name "*-plugin.sh" | read; then
+        __bliman_echo_yellow "No plugins installed"
+        return 0
+    fi
+	find "$BLIMAN_PLUGINS_DIR" -type f -name "*-plugin.sh" | while read -r plugin_file; do 
 		file_name=$(basename "$plugin_file")
 		# Extract plugin name and version using regex
 		if [[ $file_name =~ beslab-(.*)-(.*)-plugin\.sh ]]; then
