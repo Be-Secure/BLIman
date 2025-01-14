@@ -11,6 +11,14 @@ __bli_info() {
     then
         
         local installed_plugin=false
+
+        __bliman_check_parameter_empty
+        if [[ $? -ne 0 ]];
+        then
+            __bliman_echo_red "Error: Missing argument"
+            __bli_help_info
+            return 1
+        fi
         
         if [[ -d $BLIMAN_PLUGINS_DIR/$plugin_name ]] 
         then
@@ -30,17 +38,6 @@ __bli_info() {
     fi
 }
 
-function __bliman_check_plugin_exists() {
-    local plugin_url=$1
-    local plugin_url_exists
-    plugin_url_exists=$(curl -s -o /dev/null -I -w "%{http_code}" "$plugin_url")
-    if [[ "$plugin_url_exists" == "200" ]]
-    then
-        return 0
-    else
-        return 1
-    fi
-}
 
 function __bliman_get_remote_plugin() {
 
