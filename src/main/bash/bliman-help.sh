@@ -18,7 +18,7 @@ __bliman_echo_no_colour '   projects, AI models, Training datasets, documents an
 __bliman_echo_no_colour '  '
 __bliman_echo_white ' COMMANDS '
 __bliman_echo_no_colour '   help: Display the help command                                                                      '
-__bliman_echo_no_colour '   list: List available modes for the Lab installation.                                                '
+__bliman_echo_no_colour '   list: List available modes for the Lab installation, list available lab plugins.                                                '
 __bliman_echo_no_colour '   initmode <modename>: Initializes the lab installation mode.                                                    '
 __bliman_echo_cyan      '     Available modes are:                                                                              '
     __bliman_echo_cyan  '       host - This mode installs lab on a virtual machine.                                             '
@@ -27,7 +27,8 @@ __bliman_echo_cyan      '     Available modes are:                              
 __bliman_echo_no_colour '   load: Read and load th Genesis file.                                                                '
 __bliman_echo_no_colour '   launchlab: install the lab components.                                                              '
 __bliman_echo_no_colour '   status: Display the list of installed Lab, its mode and tools with the versions installed           '
-__bliman_echo_no_colour '   create: create user/project for the lab.                                                            '
+__bliman_echo_no_colour '   create: create user/project for the lab.                                                           '
+__bliman_echo_no_colour '   install: Install a plugin.                                                           '
 __bliman_echo_no_colour '  '
 __bliman_echo_white ' OPTIONS '
 __bliman_echo_no_colour '   --force: To update forcefully                                                                       '
@@ -168,7 +169,7 @@ function __bli_help_launchlab {
 function __bli_help_list {
     __bliman_echo_no_colour '  '
     __bliman_echo_white 'NAME'
-    __bliman_echo_no_colour '   list - To list the available modes for beslab to get installed.                                  '
+    __bliman_echo_no_colour '   list - To list the available modes and plugins for beslab to get installed.                                  '
     __bliman_echo_no_colour '  '
     __bliman_echo_white 'SYNOPSIS  ' 
     __bliman_echo_yellow '      $ bli list                                                                                       '
@@ -176,6 +177,20 @@ function __bli_help_list {
     __bliman_echo_white 'DESCRIPTION'
     __bliman_echo_no_colour '   It provides users with a comprehensive overview of all the available beslab modes, playbooks and '
     __bliman_echo_no_colour '   roles for the installation.                                                                      '    
+    __bliman_echo_no_colour '  '
+}
+
+function __bli_help_install {
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   install - To install a BeSLab plugin'
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  ' 
+    __bliman_echo_yellow '      $ bli install plugin <plugin name> <version>                                                                                       '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'DESCRIPTION'
+    __bliman_echo_no_colour '   The command downloads and installs BeSLab plugins.'
+    __bliman_echo_no_colour '   You can view the available plugins from list command'
     __bliman_echo_no_colour '  '
 }
 

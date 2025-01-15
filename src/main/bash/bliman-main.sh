@@ -55,6 +55,9 @@ function bli() {
 	list)
 		COMMAND="list"
 		;;
+	install)
+		COMMAND="install"
+		;;
 	info)
 		COMMAND="info"
 		;;
@@ -97,6 +100,9 @@ function bli() {
                                         ;;
                                         initmode)
                                                 __bli_help_initmode
+                                        ;;
+										install)
+                                                __bli_help_install
                                         ;;
                                         list)
                                                 __bli_help_list
