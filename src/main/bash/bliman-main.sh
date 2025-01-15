@@ -101,6 +101,9 @@ function bli() {
                                         initmode)
                                                 __bli_help_initmode
                                         ;;
+										install)
+                                                __bli_help_install
+                                        ;;
                                         list)
                                                 __bli_help_list
                                         ;;
