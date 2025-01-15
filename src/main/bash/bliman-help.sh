@@ -28,7 +28,8 @@ __bliman_echo_no_colour '   load: Read and load th Genesis file.                
 __bliman_echo_no_colour '   launchlab: install the lab components.                                                              '
 __bliman_echo_no_colour '   status: Display the list of installed Lab, its mode and tools with the versions installed           '
 __bliman_echo_no_colour '   create: create user/project for the lab.                                                           '
-__bliman_echo_no_colour '   install: Install a plugin.                                                           '
+__bliman_echo_no_colour '   install: Install a plugin.'
+__bliman_echo_no_colour '   uninstall: Uninstall a plugin. '
 __bliman_echo_no_colour '  '
 __bliman_echo_white ' OPTIONS '
 __bliman_echo_no_colour '   --force: To update forcefully                                                                       '
@@ -177,6 +178,19 @@ function __bli_help_list {
     __bliman_echo_white 'DESCRIPTION'
     __bliman_echo_no_colour '   It provides users with a comprehensive overview of all the available beslab modes, playbooks and '
     __bliman_echo_no_colour '   roles for the installation.                                                                      '    
+    __bliman_echo_no_colour '  '
+}
+
+function __bli_help_uninstall {
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   uninstall - To uninstall an installed plugin.                                  '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  ' 
+    __bliman_echo_yellow '      $ bli uninstall <plugin name> <plugin_version>'
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'DESCRIPTION'
+    __bliman_echo_no_colour '   The command removes the installed plugin from the machine.'    
     __bliman_echo_no_colour '  '
 }
 
