@@ -19,10 +19,11 @@
 
 function __bli_install(){
     # bli install plugin <plugin_name> <version>
-    local type plugin_name plugin_version
+    local type plugin_name plugin_version plugin_file
     type="$1"
     plugin_name="$2"
     plugin_version="$3"
+    plugin_file="$BLIMAN_PLUGINS_DIR/$plugin_name/$plugin_version/beslab-$plugin_name-$plugin_version-plugin.sh"
 
     __bliman_check_parameter_empty  "$plugin_name" "$type" "$plugin_version"
     if [[ $? -ne 0 ]];
@@ -32,10 +33,16 @@ function __bli_install(){
         return 1
     fi
 
+    if [[ -f "$plugin_file" ]];
+    then
+        __bliman_echo_yellow "Plugin $plugin_name $plugin_version is already install in this machine"
+        return 0
+    fi
+
     __bliman_echo_no_colour "Downloading plugin $plugin_name $plugin_version"
     __bliman_download_plugin "$plugin_name" "$plugin_version" || return 1
 
-    source $BLIMAN_PLUGINS_DIR/$plugin_name/$plugin_version/beslab-$plugin_name-$plugin_version-plugin.sh
+    source "$plugin_file"
 
     __bliman_echo_white "Installing plugin..."
     __beslab_install_"$plugin_name"
