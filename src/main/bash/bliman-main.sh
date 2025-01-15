@@ -55,6 +55,9 @@ function bli() {
 	list)
 		COMMAND="list"
 		;;
+	install)
+		COMMAND="install"
+		;;
 	info)
 		COMMAND="info"
 		;;
