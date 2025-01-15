@@ -70,7 +70,7 @@ function bli() {
 	launchlab)
 		COMMAND="launchlab"
 		;;
-	rm)
+	uninstall)
 		COMMAND="uninstall"
 		;;
 	c)
@@ -103,6 +103,9 @@ function bli() {
                                         ;;
 										install)
                                                 __bli_help_install
+										;;
+										uninstall)
+                                                __bli_help_uninstall
                                         ;;
                                         list)
                                                 __bli_help_list

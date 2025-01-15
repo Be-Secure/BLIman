@@ -17,26 +17,34 @@
 #
 
 function __bli_uninstall() {
-	local candidate version current
+	local plugin_name plugin_version plugin_file type
 
-	candidate="$1"
-	version="$2"
-	__bliman_check_candidate_present "$candidate" || return 1
-	__bliman_check_version_present "$version" || return 1
+	type="$1"
+	plugin_name="$2"
+	plugin_version="$3"
+	plugin_file="$BLIMAN_PLUGINS_DIR/$plugin_name/$plugin_version/beslab-$plugin_name-$plugin_version-plugin.sh"
 
-	current=$(readlink "${BLIMAN_CANDIDATES_DIR}/${candidate}/current" | sed "s!${BLIMAN_CANDIDATES_DIR}/${candidate}/!!g")
-	if [[ -L "${BLIMAN_CANDIDATES_DIR}/${candidate}/current" && "$version" == "$current" ]]; then
-		echo ""
-		__bliman_echo_green "Deselecting ${candidate} ${version}..."
-		unlink "${BLIMAN_CANDIDATES_DIR}/${candidate}/current"
+	__bliman_check_parameter_empty "$type" "$plugin_name" "$plugin_version"
+	if [[ $? -ne 0 ]]; then
+		__bliman_echo_red "Error: Missing argument"
+		__bli_help_uninstall
+		return 1
 	fi
 
-	echo ""
+	if [[ ! -f "$plugin_file" ]]; then
+		__bliman_echo_yellow "Plugin $plugin_name $plugin_version is not installed in your system."
+		return 1
+	fi
 
-	if [ -d "${BLIMAN_CANDIDATES_DIR}/${candidate}/${version}" ]; then
-		__bliman_echo_green "Uninstalling ${candidate} ${version}..."
-		rm -rf "${BLIMAN_CANDIDATES_DIR}/${candidate}/${version}"
+	__bliman_echo_green "Uninstalling plugin $plugin_name $plugin_version"
+	source "$plugin_file"
+	__beslab_uninstall_"$plugin_name"
+	if [[ "$?" != "0" ]] 
+	then
+		__bliman_echo_red "Error: Uninstalling plugin $plugin_name $plugin_version"
+		return 1
 	else
-		__bliman_echo_red "${candidate} ${version} is not installed."
+		rm -rf "$BLIMAN_PLUGINS_DIR/$plugin_name"
+		__bliman_echo_green "Plugin $plugin_name $plugin_version uninstalled successfully"
 	fi
 }
