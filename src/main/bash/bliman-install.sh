@@ -32,10 +32,12 @@ function __bli_install(){
         return 1
     fi
 
+    __bliman_echo_no_colour "Downloading plugin $plugin_name $plugin_version"
     __bliman_download_plugin "$plugin_name" "$plugin_version" || return 1
 
     source $BLIMAN_PLUGINS_DIR/$plugin_name/$plugin_version/beslab-$plugin_name-$plugin_version-plugin.sh
 
+    __bliman_echo_white "Installing plugin..."
     __beslab_install_"$plugin_name"
 
     if [[ $? -eq 0 ]] 
