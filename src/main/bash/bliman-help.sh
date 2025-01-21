@@ -30,6 +30,7 @@ __bliman_echo_no_colour '   status: Display the list of installed Lab, its mode 
 __bliman_echo_no_colour '   create: create user/project for the lab.                                                           '
 __bliman_echo_no_colour '   install: Install a plugin.'
 __bliman_echo_no_colour '   uninstall: Uninstall a plugin. '
+__bliman_echo_no_colour '   validate: Validate the installation of a plugin. '
 __bliman_echo_no_colour '  '
 __bliman_echo_white ' OPTIONS '
 __bliman_echo_no_colour '   --force: To update forcefully                                                                       '
@@ -205,6 +206,19 @@ function __bli_help_install {
     __bliman_echo_white 'DESCRIPTION'
     __bliman_echo_no_colour '   The command downloads and installs BeSLab plugins.'
     __bliman_echo_no_colour '   You can view the available plugins from list command'
+    __bliman_echo_no_colour '  '
+}
+
+function __bli_help_validate {
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   validate - To validate the installation of a BeSLab plugin'
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  ' 
+    __bliman_echo_yellow '      $ bli validate plugin <plugin name> <version>                                                                                       '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'DESCRIPTION'
+    __bliman_echo_no_colour '   The command checks if the plugin is installed properly.'
     __bliman_echo_no_colour '  '
 }
 

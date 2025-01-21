@@ -46,6 +46,9 @@ function bli() {
 	load)
 		COMMAND="load-genesis"
 		;;
+	validate)
+		COMMAND="validate"
+		;;
 	status)
 		COMMAND="status"
 		;;
@@ -54,12 +57,6 @@ function bli() {
 		;;
 	list)
 		COMMAND="list"
-		;;
-	install)
-		COMMAND="install"
-		;;
-	info)
-		COMMAND="info"
 		;;
 	-V | --version)
 		COMMAND="version"
@@ -70,7 +67,7 @@ function bli() {
 	launchlab)
 		COMMAND="launchlab"
 		;;
-	uninstall)
+	rm)
 		COMMAND="uninstall"
 		;;
 	c)
@@ -101,21 +98,16 @@ function bli() {
                                         initmode)
                                                 __bli_help_initmode
                                         ;;
-										install)
-                                                __bli_help_install
-										;;
-										uninstall)
-                                                __bli_help_uninstall
-                                        ;;
                                         list)
                                                 __bli_help_list
                                         ;;
                                         status)
                                                 __bli_help_status
                                         ;;
-										info)
-                                                __bli_help_info
+										validate)
+                                                __bli_help_validate
                                         ;;
+										
                                         launchlab)
                                                 __bli_help_launchlab
                                         ;;
