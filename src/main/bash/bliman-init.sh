@@ -36,6 +36,8 @@ fi
 [[ -z  $BLIMAN_LAB_URL ]]  && export BLIMAN_LAB_URL="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BeSLab/main"
 [[ -z $BLIMAN_PLUGINS_REPO ]] && export BLIMAN_PLUGINS_REPO="http://github.com/$BLIMAN_NAMESPACE/BeSLab-Plugins/main"
 [[ -z $BLIMAN_PLUGINS_DIR ]] && export BLIMAN_PLUGINS_DIR="$HOME/.beslab/plugins"
+[[ -z $BLIMAN_PLUGINS_REPO_DIR ]] && export BLIMAN_PLUGINS_REPO_DIR="$HOME/BeSLab-Plugins"
+
 if [ -z "$BLIMAN_CANDIDATES_REPO" ]; then
 	if [ ! -z $BLIMAN_HOSTED_URL ] && [ ! -z $BLIMAN_NAMESPACE ];then
            export BLIMAN_CANDIDATES_REPO="$BLIMAN_HOSTED_URL/$BLIMAN_NAMESPACE/BLIman/main"
