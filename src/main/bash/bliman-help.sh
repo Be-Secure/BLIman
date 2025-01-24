@@ -18,7 +18,7 @@ __bliman_echo_no_colour '   projects, AI models, Training datasets, documents an
 __bliman_echo_no_colour '  '
 __bliman_echo_white ' COMMANDS '
 __bliman_echo_no_colour '   help: Display the help command                                                                      '
-__bliman_echo_no_colour '   list: List available modes for the Lab installation.                                                '
+__bliman_echo_no_colour '   list: List available modes for the Lab installation, list available lab plugins.                                                '
 __bliman_echo_no_colour '   initmode <modename>: Initializes the lab installation mode.                                                    '
 __bliman_echo_cyan      '     Available modes are:                                                                              '
     __bliman_echo_cyan  '       host - This mode installs lab on a virtual machine.                                             '
@@ -27,7 +27,10 @@ __bliman_echo_cyan      '     Available modes are:                              
 __bliman_echo_no_colour '   load: Read and load th Genesis file.                                                                '
 __bliman_echo_no_colour '   launchlab: install the lab components.                                                              '
 __bliman_echo_no_colour '   status: Display the list of installed Lab, its mode and tools with the versions installed           '
-__bliman_echo_no_colour '   create: create user/project for the lab.                                                            '
+__bliman_echo_no_colour '   create: create user/project for the lab.                                                           '
+__bliman_echo_no_colour '   install: Install a plugin.'
+__bliman_echo_no_colour '   uninstall: Uninstall a plugin. '
+__bliman_echo_no_colour '   validate: Validate the installation of a plugin. '
 __bliman_echo_no_colour '  '
 __bliman_echo_white ' OPTIONS '
 __bliman_echo_no_colour '   --force: To update forcefully                                                                       '
@@ -168,7 +171,7 @@ function __bli_help_launchlab {
 function __bli_help_list {
     __bliman_echo_no_colour '  '
     __bliman_echo_white 'NAME'
-    __bliman_echo_no_colour '   list - To list the available modes for beslab to get installed.                                  '
+    __bliman_echo_no_colour '   list - To list the available modes and plugins for beslab to get installed.                                  '
     __bliman_echo_no_colour '  '
     __bliman_echo_white 'SYNOPSIS  ' 
     __bliman_echo_yellow '      $ bli list                                                                                       '
@@ -176,6 +179,79 @@ function __bli_help_list {
     __bliman_echo_white 'DESCRIPTION'
     __bliman_echo_no_colour '   It provides users with a comprehensive overview of all the available beslab modes, playbooks and '
     __bliman_echo_no_colour '   roles for the installation.                                                                      '    
+    __bliman_echo_no_colour '  '
+}
+
+function __bli_help_uninstall {
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   uninstall - To uninstall an installed plugin.                                  '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  ' 
+    __bliman_echo_yellow '      $ bli uninstall <plugin name> <plugin_version>'
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'DESCRIPTION'
+    __bliman_echo_no_colour '   The command removes the installed plugin from the machine.'    
+    __bliman_echo_no_colour '  '
+}
+
+function __bli_help_install {
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   install - To install a BeSLab plugin'
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  ' 
+    __bliman_echo_yellow '      $ bli install plugin <plugin name> <version>                                                                                       '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'DESCRIPTION'
+    __bliman_echo_no_colour '   The command downloads and installs BeSLab plugins.'
+    __bliman_echo_no_colour '   You can view the available plugins from list command'
+    __bliman_echo_no_colour '  '
+}
+
+function __bli_help_create_plugin {
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   create - To create a new plugin with skeletal code.                                                                 '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  ' 
+    __bliman_echo_yellow '      $ bli create plugin <plugin name> <version>                                                                                       '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'DESCRIPTION'
+    __bliman_echo_no_colour '   It helps the contributor to create a plugin file easily with a skeletal code'
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NOTE'
+    __bliman_echo_no_colour "      Before running the command clone your plugin repository and"
+    __bliman_echo_no_colour "      set this variable to the cloned path:$(__bliman_echo_yellow 'BLIMAN_PLUGINS_REPO_DIR')"
+    __bliman_echo_no_colour '  '
+}
+
+function __bli_help_validate {
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   validate - To validate the installation of a BeSLab plugin'
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  ' 
+    __bliman_echo_yellow '      $ bli validate plugin <plugin name> <version>                                                                                       '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'DESCRIPTION'
+    __bliman_echo_no_colour '   The command checks if the plugin is installed properly.'
+    __bliman_echo_no_colour '  '
+}
+
+function __bli_help_info {
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   info - To list the information of plugin passed'
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  ' 
+    __bliman_echo_yellow '      $ bli info plugin <plugin name> <plugin version>' 
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'DESCRIPTION'
+    __bliman_echo_no_colour '   It gives the user the following details about the plugin.'
+    __bliman_echo_no_colour '     - what the plugin is'
+    __bliman_echo_no_colour '     - endpoint at which it will be available'
+    __bliman_echo_no_colour '     - its dependencies'
     __bliman_echo_no_colour '  '
 }
 

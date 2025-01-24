@@ -46,6 +46,9 @@ function bli() {
 	load)
 		COMMAND="load-genesis"
 		;;
+	validate)
+		COMMAND="validate"
+		;;
 	status)
 		COMMAND="status"
 		;;
@@ -101,6 +104,10 @@ function bli() {
                                         status)
                                                 __bli_help_status
                                         ;;
+										validate)
+                                                __bli_help_validate
+                                        ;;
+										
                                         launchlab)
                                                 __bli_help_launchlab
                                         ;;
