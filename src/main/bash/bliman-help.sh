@@ -209,6 +209,23 @@ function __bli_help_install {
     __bliman_echo_no_colour '  '
 }
 
+function __bli_help_create_plugin {
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NAME'
+    __bliman_echo_no_colour '   create - To create a new plugin with skeletal code.                                                                 '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'SYNOPSIS  ' 
+    __bliman_echo_yellow '      $ bli create plugin <plugin name> <version>                                                                                       '
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'DESCRIPTION'
+    __bliman_echo_no_colour '   It helps the contributor to create a plugin file easily with a skeletal code'
+    __bliman_echo_no_colour '  '
+    __bliman_echo_white 'NOTE'
+    __bliman_echo_no_colour "      Before running the command clone your plugin repository and"
+    __bliman_echo_no_colour "      set this variable to the cloned path:$(__bliman_echo_yellow 'BLIMAN_PLUGINS_REPO_DIR')"
+    __bliman_echo_no_colour '  '
+}
+
 function __bli_help_validate {
     __bliman_echo_no_colour '  '
     __bliman_echo_white 'NAME'
