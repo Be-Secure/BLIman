@@ -334,11 +334,11 @@ if [ -f $beslighthousedatafile ];then
    sed -i "/\"gitLabUrl\"/c\"gitLabUrl\": \"$domainURL\"," $beslighthouse_config_path 2>&1 | __bliman_log
    
    if [ ! -z $BESMAN_LAB_NAME ];then
-      sed -i "/\"labName\"/c\"labName\": \"$BESMAN_LAB_NAME\"," $beslighthouse_config_path 2>&1 | __bliman_log
+      sed -i "/\"labName\"/c\"labName\": \"$BESMAN_LAB_NAME\"" $beslighthouse_config_path 2>&1 | __bliman_log
    else
       sed -i "/\"labName\"/c\"labName\": \"Be-Secure\"" $beslighthouse_config_path 2>&1 | __bliman_log
    fi
 
-   sed -i "/\"version\"/c\"version\": \"$BESLAB_DASHBOARD_RELEASE_VERSION\"" $beslighthouse_config_path 2>&1 | __bliman_log
+   sed -i "/\"version\"/c\"version\": \"$BESLAB_DASHBOARD_RELEASE_VERSION\"," $beslighthouse_config_path 2>&1 | __bliman_log
 
 fi
