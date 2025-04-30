@@ -1,18 +1,17 @@
 # Managing genesis file configurations.
 ## Gudelines to Add or Update a genesis file.
 To update the existing genesis files, follow the below guidelines.
-- Find the tool applicability to which type of lab deployment or deployments is.
+
 - All configuration must be in capital letters.
 - Add following two configuration for any new tool mandatory.
-    - INSTALL_TOOLNAME 
+    - INSTALL_\<TOOLNAME\> 
         <br>Tool is installed only if this is enalbed. if disabled or not defined tool is not installed.
-    - TOOLNAME_VESRION
+    - TOOLNAME_\<VESRION\>
     <br> Tells the version of tool to be installed. If not defined or blank install the latest release.
-    <br> Replace the TOOLNAME with the actual name of tool in capital letters.
+    <br> Replace the \<TOOLNAME\> with the actual name of tool in capital letters.
 - For any configuration added put the comments above the configuration to specify possible values, description and reference if any.
-
-- Configurations must have deault values and should be the values assigned initially.
-- Keep the configuration minimum.
+- Configurations must have default values assigned initially.
+- Keep the configuration as minimum as possible. Do not add too many parameters to be passed for a tool.
 
 ## Guidelines to add new custom genesis file.
 To add any new custom genesis file, it must be grouping additional tool on top of default genesis file. [default-genesis](https://github.com/Be-Secure/BeSLab/blob/master/genesis.yaml).
@@ -24,10 +23,10 @@ To add any new custom genesis file, it must be grouping additional tool on top o
 
 3. Downlaod the default genesis file from BeSLab from [here](https://github.com/Be-Secure/BeSLab/blob/master/genesis.yaml)
 
-4. Rename the genesis file to genesis-<capital abbrevation of tools froup e.g OASP, OSPO>.yaml
+4. Rename the genesis file to genesis-\<capital abbrevation of tools froup e.g OASP, OSPO\>.yaml
 e.g genesis-OASP.yaml
 
-5. Add the tools and there configurations by following insurction mentioned in section [guidelines](Gudelines-to-Add-or-Update-a-genesis-file.)
+5. Add the tools and there configurations by following insurction mentioned in above section [guidelines](Gudelines-to-Add-or-Update-a-genesis-file.)
 6. For a new genesis file there will be code changes required.
 - Copy the template script placed at src/launch-template.sh to src/bliman-launch-<Abberavation of tool group used in genesis file>.sh e.g bliman-launch-OASP.sh
 - Edit the new script to call the tool installation environment or function. Please read the comments of template file carefully to wrire the module.

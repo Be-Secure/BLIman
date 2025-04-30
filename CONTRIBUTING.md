@@ -32,7 +32,7 @@ For this to achieve BLIman is defining the 3 type of deployments targeted for sp
 * AIC - (AI Council) is an organisation or entity providing security services for AI models and  its deployments. This is aimed for setting up BeSLab for specific to AI requirements.
 * OASP - (Open-Source Assurance Service Provider) provides assurance to various OSS and AI models and are able to offer assurance services on marketplace such as OSSVerse.
 
-To make this possible BLIman contains a folder called \"gensis\". under which a specilized genesis file is created which contains the configurations for tools and process for a specific targeted type of deployment e.g OSPO, OASP or AIC.
+To make this possible BLIman contains a folder called \"gensis\". under which a specialized genesis file is created which contains the configurations for tools required for a specific targeted type of deployment e.g OSPO, OASP or AIC.
 
 Genesis file is the configuration file for  [BeSLab](https://github.com/Be-Secure/BeSLab) deployments. It defines all the required configurations to deploy the BeSLab for various modes, types and models.
 
@@ -44,7 +44,7 @@ Genesis file is the configuration file for  [BeSLab](https://github.com/Be-Secur
 * genesis-AIC.yaml - A genesis file defining all the BeSLab tools and components required for the deployment of BeSLab in AIC model. Default genesis-AIC.yaml is defined
 [here](https://github.com/Be-Secure/BLIman/genesis/genesis-AIC.yaml)
 
-Click [here](https://github.com/Be-Secure/BLIman/genesis/contributing.md) for detailed instructions for adding a new tool. 
+Click [here](https://github.com/Be-Secure/BLIman/genesis/contributing.md) for detailed instructions for adding a new tool.
 
 ## Installation of BLIman and BeSLab
 1. Download the bliman_setup.sh
